@@ -55,6 +55,23 @@ namespace Narramancer {
 			}
 		}
 
+		public static void DuplciateNodeGraphField(UnityEngine.Object targetObject) {
+			if (GUILayout.Button("Duplicate")) {
+				var nodeGraph = targetObject as XNode.NodeGraph;
+				var mainAssetPath = AssetDatabase.GetAssetPath(nodeGraph);
+				var mainAsset = AssetDatabase.LoadMainAssetAtPath(mainAssetPath);
+				Undo.RecordObject(mainAsset, "Duplicate");
+				var duplicate = nodeGraph.Copy();
+				AssetDatabase.AddObjectToAsset(duplicate, mainAssetPath);
+				foreach (var node in duplicate.nodes) {
+					AssetDatabase.AddObjectToAsset(node, mainAssetPath);
+				}
+				EditorUtility.SetDirty(mainAsset);
+				AssetDatabase.SaveAssets();
+				AssetDatabase.Refresh();
+			}
+		}
+
 		public static ColorScope Color(Color? color = null) {
 			var scope = new ColorScope() {
 				originalColor = GUI.color

@@ -21,7 +21,7 @@ namespace Narramancer {
 #if ODIN_INSPECTOR
 		PropertyTree objectTree;
 #else
-	Editor defaultEditor;
+		Editor defaultEditor;
 #endif
 		StringBuilder stringBuilder;
 
@@ -180,6 +180,8 @@ namespace Narramancer {
 					}
 					if (!AssetDatabase.IsMainAsset(property.objectReferenceValue)) {
 						EditorDrawerUtilities.RenameField(property.objectReferenceValue, ref renaming);
+
+						EditorDrawerUtilities.DuplciateNodeGraphField(property.objectReferenceValue);
 					}
 #if ODIN_INSPECTOR
 					objectTree ??= PropertyTree.Create(property.objectReferenceValue);
