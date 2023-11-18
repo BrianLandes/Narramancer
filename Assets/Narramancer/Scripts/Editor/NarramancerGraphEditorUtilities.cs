@@ -263,12 +263,15 @@ namespace Narramancer {
 				}
 			}
 
-			if ( newGraph.TryGetOutputNode(out var outputNodeB)) {
-				var farthestRightNode = newGraph.nodes.Excluding(outputNodeB).OrderByDescending(x => x.position.x).FirstOrDefault();
-				if ( farthestRightNode!=null ) {
-					outputNodeB.position = farthestRightNode.position + Vector2.right * 300;
+			if (newGraph is ValueVerb) {
+				if (newGraph.TryGetOutputNode(out var outputNodeB)) {
+					var farthestRightNode = newGraph.nodes.Excluding(outputNodeB).OrderByDescending(x => x.position.x).FirstOrDefault();
+					if (farthestRightNode != null) {
+						outputNodeB.position = farthestRightNode.position + Vector2.right * 300;
+					}
 				}
 			}
+
 
 			foreach (var node in nodes) {
 				graph.RemoveNode(node);
