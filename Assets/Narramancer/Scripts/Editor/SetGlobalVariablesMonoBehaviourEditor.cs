@@ -20,6 +20,22 @@ namespace Narramancer {
 				list = new ReorderableList(serializedObject, assignmentsProperty, true, true, true, true);
 				list.drawElementCallback = DrawListItem;
 				list.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Variable Assignments");
+				list.onAddCallback = list => {
+					var menu = new GenericMenu();
+
+					foreach( var variable in NarramancerSingleton.Instance.GlobalVariables) {
+						menu.AddItem( new GUIContent(variable.Name), false, () => {
+							assignmentsProperty.InsertArrayElementAtIndex(assignmentsProperty.arraySize);
+							var newElement = assignmentsProperty.GetArrayElementAtIndex(assignmentsProperty.arraySize - 1);
+							newElement.FindPropertyRelative(nameof(VariableAssignment.name)).stringValue = variable.Name;
+							newElement.FindPropertyRelative(nameof(VariableAssignment.id)).stringValue = variable.Id;
+							newElement.FindPropertyRelative(nameof(VariableAssignment.type)).stringValue = VariableAssignment.TypeToString(variable.Type);
+							serializedObject.ApplyModifiedProperties();
+						});
+					}
+
+					menu.ShowAsContext();
+				};
 			}
 
 			list.DoLayoutList();
