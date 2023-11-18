@@ -13,8 +13,8 @@ namespace Narramancer {
 
 		public override void OnBodyGUI() {
 
-			var textPort = target.GetInputPort(FormatStringNode.TextFieldName);
-			NodeEditorGUILayout.PortField(textPort, serializedObject);
+			var textProperty = serializedObject.FindProperty(FormatStringNode.TextFieldName);
+			NodeEditorGUILayout.PropertyField(textProperty);
 
 			menuContent = menuContent != null ? menuContent: EditorGUIUtility.IconContent("_Menu");
 
