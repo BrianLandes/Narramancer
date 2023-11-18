@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f77318c298080d8439f08a93f695dc61, type: 3}
+  m_Name: NarramancerSingleton
+  m_EditorClassIdentifier: 
+  runOnGameStart: 1
+  nouns:
+  - {fileID: 11400000, guid: e5a95aaf32ce714479f71c9e815e5925, type: 2}
+  runAtStart: []
+  globalVariables:
+  - type:
+      typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      list: 0
+    name: cube
+    id: 859aa3c5-5f5f-4e58-9b38-138178b4098c
+    assignment:
+      name: 
+      id: 
+      type: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      boolValue: 0
+      intValue: 0
+      floatValue: 0
+      stringValue: 
+      objectValue: {fileID: 0}
+  - type:
+      typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      list: 0
+    name: secondCube
+    id: 40c5a331-d081-4af6-8f86-5c9463044f6e
+    assignment:
+      name: 
+      id: 
+      type: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      boolValue: 0
+      intValue: 0
+      floatValue: 0
+      stringValue: 
+      objectValue: {fileID: 0}
+  storyInstance:
+    instances:
+    - displayName: Ryoko
+      nounType: 0
+      uid:
+        Value: fbb7a718-962e-4040-9f64-45cacdccbb0f
+      noun: {fileID: 11400000, guid: e5a95aaf32ce714479f71c9e815e5925, type: 2}
+      pronouns: 0
+      properties:
+      - adjective: {fileID: 11400000, guid: 78fb1c64b5cd6da4da7cf666b6ca04c2, type: 2}
+      stats: []
+      relationships: []
+      blackboard:
+        ints:
+          keys: []
+          values: 
+        bools:
+          keys: []
+          values: 
+        floats:
+          keys: []
+          values: []
+        strings:
+          keys: []
+          values: []
+        unityObjects:
+          keys:
+          - angry
+          - angrypout
+          - angrytalk
+          - blush
+          - discontent
+          - disgusted
+          - huh
+          - normal
+          - normalblush
+          - normaltalk
+          - normaltalk2
+          - pout
+          - sad
+          values:
+          - {fileID: 2800000, guid: 0c7d00ed97b4fae4db791641d42af11a, type: 3}
+          - {fileID: 2800000, guid: 8cd9b20e27b5b6242b1c1f58ea6fffa5, type: 3}
+          - {fileID: 2800000, guid: 3be31bb5889261643859da80ec8e53a7, type: 3}
+          - {fileID: 2800000, guid: 6b1212450dc07be449013a4ac7985db0, type: 3}
+          - {fileID: 2800000, guid: 6a5a325a72a7ef243872377b7337694c, type: 3}
+          - {fileID: 21300000, guid: 2044b2f2a5e68ba43a75a0bf3a740412, type: 3}
+          - {fileID: 2800000, guid: cc7f907fc76b60147ba9cfef506394c5, type: 3}
+          - {fileID: 2800000, guid: aee95ebac0332904c9493b4add9bfa96, type: 3}
+          - {fileID: 2800000, guid: aacdeabd5710b6941be5ed9e7f3f4cb1, type: 3}
+          - {fileID: 2800000, guid: 3074b09ba05d1f94586aba3ba94b20c8, type: 3}
+          - {fileID: 2800000, guid: f446a1096dd832f438a1dd2798723e66, type: 3}
+          - {fileID: 2800000, guid: 06851d7b5cd03d74e8084c1adf48c8cb, type: 3}
+          - {fileID: 2800000, guid: 759cdc1c0435c6f45a3c43c69a53640f, type: 3}
+        objects:
+          keys: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys:
+        - cube (GameObject) 859aa3c5-5f5f-4e58-9b38-138178b4098c -935942940
+        values:
+        - {fileID: 0}
+      objects:
+        keys: []
+    timers: []
+    nodeRunners:
+      keys:
+      - Capsule
+      values:
+      - runningNode: {fileID: 0}
+        queuedNodes: []
+        promise:
+          doneCallbacks: []
+        blackboard:
+          ints:
+            keys: []
+            values: 
+          bools:
+            keys: []
+            values: 
+          floats:
+            keys: []
+            values: []
+          strings:
+            keys: []
+            values: []
+          unityObjects:
+            keys: []
+            values: []
+          objects:
+            keys: []
+        recentlyRunNodes:
+        - name: Ran
+          node: {fileID: 7324044519248377111, guid: 5851c801e2fd6c044922879d7e9cdade, type: 2}
+          timeStamp: 0
+        verbose: 0
+    promises:
+      keys: []
+      values: []
+    flags:
+      keys: []
+      values: 
+    sceneIndex: -1
