@@ -51,7 +51,7 @@ namespace Narramancer {
 					dragging = true;
 				}
 
-				resizeIcon = resizeIcon !=null ? resizeIcon :(Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Plugins/Kenney/Game Icons/White/2x/downRight.png", typeof(Texture2D));
+				resizeIcon = resizeIcon !=null ? resizeIcon : EditorGUIUtility.IconContent("d_Grid.MoveTool").image as Texture2D;
 				GUI.DrawTexture(rect, resizeIcon);
 
 				if (Event.current.type == EventType.MouseUp || Event.current.type == EventType.MouseLeaveWindow) {
