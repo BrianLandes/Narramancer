@@ -13,42 +13,9 @@ MonoBehaviour:
   m_Name: NarramancerSingleton
   m_EditorClassIdentifier: 
   runOnGameStart: 1
-  nouns:
-  - {fileID: 11400000, guid: e5a95aaf32ce714479f71c9e815e5925, type: 2}
+  nouns: []
   runAtStart: []
-  globalVariables:
-  - type:
-      typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      list: 0
-    name: cube
-    id: 859aa3c5-5f5f-4e58-9b38-138178b4098c
-    assignment:
-      name: 
-      id: 
-      type: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      boolValue: 0
-      intValue: 0
-      floatValue: 0
-      stringValue: 
-      objectValue: {fileID: 0}
-  - type:
-      typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      list: 0
-    name: secondCube
-    id: 40c5a331-d081-4af6-8f86-5c9463044f6e
-    assignment:
-      name: 
-      id: 
-      type: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
-      boolValue: 0
-      intValue: 0
-      floatValue: 0
-      stringValue: 
-      objectValue: {fileID: 0}
+  globalVariables: []
   storyInstance:
     instances:
     - displayName: Ryoko

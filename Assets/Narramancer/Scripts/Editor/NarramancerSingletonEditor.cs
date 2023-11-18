@@ -14,7 +14,7 @@ namespace Narramancer {
 		ReorderableList variableList;
 
 		private int tab;
-		private int nounTypeFilter;
+		private int nounTypeFilter = 0;
 		private int adjectiveTypeFilter;
 
 		string characterSearch;
@@ -48,6 +48,15 @@ namespace Narramancer {
 
 			switch (tab) {
 				case 0:
+
+					if (singleton.Nouns.Any(x => x == null)) {
+						foreach( var noun in singleton.Nouns.ToArray()) {
+							if (noun == null) {
+								singleton.Nouns.Remove(noun);
+							}
+						}
+					}
+
 					var buttonContent = EditorGUIUtility.IconContent("CreateAddNew");
 					if (GUILayout.Button(buttonContent)) {
 						var path = EditorUtility.SaveFilePanelInProject("Create New Character", "Character", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Characters");
@@ -64,6 +73,7 @@ namespace Narramancer {
 
 					nounTypeFilter = GUILayout.Toolbar(nounTypeFilter, new string[] { "All", "Characters", "Items", "Locations" });
 					NounScriptableObject[] nouns = null;
+					
 					switch (nounTypeFilter) {
 						default:
 						case 0:
