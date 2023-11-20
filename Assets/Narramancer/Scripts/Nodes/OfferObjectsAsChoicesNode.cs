@@ -92,18 +92,14 @@ namespace Narramancer {
 				choicePrinter.AddChoice(displayText, () => {
 					runner.Blackboard.Set(ElementKey, element);
 					var nextNode = GetRunnableNodeFromPort(nameof(runWhenObjectSelected));
-					if (nextNode != null) {
-						runner.Resume(nextNode);
-					}
+					runner.Resume(nextNode);
 				});
 			}
 
 			choicePrinter.AddChoice("Back", () => {
 				runner.Blackboard.Set(ElementKey, null, type.Type);
 				var nextNode = GetRunnableNodeFromPort(nameof(runWhenBackSelected));
-				if (nextNode != null) {
-					runner.Resume(nextNode);
-				}
+				runner.Resume(nextNode);
 			});
 
 			choicePrinter.ShowChoices();
