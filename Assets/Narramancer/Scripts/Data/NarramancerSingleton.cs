@@ -16,6 +16,11 @@ namespace Narramancer {
 		public List<NounScriptableObject> Nouns { get => nouns; set => nouns = value; }
 
 		[SerializeField]
+		List<AdjectiveScriptableObject> adjectives = new List<AdjectiveScriptableObject>();
+		public static string AdjectivesFieldName => nameof(adjectives);
+		public List<AdjectiveScriptableObject> Adjectives { get => adjectives; set => adjectives = value; }
+
+		[SerializeField]
 		List<ActionVerb> runAtStart = new List<ActionVerb>();
 		public static string RunAtStartFieldName => nameof(runAtStart);
 		public List<ActionVerb> RunAtStart { get => runAtStart; set => runAtStart = value; }

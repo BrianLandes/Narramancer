@@ -97,7 +97,8 @@ namespace Narramancer {
 							}
 						}
 
-						var buttonContent = new GUIContent( EditorGUIUtility.IconContent("CreateAddNew") );
+
+						var buttonContent = new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
 						buttonContent.text = "Create new Noun...";
 						if (GUILayout.Button(buttonContent)) {
 							var path = EditorUtility.SaveFilePanelInProject("Create New Character", "Character", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Characters");
@@ -139,32 +140,88 @@ namespace Narramancer {
 					#region Adjectives
 					case 1:
 
-						//if (GUILayout.Button("Add all used")) {
-						//	var newProperties = story.Nouns.SelectMany(noun => noun.Properties).Select(assignment => assignment.property);
-						//	var newStats = story.Nouns.SelectMany(noun => noun.Stats).Select(assignment => assignment.stat);
-						//	var newRelationships = story.Nouns.SelectMany(noun => noun.Relationships).Select(assignment => assignment.relationship);
+						if (singleton.Adjectives.Any(x => x == null)) {
+							foreach (var value in singleton.Adjectives.ToArray()) {
+								if (value == null) {
+									singleton.Adjectives.Remove(value);
+								}
+							}
+						}
 
-						//	story.Adjectives = story.Adjectives.Union(newProperties).Union(newStats).Union(newRelationships).WithoutNulls().ToList();
-						//}
+						var buttonContent2 = new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
+						buttonContent2.text = "Create new Adjective...";
+						if (GUILayout.Button(buttonContent2)) {
 
-						//adjectiveTypeFilter = GUILayout.Toolbar(adjectiveTypeFilter, new string[] { "All", "Properties", "Stats", "Relationships" });
-						//AdjectiveScriptableObject[] adjectives = null;
-						//switch (adjectiveTypeFilter) {
-						//	default:
-						//	case 0:
-						//		adjectives = story.Adjectives.ToArray();
-						//		break;
-						//	case 1:
-						//		adjectives = story.Adjectives.OfType<PropertyScriptableObject>().WithoutNulls().ToArray();
-						//		break;
-						//	case 2:
-						//		adjectives = story.Adjectives.OfType<StatScriptableObject>().WithoutNulls().ToArray();
-						//		break;
-						//	case 3:
-						//		adjectives = story.Adjectives.OfType<RelationshipScriptableObject>().WithoutNulls().ToArray();
-						//		break;
-						//}
-						//DrawSearchableListOfElements(ref adjectiveSearch, adjectives);
+							var menu = new GenericMenu();
+
+							menu.AddItem(new GUIContent("Property"), false, () => {
+								var path = EditorUtility.SaveFilePanelInProject("Create New Property", "Property", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Properties");
+								if (path.IsNotNullOrEmpty()) {
+									var newProperty = ScriptableObject.CreateInstance<PropertyScriptableObject>();
+									newProperty.name = Path.GetFileNameWithoutExtension(path);
+									singleton.Adjectives.Add(newProperty);
+									EditorUtility.SetDirty(singleton);
+									AssetDatabase.CreateAsset(newProperty, path);
+									AssetDatabase.Refresh();
+									AssetDatabase.SaveAssets();
+								}
+							});
+
+							menu.AddItem(new GUIContent("Stat"), false, () => {
+								var path = EditorUtility.SaveFilePanelInProject("Create New Stat", "Stat", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Stats");
+								if (path.IsNotNullOrEmpty()) {
+									var newStat = ScriptableObject.CreateInstance<StatScriptableObject>();
+									newStat.name = Path.GetFileNameWithoutExtension(path);
+									singleton.Adjectives.Add(newStat);
+									EditorUtility.SetDirty(singleton);
+									AssetDatabase.CreateAsset(newStat, path);
+									AssetDatabase.Refresh();
+									AssetDatabase.SaveAssets();
+								}
+							});
+
+							menu.AddItem(new GUIContent("Relationship"), false, () => {
+								var path = EditorUtility.SaveFilePanelInProject("Create New Relationship", "Relationship", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Relationships");
+								if (path.IsNotNullOrEmpty()) {
+									var newRelationship = ScriptableObject.CreateInstance<RelationshipScriptableObject>();
+									newRelationship.name = Path.GetFileNameWithoutExtension(path);
+									singleton.Adjectives.Add(newRelationship);
+									EditorUtility.SetDirty(singleton);
+									AssetDatabase.CreateAsset(newRelationship, path);
+									AssetDatabase.Refresh();
+									AssetDatabase.SaveAssets();
+								}
+							});
+
+							menu.ShowAsContext();
+						}
+
+						if (GUILayout.Button("Add all used")) {
+							var newProperties = singleton.Nouns.SelectMany(noun => noun.Properties).Select(assignment => assignment.property);
+							var newStats = singleton.Nouns.SelectMany(noun => noun.Stats).Select(assignment => assignment.stat);
+							var newRelationships = singleton.Nouns.SelectMany(noun => noun.Relationships).Select(assignment => assignment.relationship);
+
+							singleton.Adjectives = singleton.Adjectives.Union(newProperties).Union(newStats).Union(newRelationships).WithoutNulls().ToList();
+						}
+
+						adjectiveTypeFilter = GUILayout.Toolbar(adjectiveTypeFilter, new string[] { "All", "Properties", "Stats", "Relationships" });
+						AdjectiveScriptableObject[] adjectives = null;
+						switch (adjectiveTypeFilter) {
+							default:
+							case 0:
+								adjectives = singleton.Adjectives.ToArray();
+								break;
+							case 1:
+								adjectives = singleton.Adjectives.OfType<PropertyScriptableObject>().WithoutNulls().ToArray();
+								break;
+							case 2:
+								adjectives = singleton.Adjectives.OfType<StatScriptableObject>().WithoutNulls().ToArray();
+								break;
+							case 3:
+								adjectives = singleton.Adjectives.OfType<RelationshipScriptableObject>().WithoutNulls().ToArray();
+								break;
+						}
+						EditorDrawerUtilities.DrawSearchableListOfUnityObjectsWithDragSupport(ref adjectiveSearch, adjectives, ref draggedElement, ref lastHoveredElement);
 
 						break;
 					#endregion
@@ -304,6 +361,9 @@ namespace Narramancer {
 				var instancesProperty = storyProperty.FindPropertyRelative(StoryInstance.InstancesFieldName);
 				EditorGUILayout.PropertyField(instancesProperty);
 
+				var blackboardProperty = storyProperty.FindPropertyRelative(StoryInstance.BlackboardFieldName);
+				EditorGUILayout.PropertyField(blackboardProperty);
+
 				GUILayout.EndVertical();
 			}
 
@@ -324,11 +384,11 @@ namespace Narramancer {
 							singleton.Nouns.Add(noun);
 						}
 					}
-					//foreach (AdjectiveScriptableObject adjective in selected.Where(x => x is AdjectiveScriptableObject)) {
-					//	if (!singleton.Adjectives.Contains(adjective)) {
-					//		singleton.Adjectives.Add(adjective);
-					//	}
-					//}
+					foreach (AdjectiveScriptableObject adjective in selected.Where(x => x is AdjectiveScriptableObject)) {
+						if (!singleton.Adjectives.Contains(adjective)) {
+							singleton.Adjectives.Add(adjective);
+						}
+					}
 					//foreach (VerbGraph graph in selected.Where(x => x is VerbGraph)) {
 					//	if (!singleton.Graphs.Contains(graph)) {
 					//		singleton.Graphs.Add(graph);
