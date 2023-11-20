@@ -260,5 +260,97 @@ namespace Narramancer {
 					break;
 			}
 		}
+
+
+		public static void DrawSearchableListOfUnityObjectsWithDragSupport<T>(ref string search, T[] allValues, ref UnityEngine.Object draggedElement, ref UnityEngine.Object lastHoveredElement) where T : UnityEngine.Object {
+
+
+			if (Event.current.type == EventType.MouseDown) {
+				draggedElement = lastHoveredElement;
+			}
+
+			if (Event.current.type == EventType.MouseDrag) {
+				if (draggedElement != null) {
+					DragAndDrop.PrepareStartDrag();
+					DragAndDrop.StartDrag("Dragging " + draggedElement.name);
+					DragAndDrop.objectReferences = new UnityEngine.Object[] { draggedElement };
+					draggedElement = null;
+				}
+			}
+
+			if (Event.current.type == EventType.MouseUp || Event.current.type == EventType.MouseLeaveWindow) {
+				draggedElement = null;
+			}
+
+			EditorGUILayout.BeginHorizontal();
+			EditorGUILayout.LabelField(EditorGUIUtility.IconContent("d_Search Icon"), GUILayout.Width(20));
+			search = EditorGUILayout.TextField(search);
+
+			EditorGUILayout.EndHorizontal();
+
+			bool ContainsAnySearchTerms(UnityEngine.Object value, string[] terms) {
+				var fullName = value.name.ToLower();
+				if (terms.All(term => fullName.Contains(term))) {
+					return true;
+				}
+				return false;
+			}
+
+			var shownValues = allValues;
+
+			if (search.IsNotNullOrEmpty()) {
+
+				var searchLower = search.ToLower();
+				var searchTerms = searchLower.Split(' ');
+				shownValues = allValues.Where(type => ContainsAnySearchTerms(type, searchTerms)).ToArray();
+			}
+
+			var style = new GUIStyle(EditorStyles.objectField);
+			style.border = new RectOffset();
+			style.padding = new RectOffset();
+
+			if (Event.current.type == EventType.Repaint) {
+				lastHoveredElement = null;
+			}
+
+			EditorGUIUtility.SetIconSize(Vector2.one * 24);
+			var content = new GUIContent(EditorGUIUtility.IconContent("d_ScriptableObject Icon"));
+
+			foreach (var element in shownValues) {
+				var name = element.name;
+				//var tooltip = GetTooltip(element);
+				using (EditorDrawerUtilities.Color()) {
+					if (element == Selection.activeObject) {
+						GUI.color = new Color(0.6f, 0.6f, .99f);
+					}
+
+					content.text = name;
+#if UNITY_2021_3_OR_NEWER
+					var customIcon = EditorGUIUtility.GetIconForObject(element);
+					if (customIcon != null) {
+						content.image = customIcon;
+					}
+#endif
+
+					if (GUILayout.Button(content, style)) {
+						EditorGUIUtility.PingObject(element);
+						Selection.activeObject = element;
+
+					}
+
+					if (Event.current.type == EventType.Repaint) {
+						var buttonRect = GUILayoutUtility.GetLastRect();
+
+						if (buttonRect.Contains(Event.current.mousePosition)) {
+							lastHoveredElement = element;
+						}
+					}
+
+				}
+			}
+
+			EditorGUIUtility.SetIconSize(Vector2.zero);
+
+		}
 	}
 }

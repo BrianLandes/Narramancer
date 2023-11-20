@@ -29,6 +29,7 @@ namespace Narramancer {
 		[SerializeField]
 		private StoryInstance storyInstance;
 		public StoryInstance StoryInstance => storyInstance;
+		public static string StoryInstanceFieldName => nameof(storyInstance);
 
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
 

@@ -62,7 +62,7 @@ namespace Narramancer {
 				EditorGUILayout.EndHorizontal();
 			}
 
-			addInputContent = addInputContent!=null ? addInputContent : EditorGUIUtility.IconContent("CreateAddNew");
+			addInputContent = addInputContent!=null ? addInputContent : new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
 			addInputContent.text = "Add New Input";
 
 			if (GUILayout.Button(addInputContent)) {

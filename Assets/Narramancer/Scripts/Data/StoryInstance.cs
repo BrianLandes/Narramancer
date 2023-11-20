@@ -13,6 +13,7 @@ namespace Narramancer {
 		[SerializeField]
 		private List<NounInstance> instances = new List<NounInstance>();
 		public List<NounInstance> Instances => instances;
+		public static string InstancesFieldName => nameof(instances);
 
 		[SerializeField]
 		private Blackboard blackboard = new Blackboard();
