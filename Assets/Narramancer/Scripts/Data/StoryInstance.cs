@@ -18,6 +18,7 @@ namespace Narramancer {
 		[SerializeField]
 		private Blackboard blackboard = new Blackboard();
 		public Blackboard Blackboard => blackboard;
+		public static string BlackboardFieldName => nameof(blackboard);
 
 		[SerializeField]
 		private List<SerializableTimer> timers = new List<SerializableTimer>();
