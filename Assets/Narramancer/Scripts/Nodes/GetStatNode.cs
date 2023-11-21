@@ -14,6 +14,10 @@ namespace Narramancer {
 
 		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
+		private bool hasStat = false;
+
+		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
+		[SerializeField]
 		private float value = 0f;
 
 		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
@@ -23,6 +27,14 @@ namespace Narramancer {
 
 		public override object GetValue(object context, NodePort port) {
 			if (Application.isPlaying) {
+				if (port.fieldName.Equals(nameof(hasStat))) {
+					var inputInstance = GetInstance(context);
+					var inputStat = GetInputValue(context, nameof(stat), stat);
+					if (inputInstance != null && inputStat != null) {
+						return inputInstance.HasStat(inputStat);
+					}
+				}
+				else
 				if (port.fieldName.Equals(nameof(value))) {
 					var inputInstance = GetInstance(context);
 					Assert.IsNotNull(inputInstance);
@@ -43,7 +55,7 @@ namespace Narramancer {
 					return percentageValue;
 				}
 			}
-			return null;
+			return base.GetValue(context, port);
 		}
 	}
 
