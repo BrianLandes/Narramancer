@@ -22,6 +22,10 @@ namespace Narramancer {
 		[NodeEnum]
 		private Pronouns pronouns = Pronouns.Nonbinary;
 
+		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
+		[SerializeField]
+		SerializableSpawner spawner;
+
 		[SerializeField]
 		private List<PropertyScriptableObject> properties = new List<PropertyScriptableObject>();
 
@@ -61,6 +65,12 @@ namespace Narramancer {
 
 			var instance = NarramancerSingleton.Instance.CreateInstance(instancable);
 			runner.Blackboard.Set(InstanceKey, instance);
+
+			var spawner = GetInputValue(runner.Blackboard, nameof(this.spawner), this.spawner);
+			if (spawner != null) {
+				var newGameObject = spawner.Spawn();
+				instance.GameObject = newGameObject;
+			}
 		}
 
 		public override object GetValue(object context, NodePort port) {
