@@ -29,9 +29,28 @@ namespace Narramancer {
 		UnityEngine.Object draggedElement;
 
 		[MenuItem("Window/Narramancer")]
-		public static void OpenSceneProperties() {
+		public static void OpenWindow() {
 			var narramancer = Resources.LoadAll<NarramancerSingleton>(string.Empty).FirstOrDefault();
+			if (narramancer == null) {
+				narramancer = ScriptableObject.CreateInstance<NarramancerSingleton>();
+				narramancer.name = "Narramancer";
+				var path = "Assets/Resources";
+				// ensure the folder exists
+				{
+					var directoryAbsolutePath = PathUtilities.AsAbsolutePath(path);
+					Directory.CreateDirectory(directoryAbsolutePath);
+				}
+				path = PathUtilities.CreateNewAssetPath(path, narramancer.name);
+				AssetDatabase.CreateAsset(narramancer, path);
+				AssetDatabase.SaveAssets();
+				AssetDatabase.Refresh();
+			}
+#if UNITY_2021_1_OR_NEWER
 			EditorUtility.OpenPropertyEditor(narramancer);
+#else
+			Selection.activeObject = narramancer;
+			EditorGUIUtility.PingObject(narramancer);
+#endif
 		}
 
 		public override void OnInspectorGUI() {
@@ -47,7 +66,7 @@ namespace Narramancer {
 
 			GUILayout.Space(8);
 
-			#region Editor or Runtime Selector
+#region Editor or Runtime Selector
 
 			GUILayout.BeginHorizontal();
 
@@ -71,9 +90,9 @@ namespace Narramancer {
 			//}
 
 			GUILayout.EndHorizontal();
-			#endregion
+#endregion
 
-			#region Draw Editor Assets
+#region Draw Editor Assets
 
 			if (isInEditorMode) {
 
@@ -86,7 +105,7 @@ namespace Narramancer {
 				GUILayout.BeginVertical("box");
 
 				switch (editorTab) {
-					#region Nouns
+#region Nouns
 					case 0:
 
 						if (singleton.Nouns.Any(x => x == null)) {
@@ -135,9 +154,9 @@ namespace Narramancer {
 						EditorDrawerUtilities.DrawSearchableListOfUnityObjectsWithDragSupport(ref characterSearch, nouns, ref draggedElement, ref lastHoveredElement);
 
 						break;
-					#endregion
+#endregion
 
-					#region Adjectives
+#region Adjectives
 					case 1:
 
 						if (singleton.Adjectives.Any(x => x == null)) {
@@ -224,9 +243,9 @@ namespace Narramancer {
 						EditorDrawerUtilities.DrawSearchableListOfUnityObjectsWithDragSupport(ref adjectiveSearch, adjectives, ref draggedElement, ref lastHoveredElement);
 
 						break;
-					#endregion
+#endregion
 
-					#region Verbs
+#region Verbs
 					case 2:
 
 						var runAtStartProperty = serializedObject.FindProperty(NarramancerSingleton.RunAtStartFieldName);
@@ -284,9 +303,9 @@ namespace Narramancer {
 
 
 						break;
-					#endregion
+#endregion
 
-					#region Variables
+#region Variables
 					case 3:
 
 						var globalVariablesProperty = serializedObject.FindProperty(NarramancerSingleton.GlobalVariablesFieldName);
@@ -340,15 +359,15 @@ namespace Narramancer {
 
 
 						break;
-						#endregion
+#endregion
 				}
 				GUILayout.EndVertical();
 
 				GUILayout.EndVertical();
 			}
-			#endregion Draw Editor Assets
+#endregion Draw Editor Assets
 
-			#region Draw Runtime Assets
+#region Draw Runtime Assets
 
 			if (!isInEditorMode) {
 
@@ -367,9 +386,9 @@ namespace Narramancer {
 				GUILayout.EndVertical();
 			}
 
-			#endregion
+#endregion
 
-			#region Accept DragAndDrop
+#region Accept DragAndDrop
 			if (Event.current.type == EventType.DragUpdated) {
 				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
 			}
@@ -397,7 +416,7 @@ namespace Narramancer {
 				}
 
 			}
-			#endregion
+#endregion
 
 			serializedObject.ApplyModifiedProperties();
 		}
