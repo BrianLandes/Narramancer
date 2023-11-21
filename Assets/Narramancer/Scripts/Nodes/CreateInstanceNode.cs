@@ -27,7 +27,10 @@ namespace Narramancer {
 		SerializableSpawner spawner;
 
 		[SerializeField]
-		private List<PropertyScriptableObject> properties = new List<PropertyScriptableObject>();
+		private List<PropertyAssignment> properties = new List<PropertyAssignment>();
+
+		[SerializeField]
+		private List<StatAssignment> stats = new List<StatAssignment>();
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
         [SerializeField]
@@ -60,7 +63,8 @@ namespace Narramancer {
 				ID = new NounUID(),
 				NounType = GetInputValue(runner.Blackboard, nameof(nounType), nounType),
 				Pronouns = GetInputValue(runner.Blackboard, nameof(pronouns), pronouns),
-				Properties = properties.Select( property => new PropertyAssignment() { property = property }),
+				Properties = properties,
+				Stats = stats,
 			};
 
 			var instance = NarramancerSingleton.Instance.CreateInstance(instancable);
