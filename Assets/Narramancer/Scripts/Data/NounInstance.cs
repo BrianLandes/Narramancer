@@ -66,12 +66,12 @@ namespace Narramancer {
 				var statInstance = new StatInstance(stat.stat, this) {
 					Value = stat.value
 				};
-				stats.Add( statInstance);
+				stats.Add(statInstance);
 			}
 			if (instancable.Blackboard != null) {
 				blackboard = instancable.Blackboard.Copy();
 			}
-			
+
 		}
 
 		#endregion
@@ -82,7 +82,7 @@ namespace Narramancer {
 			get => GetProperty(property);
 			set {
 				RemoveProperty(property);
-				AddProperty( value);
+				AddProperty(value);
 			}
 		}
 
@@ -235,11 +235,16 @@ namespace Narramancer {
 			return statInstance;
 		}
 
+		public bool HasStat(StatScriptableObject statObject) {
+			var instance = stats.FirstOrDefault(stat => stat.Adjective == statObject);
+			return instance != null;
+		}
+
 		public StatInstance GetStatInstance(StatScriptableObject statObject) {
 			var instance = stats.FirstOrDefault(stat => stat.Adjective == statObject);
-			if (instance==null) {
+			if (instance == null) {
 				instance = InstantiateAndAddStat(statObject);
-				stats.Add( instance);
+				stats.Add(instance);
 			}
 
 			return instance;
@@ -268,7 +273,7 @@ namespace Narramancer {
 			}
 		}
 
-		public List<RelationshipInstance> GetRelationshipsWith( NounInstance other, RelationshipRequirement otherIs = RelationshipRequirement.Source) {
+		public List<RelationshipInstance> GetRelationshipsWith(NounInstance other, RelationshipRequirement otherIs = RelationshipRequirement.Source) {
 			switch (otherIs) {
 				case RelationshipRequirement.Source:
 					return relationships.Where(relationship => relationship.InvolvesSource(other)).ToList();
