@@ -90,6 +90,9 @@ namespace Narramancer {
 						if (node is ChainedRunnableNode c) {
 							node = c.GetNextNode();
 						}
+						else {
+							node = null;
+						}
 					}
 				}
 			}
@@ -142,9 +145,9 @@ namespace Narramancer {
 								else {
 									// create a graph input port
 									var inputName = inputPort.fieldName;
-									if ( outputPort.node is GetVerbVariableNode getGraphVariableNode1) {
+									if (outputPort.node is GetVerbVariableNode getGraphVariableNode1) {
 										var graphPort = getGraphVariableNode1.GetInputGraphPort();
-										if (graphPort!=null) {
+										if (graphPort != null) {
 											inputName = graphPort.Name;
 										}
 									}
@@ -241,7 +244,7 @@ namespace Narramancer {
 								outputPort.Connect(runNodePort);
 							}
 							else {
-								
+
 								var inputName = inputPortNameTable.ContainsKey(inputPort) ? inputPortNameTable[inputPort] : inputPort.fieldName;
 								var runNodePort = runGraphNode.GetInputPort(inputName);
 								outputPort.Connect(runNodePort);
