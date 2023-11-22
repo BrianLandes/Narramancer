@@ -184,6 +184,10 @@ namespace Narramancer {
 			return bools.ContainsKey(key);
 		}
 
+		public void RemoveBool(string key) {
+			bools?.Remove(key);
+		}
+
 		#endregion
 
 		#region Floats
@@ -213,6 +217,10 @@ namespace Narramancer {
 			return floats.TryGetValue(key, out value);
 		}
 
+		public void RemoveFloat(string key) {
+			floats?.Remove(key);
+		}
+
 		#endregion
 
 		#region Strings
@@ -232,6 +240,10 @@ namespace Narramancer {
 				return value;
 			}
 			return defaultValue;
+		}
+
+		public void RemoveString(string key) {
+			strings?.Remove(key);
 		}
 
 		#endregion
@@ -264,6 +276,10 @@ namespace Narramancer {
 				return true;
 			}
 			return false;
+		}
+
+		public void RemoveGameObject(string key) {
+			gameObjects?.Remove(key);
 		}
 
 		#endregion
@@ -308,6 +324,10 @@ namespace Narramancer {
 			return false;
 		}
 
+		public void RemoveComponent(string key) {
+			components?.Remove(key);
+		}
+
 		#endregion
 
 		#region Unity Objects
@@ -340,6 +360,10 @@ namespace Narramancer {
 			return false;
 		}
 
+		public void RemoveUnityObject(string key) {
+			unityObjects?.Remove(key);
+		}
+
 		#endregion
 
 		#region System Objects
@@ -370,6 +394,10 @@ namespace Narramancer {
 				return true;
 			}
 			return false;
+		}
+
+		public void RemoveObject(string key) {
+			objects?.Remove(key);
 		}
 
 		#endregion
@@ -473,6 +501,60 @@ namespace Narramancer {
 			throw new System.NotImplementedException();
 		}
 
+		public void Remove<T>(string key) {
+			Remove(key, typeof(T));
+		}
+
+		public void Remove(string key, Type type) {
+
+			if (typeof(GameObject).IsAssignableFrom(type)) {
+				RemoveGameObject(key);
+			}
+			else
+			if (typeof(Component).IsAssignableFrom(type)) {
+				RemoveComponent(key);
+			}
+			else
+			if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
+				RemoveUnityObject(key);
+			}
+			else
+			if (typeof(int).IsAssignableFrom(type)) {
+				RemoveInt(key);
+			}
+			else
+			if (typeof(float).IsAssignableFrom(type)) {
+				RemoveFloat(key);
+			}
+			else
+			if (typeof(bool).IsAssignableFrom(type)) {
+				RemoveBool(key);
+			}
+			else
+			if (typeof(string).IsAssignableFrom(type)) {
+				RemoveString(key);
+			}
+			else
+			if (typeof(object).IsAssignableFrom(type)) {
+				RemoveObject(key);
+			}
+			else {
+				throw new System.NotImplementedException(type.ToString());
+			}
+
+		}
+
+		public T GetAndRemove<T>(string key) {
+			var result = Get<T>(key);
+			Remove<T>(key);
+			return result;
+		}
+
+		public object GetAndRemove(string key, Type type) {
+			var result = Get(key, type);
+			Remove(key, type);
+			return result;
+		}
 		#endregion
 	}
 }
