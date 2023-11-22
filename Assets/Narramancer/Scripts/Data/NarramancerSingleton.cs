@@ -38,8 +38,6 @@ namespace Narramancer {
 
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
 
-		public Blackboard Blackboard => storyInstance.Blackboard;
-
 		public override void OnPreprocessBuild() {
 			Clear();
 		}
@@ -206,11 +204,17 @@ namespace Narramancer {
 			var scene = SceneManager.GetActiveScene();
 			storyInstance.sceneIndex = scene.buildIndex;
 
+			storyInstance.SaveTable = new Blackboard();
+
 			foreach (var monoBehaviour in monoBehaviourTable) {
 				monoBehaviour.Serialize(storyInstance);
 			}
 
 			return storyInstance;
+		}
+
+		public void CleanUpStoryAfterSave() {
+			storyInstance.SaveTable = null;
 		}
 
 		public void LoadStory(StoryInstance storyInstance) {
@@ -224,6 +228,8 @@ namespace Narramancer {
 					}
 				};
 			}
+
+			storyInstance.SaveTable = null;
 		}
 
 	}

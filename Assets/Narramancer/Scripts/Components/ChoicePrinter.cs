@@ -108,7 +108,7 @@ namespace Narramancer {
 		public override void Serialize(StoryInstance map) {
 			base.Serialize(map);
 			if (showingChoices) {
-				map.Blackboard.SetObject("choices", choices);
+				map.SaveTable.SetObject("choices", choices);
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace Narramancer {
 			base.Deserialize(map);
 
 			if (showingChoices) {
-				choices = map.Blackboard.GetObject("choices") as List<VisibleChoice>;
+				choices = map.SaveTable.GetObject("choices") as List<VisibleChoice>;
 				ShowChoices();
 			}
 		}

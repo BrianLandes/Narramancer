@@ -48,13 +48,13 @@ namespace Narramancer {
 		public override void Serialize(StoryInstance map) {
 			base.Serialize(map);
 
-			map.Blackboard.Set(Key("Instance"), Instance);
+			map.SaveTable.Set(Key("Instance"), Instance);
 		}
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
 
-			Instance = map.Blackboard.Get<NounInstance>(Key("Instance"));
+			Instance = map.SaveTable.Get<NounInstance>(Key("Instance"));
 			Instance.GameObject = gameObject;
 		}
 	}

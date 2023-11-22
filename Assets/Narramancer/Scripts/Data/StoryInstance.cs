@@ -21,6 +21,10 @@ namespace Narramancer {
 		public static string BlackboardFieldName => nameof(blackboard);
 
 		[SerializeField]
+		private Blackboard saveTable = null;
+		public Blackboard SaveTable { get => saveTable; set => saveTable = value; }
+
+		[SerializeField]
 		private List<SerializableTimer> timers = new List<SerializableTimer>();
 		public List<SerializableTimer> Timers => timers;
 

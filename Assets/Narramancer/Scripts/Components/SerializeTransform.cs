@@ -59,12 +59,12 @@ namespace Narramancer {
 				rotation = transform.rotation,
 				localScale = transform.localScale
 			};
-			story.Blackboard.Set(Key("transform"), serializedTransform);
+			story.SaveTable.Set(Key("transform"), serializedTransform);
 		}
 
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
-			var serializedTransform = story.Blackboard.GetAndRemove<SerializedTransform>(Key("transform"));
+			var serializedTransform = story.SaveTable.GetAndRemove<SerializedTransform>(Key("transform"));
 			transform.position = serializedTransform.position;
 			transform.rotation = serializedTransform.rotation;
 			transform.localScale = serializedTransform.localScale;

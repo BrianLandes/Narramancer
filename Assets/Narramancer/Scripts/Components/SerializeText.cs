@@ -10,13 +10,13 @@ namespace Narramancer {
 		public override void Serialize(StoryInstance story) {
 			base.Serialize(story);
 			var component = GetComponent<Text>();
-			story.Blackboard.Set(Key("text"), component.text);
+			story.SaveTable.Set(Key("text"), component.text);
 		}
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
 			var component = GetComponent<Text>();
-			component.text = map.Blackboard.GetAndRemove<string>(Key("text"));
+			component.text = map.SaveTable.GetAndRemove<string>(Key("text"));
 		}
 	}
 }

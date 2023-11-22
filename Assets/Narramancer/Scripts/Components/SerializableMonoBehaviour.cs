@@ -44,7 +44,7 @@ namespace Narramancer {
 						}
 						else {
 							var value = field.GetValue(this);
-							story.Blackboard.Set(Key(field.Name), value, field.FieldType);
+							story.SaveTable.Set(Key(field.Name), value, field.FieldType);
 
 						}
 					}
@@ -76,7 +76,7 @@ namespace Narramancer {
 							}
 						}
 						else {
-							var value = story.Blackboard.GetAndRemove(Key(field.Name), field.FieldType);
+							var value = story.SaveTable.GetAndRemove(Key(field.Name), field.FieldType);
 							field.SetValue(this, value);
 						}
 					}

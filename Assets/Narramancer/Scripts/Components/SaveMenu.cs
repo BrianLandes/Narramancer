@@ -60,6 +60,8 @@ namespace Narramancer {
 
 			SaveLoadUtilities.WriteSaveData(saveName, jsonString);
 
+			NarramancerSingleton.Instance.CleanUpStoryAfterSave();
+
 			OnEnable();
 		}
 
@@ -72,6 +74,8 @@ namespace Narramancer {
 			var saveName = "SaveSlot_" + (SaveLoadUtilities.CountSaveData() + 1).ToString("D3");
 
 			SaveLoadUtilities.WriteSaveData(saveName, jsonString);
+
+			NarramancerSingleton.Instance.CleanUpStoryAfterSave();
 
 			OnEnable();
 		}

@@ -55,12 +55,12 @@ namespace Narramancer {
 			var serializedTransform = new SerializedRectTransform() {
 				anchoredPosition = rectTransform.anchoredPosition,
 			};
-			story.Blackboard.Set(Key("transform"), serializedTransform);
+			story.SaveTable.Set(Key("transform"), serializedTransform);
 		}
 
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
-			var serializedTransform = story.Blackboard.GetAndRemove<SerializedRectTransform>(Key("transform"));
+			var serializedTransform = story.SaveTable.GetAndRemove<SerializedRectTransform>(Key("transform"));
 			var rectTransform = GetComponent<RectTransform>();
 			rectTransform.anchoredPosition = serializedTransform.anchoredPosition;
 		}

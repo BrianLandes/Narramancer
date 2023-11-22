@@ -10,17 +10,17 @@ namespace Narramancer {
 		public override void Serialize(StoryInstance story) {
 			base.Serialize(story);
 			var image = GetComponent<Image>();
-			story.Blackboard.Set(Key("texture"), image.sprite.texture);
-			story.Blackboard.Set(Key("rect"), image.sprite.rect);
-			story.Blackboard.Set(Key("pivot"), image.sprite.pivot);
+			story.SaveTable.Set(Key("texture"), image.sprite.texture);
+			story.SaveTable.Set(Key("rect"), image.sprite.rect);
+			story.SaveTable.Set(Key("pivot"), image.sprite.pivot);
 		}
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
 			var image = GetComponent<Image>();
-			var texture = map.Blackboard.GetAndRemove<Texture2D>(Key("texture"));
-			var rect = map.Blackboard.GetAndRemove<Rect>(Key("rect"));
-			var pivot = map.Blackboard.GetAndRemove<Vector2>(Key("pivot"));
+			var texture = map.SaveTable.GetAndRemove<Texture2D>(Key("texture"));
+			var rect = map.SaveTable.GetAndRemove<Rect>(Key("rect"));
+			var pivot = map.SaveTable.GetAndRemove<Vector2>(Key("pivot"));
 			image.sprite = Sprite.Create(texture, rect, pivot);
 		}
 	}
