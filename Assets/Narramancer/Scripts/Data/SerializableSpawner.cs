@@ -6,13 +6,28 @@ using UnityEngine;
 
 namespace Narramancer {
 
-    public class SerializableSpawner : SerializableMonoBehaviour {
+	public class SerializableSpawner : SerializableMonoBehaviour {
 
-        [SerializeField]
-        private GameObject prefab = default;
+		[SerializeField]
+		private GameObject prefab = default;
+
+		[Serializable]
+		public enum SpawnLocationType {
+			None,
+			AtTransform,
+			RandomInXYCircle,
+			RandomInXZCircle,
+			RandomInYZCircle,
+			RandomInSphere,
+		}
+		[SerializeField]
+		private SpawnLocationType spawnLocationType = default;
 
 		[SerializeField]
 		private Transform spawnLocation = default;
+
+		[SerializeField]
+		private float circleRadius = default;
 
 		private List<GameObject> spawns = new List<GameObject>();
 
@@ -23,17 +38,47 @@ namespace Narramancer {
 		public GameObject Spawn() {
 			var newSpawn = Instantiate(prefab, transform);
 			newSpawn.SetActive(true);
-			if (spawnLocation != null) {
-				newSpawn.transform.position = spawnLocation.position;
-				newSpawn.transform.rotation = spawnLocation.rotation;
+			switch (spawnLocationType) {
+				case SpawnLocationType.None:
+					break;
+				case SpawnLocationType.AtTransform:
+					if (spawnLocation != null) {
+						newSpawn.transform.position = spawnLocation.position;
+						newSpawn.transform.rotation = spawnLocation.rotation;
+					}
+					break;
+				case SpawnLocationType.RandomInXYCircle: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var variance = UnityEngine.Random.insideUnitCircle * circleRadius;
+						newSpawn.transform.position = center.position + new Vector3(variance.x, variance.y, 0);
+					}
+					break;
+				case SpawnLocationType.RandomInXZCircle: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var variance = UnityEngine.Random.insideUnitCircle * circleRadius;
+						newSpawn.transform.position = center.position + new Vector3(variance.x, 0, variance.y);
+					}
+					break;
+				case SpawnLocationType.RandomInYZCircle: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var variance = UnityEngine.Random.insideUnitCircle * circleRadius;
+						newSpawn.transform.position = center.position + new Vector3(0, variance.x, variance.y);
+					}
+					break;
+				case SpawnLocationType.RandomInSphere: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						newSpawn.transform.position = center.position + UnityEngine.Random.insideUnitSphere * circleRadius;
+					}
+					break;
 			}
+
 			newSpawn.name = newSpawn.name.Replace("(Clone)", $" ({Guid.NewGuid()})");
 			spawns.Add(newSpawn);
 			return newSpawn;
 		}
 
 		public void DestroyAll() {
-			foreach( var spawn in spawns) {
+			foreach (var spawn in spawns) {
 				Destroy(spawn);
 			}
 			spawns.Clear();
@@ -45,7 +90,7 @@ namespace Narramancer {
 			spawns = spawns.Where(x => x != null).ToList();
 
 			var spawnNames = spawns.Select(x => x.name).ToList();
-			story.Blackboard.Set(Key("spawnNames"), spawnNames);
+			story.SaveTable.Set(Key("spawnNames"), spawnNames);
 		}
 
 		public override void Deserialize(StoryInstance story) {
@@ -54,14 +99,14 @@ namespace Narramancer {
 
 			base.Deserialize(story);
 
-			var spawnNames = story.Blackboard.Get<List<string>>(Key("spawnNames"));
+			var spawnNames = story.SaveTable.GetAndRemove<List<string>>(Key("spawnNames"));
 
-			foreach( var name in spawnNames) {
+			foreach (var name in spawnNames) {
 				var newSpawn = Spawn();
 				newSpawn.name = name;
 				var serializableMonoBehaviours = newSpawn.GetComponentsInChildren<ISerializableMonoBehaviour>();
 
-				foreach( var monoBehaviour in serializableMonoBehaviours) {
+				foreach (var monoBehaviour in serializableMonoBehaviours) {
 					monoBehaviour.Deserialize(story);
 				}
 			}
