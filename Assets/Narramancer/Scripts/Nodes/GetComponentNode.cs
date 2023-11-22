@@ -13,6 +13,8 @@ namespace Narramancer {
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
 
+		[SerializeField]
+		private bool includeChildren = false;
 
 		protected override void Init() {
 			listType.OnChanged -= UpdatePorts;
@@ -45,6 +47,9 @@ namespace Narramancer {
 					return null;
 				}
 				var component = inputGameObject.GetComponent(listType.Type);
+				if (component == null && includeChildren) {
+					component = inputGameObject.GetComponentInChildren(listType.Type);
+				}
 				return component;
 			}
 
