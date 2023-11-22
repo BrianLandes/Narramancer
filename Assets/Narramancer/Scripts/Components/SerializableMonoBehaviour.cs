@@ -65,13 +65,15 @@ namespace Narramancer {
 					if (attribute is SerializeMonoBehaviourFieldAttribute) {
 
 						if (field.FieldType == typeof(Promise)) {
-							var promise = story.Promises[Key(field.Name)]; // TODO: fail safe
-							field.SetValue(this, promise);
+							if (story.Promises.TryGetValue(Key(field.Name), out var promise)) {
+								field.SetValue(this, promise);
+							}
 						}
 						else
 						if (field.FieldType == typeof(NodeRunner)) {
-							var runner = story.NodeRunners[Key(field.Name)]; // TODO: fail safe
-							field.SetValue(this, runner);
+							if (story.NodeRunners.TryGetValue(Key(field.Name), out var runner)) {
+								field.SetValue(this, runner);
+							}
 						}
 						else {
 							var value = story.Blackboard.Get(Key(field.Name), field.FieldType);
