@@ -20,6 +20,7 @@ namespace Narramancer {
 		private string IndexKey => Blackboard.UniqueKey(this, "index");
 
 		private string ElementKey => Blackboard.UniqueKey(this, "currentElement");
+		private string ListKey => Blackboard.UniqueKey(this, "list");
 
 		protected override void Init() {
 			listType.OnChanged -= RebuildPorts;
@@ -53,36 +54,48 @@ namespace Narramancer {
 
 		}
 
-		public override void Run(NodeRunner runner) {
-			var variableTable = runner.Blackboard;
-
-			var index = variableTable.GetInt(IndexKey);
+		private List<object> BuildList(object blackboard) {
 
 			var inputList = new List<object>();
 
 			var inputListPort = GetInputPort(INPUT_LIST);
-			var value = inputListPort.GetInputValue(runner.Blackboard);
+			var value = inputListPort.GetInputValue(blackboard);
 			if (value != null) {
 				inputList.AddRange(NodeExtensions.ConvertObjectToList(value));
 			}
-			
+
 
 			var inputElementPort = GetInputPort(INPUT_ELEMENTS);
-			var inputElements = inputElementPort.GetInputValues(runner.Blackboard);
+			var inputElements = inputElementPort.GetInputValues(blackboard);
 
 			if (inputElements != null) {
 				inputList.AddRange(inputElements);
 			}
-			
+			return inputList;
+		}
 
-			if (index >= inputList.Count()) {
-				variableTable.SetInt(IndexKey, 0);
+		public override void Run(NodeRunner runner) {
+			var blackboard = runner.Blackboard;
+
+			var index = blackboard.GetInt(IndexKey);
+
+			var list = blackboard.Get<List<object>>(ListKey);
+
+			if (index == 0 || list == null) {
+				list = BuildList(blackboard);
+				blackboard.Set(ListKey, list);
+			}
+
+
+			if (index >= list.Count()) {
+				blackboard.SetInt(IndexKey, 0);
+				blackboard.Remove<List<object>>(ListKey);
 				// allow the runner to resume / drop out
 			}
 			else {
-				var currentElement = inputList.ElementAt(index);
-				variableTable.Set(ElementKey, currentElement);
-				variableTable.IncrementInt(IndexKey);
+				var currentElement = list.ElementAt(index);
+				blackboard.Set(ElementKey, currentElement);
+				blackboard.IncrementInt(IndexKey);
 
 				// 'Push' this same node -> trigger the next iteration
 				runner.Prepend(this);
@@ -96,8 +109,8 @@ namespace Narramancer {
 		}
 
 		public override object GetValue(object context, NodePort port) {
-			if (Application.isPlaying ) {
-				if ( port.fieldName.Equals(CURRENT_ELEMENT)) {
+			if (Application.isPlaying) {
+				if (port.fieldName.Equals(CURRENT_ELEMENT)) {
 					var blackboard = context as Blackboard;
 					return blackboard.Get(ElementKey, listType.Type);
 				}
