@@ -8,9 +8,11 @@ namespace Narramancer {
 
 		[SerializeField]
 		protected NounUID source;
+		public NounUID SourceUID => source;
 
 		[SerializeField]
 		protected NounUID destination;
+		public NounUID DestinationUID => destination;
 
 		public RelationshipInstance(RelationshipScriptableObject adjective, NounInstance left, NounInstance right, SourceOrDestination leftIsSourceOrDestination = SourceOrDestination.Source) : base(adjective) {
 			switch (leftIsSourceOrDestination) {

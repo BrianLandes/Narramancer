@@ -39,6 +39,7 @@ namespace Narramancer {
 		/// <summary> Any relationships that involve this instance. </summary>
 		[SerializeField]
 		private List<RelationshipInstance> relationships = new List<RelationshipInstance>();
+		public List<RelationshipInstance> Relationships => relationships;
 
 		public GameObject GameObject { get; set; }
 
@@ -314,14 +315,19 @@ namespace Narramancer {
 			other.AddRelationship(relationshipInstance);
 		}
 
-		public void RemoveRelationship(RelationshipInstance relationship) {
+		public void RemoveRelationship(RelationshipInstance relationship, bool removeFromOther = true) {
 			relationships.Remove(relationship);
+			if (removeFromOther) {
+				var otherUid = relationship.SourceUID != this.uid ? relationship.SourceUID : relationship.DestinationUID;
+				var otherInstance = NarramancerSingleton.Instance.GetInstance(otherUid);
+				otherInstance.RemoveRelationship(relationship, false);
+			}
 		}
 
 		public void RemoveRelationship(RelationshipScriptableObject relationship, NounInstance other, RelationshipRequirement requirement = RelationshipRequirement.Source) {
 			if (TryGetRelationship(relationship, other, out var instance, requirement)) {
-				this.RemoveRelationship(instance);
-				other.RemoveRelationship(instance);
+				this.RemoveRelationship(instance, false);
+				other.RemoveRelationship(instance, false);
 			}
 		}
 

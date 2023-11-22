@@ -53,7 +53,7 @@ namespace Narramancer {
 			if (runOnGameStart) {
 				storyInstance = new StoryInstance(Nouns);
 
-				globalVariables.ApplyAssignmentsToBlackboard( storyInstance.Blackboard);
+				globalVariables.ApplyAssignmentsToBlackboard(storyInstance.Blackboard);
 
 				foreach (var verb in runAtStart) {
 					if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
@@ -107,8 +107,8 @@ namespace Narramancer {
 		}
 
 		public void ReleaseNodeRunner(NodeRunner runner) {
-			foreach( var pair in storyInstance.NodeRunners.ToArray()) {
-				if ( pair.Value == runner) {
+			foreach (var pair in storyInstance.NodeRunners.ToArray()) {
+				if (pair.Value == runner) {
 					storyInstance.NodeRunners.Remove(pair.Key);
 					break;
 				}
@@ -149,6 +149,8 @@ namespace Narramancer {
 
 		#endregion
 
+		#region Noun Instances
+
 		public bool TryGetInstance(NounScriptableObject noun, out NounInstance instance) {
 			instance = GetInstance(noun);
 			return instance != null;
@@ -156,6 +158,10 @@ namespace Narramancer {
 
 		public NounInstance GetInstance(NounScriptableObject noun) {
 			return storyInstance.Instances.FirstOrDefault(instance => instance.Noun == noun);
+		}
+
+		public NounInstance GetInstance(NounUID uid) {
+			return storyInstance.Instances.FirstOrDefault(instance => instance.UID == uid);
 		}
 
 		public List<NounInstance> GetInstances() {
@@ -166,6 +172,21 @@ namespace Narramancer {
 			return storyInstance.CreateInstance(instancable);
 		}
 
+		public void RemoveInstance(NounInstance instance) {
+			if (instance != null) {
+				storyInstance.Instances.Remove(instance);
+
+				foreach (var relationship in instance.Relationships.ToArray()) {
+					instance.RemoveRelationship(relationship);
+				}
+
+				if (instance.HasGameObject) {
+					Destroy(instance.GameObject);
+				}
+			}
+		}
+
+		#endregion
 
 		public void Register(ISerializableMonoBehaviour monoBehaviour) {
 			monoBehaviourTable.Add(monoBehaviour);
