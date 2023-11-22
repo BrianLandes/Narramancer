@@ -60,7 +60,7 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
-			var serializedTransform = story.Blackboard.Get<SerializedRectTransform>(Key("transform"));
+			var serializedTransform = story.Blackboard.GetAndRemove<SerializedRectTransform>(Key("transform"));
 			var rectTransform = GetComponent<RectTransform>();
 			rectTransform.anchoredPosition = serializedTransform.anchoredPosition;
 		}

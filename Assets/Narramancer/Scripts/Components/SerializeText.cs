@@ -16,7 +16,7 @@ namespace Narramancer {
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
 			var component = GetComponent<Text>();
-			component.text = map.Blackboard.Get<string>(Key("text"));
+			component.text = map.Blackboard.GetAndRemove<string>(Key("text"));
 		}
 	}
 }

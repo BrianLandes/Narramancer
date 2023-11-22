@@ -18,9 +18,9 @@ namespace Narramancer {
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
 			var image = GetComponent<Image>();
-			var texture = map.Blackboard.Get<Texture2D>(Key("texture"));
-			var rect = map.Blackboard.Get<Rect>(Key("rect"));
-			var pivot = map.Blackboard.Get<Vector2>(Key("pivot"));
+			var texture = map.Blackboard.GetAndRemove<Texture2D>(Key("texture"));
+			var rect = map.Blackboard.GetAndRemove<Rect>(Key("rect"));
+			var pivot = map.Blackboard.GetAndRemove<Vector2>(Key("pivot"));
 			image.sprite = Sprite.Create(texture, rect, pivot);
 		}
 	}

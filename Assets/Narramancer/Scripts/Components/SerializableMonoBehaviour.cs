@@ -76,7 +76,7 @@ namespace Narramancer {
 							}
 						}
 						else {
-							var value = story.Blackboard.Get(Key(field.Name), field.FieldType);
+							var value = story.Blackboard.GetAndRemove(Key(field.Name), field.FieldType);
 							field.SetValue(this, value);
 						}
 					}
