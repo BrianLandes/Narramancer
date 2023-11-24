@@ -15,7 +15,7 @@ namespace Narramancer {
 		private List<NounInstance> instances = default;
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[RequireInput(typeof(NounInstance))]
 		[RequireOutput(typeof(bool))]
 		private ValueVerb predicate = default;

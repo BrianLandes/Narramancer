@@ -15,7 +15,7 @@ namespace Narramancer {
 		private List<NounInstance> inputInstances = default;
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[GraphHideLabel]
 		[RequireInput(typeof(NounInstance), "instance")]
 		[RequireOutput(typeof(bool), "passesFilter")]

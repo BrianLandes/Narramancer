@@ -12,7 +12,7 @@ namespace Narramancer {
 	public class RunActionVerbNode : ChainedRunnableNode {
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[GraphHideLabel]
 		[FormerlySerializedAs("runnableGraph")]
 		public ActionVerb actionVerb;

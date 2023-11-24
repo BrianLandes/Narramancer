@@ -15,7 +15,7 @@ namespace Narramancer {
 		ToggleableInt staticRank = new ToggleableInt(1);
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[RequireInput(typeof(NounInstance), "instance")]
 		[RequireOutput(typeof(int), "rank")]
 		private ValueVerb rankGraph = default;
@@ -36,7 +36,7 @@ namespace Narramancer {
 		ToggleableFloat staticWeight = new ToggleableFloat(1f);
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[RequireInput(typeof(NounInstance), "instance")]
 		[RequireOutput(typeof(float), "weight")]
 		private ValueVerb weightGraph = default;
@@ -55,7 +55,7 @@ namespace Narramancer {
 		#region Effect
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[RequireInput(typeof(NounInstance), "instance")]
 		private ActionVerb effectGraph = default;
 

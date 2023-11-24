@@ -13,7 +13,7 @@ namespace Narramancer {
 
 
 		[SerializeField]
-		[GraphRequired, GraphHideLabel]
+		[VerbRequired, GraphHideLabel]
 		[RequireInputFromSerializableType(nameof(listType), "element")]
 		[RequireOutput(typeof(float), "value")]
 		private ValueVerb predicate = default;

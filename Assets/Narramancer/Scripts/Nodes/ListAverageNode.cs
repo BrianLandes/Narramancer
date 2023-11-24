@@ -14,7 +14,7 @@ namespace Narramancer {
 
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[GraphHideLabel]
 		[RequireInputFromSerializableType(nameof(listType), "element")]
 		[RequireOutput(typeof(float), "average")]

@@ -2,7 +2,7 @@ using System;
 
 namespace Narramancer {
 	[AttributeUsage(AttributeTargets.Field)]
-	public class GraphRequiredAttribute : Attribute {
+	public class VerbRequiredAttribute : Attribute {
 
 	}
 

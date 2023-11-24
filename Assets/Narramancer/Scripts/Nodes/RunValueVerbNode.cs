@@ -12,7 +12,7 @@ namespace Narramancer {
 	public class RunValueVerbNode : Node {
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[GraphHideLabel]
 		[FormerlySerializedAs("behaviorGraph")]
 		public ValueVerb valueVerb;

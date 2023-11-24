@@ -244,7 +244,7 @@ namespace Narramancer {
 			var nodeGraph = property.objectReferenceValue as VerbGraph;
 			foreach (var attribute in fieldInfo.GetCustomAttributes(false)) {
 
-				if (attribute is GraphRequiredAttribute graphRequiresNotNullAttribute) {
+				if (attribute is VerbRequiredAttribute graphRequiresNotNullAttribute) {
 					if (property.objectReferenceValue == null) {
 
 						stringBuilder.AppendLine($"{property.propertyPath.Nicify()} must not null.");

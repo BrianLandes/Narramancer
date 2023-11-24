@@ -7,7 +7,7 @@ namespace Narramancer {
 	public class ListSelectNode : Node {
 
 		[SerializeField]
-		[GraphRequired]
+		[VerbRequired]
 		[GraphHideLabel]
 		[RequireInput]
 		[RequireOutput]
