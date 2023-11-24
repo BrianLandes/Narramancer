@@ -226,10 +226,10 @@ namespace Narramancer {
 					foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
 						monoBehaviour.Deserialize(storyInstance);
 					}
+
+					storyInstance.SaveTable = null;
 				};
 			}
-
-			storyInstance.SaveTable = null;
 		}
 
 	}
