@@ -274,6 +274,18 @@ namespace Narramancer {
 			}
 		}
 
+		public RelationshipInstance GetRelationship(RelationshipScriptableObject relationship, RelationshipRequirement requirement = RelationshipRequirement.Source) {
+			switch (requirement) {
+				case RelationshipRequirement.Source:
+					return relationships.FirstOrDefault(x => x.Involves(relationship) && x.InvolvesSource(this));
+				case RelationshipRequirement.Destination:
+					return relationships.FirstOrDefault(x => x.Involves(relationship) && x.InvolvesDestination(this));
+				case RelationshipRequirement.Either:
+				default:
+					return relationships.FirstOrDefault(x => x.Involves(relationship) && x.Involves(this));
+			}
+		}
+
 		public List<RelationshipInstance> GetRelationshipsWith(NounInstance other, RelationshipRequirement otherIs = RelationshipRequirement.Source) {
 			switch (otherIs) {
 				case RelationshipRequirement.Source:
