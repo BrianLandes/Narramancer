@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Narramancer {
 
-	[CreateAssetMenu(menuName="Narramancer/Noun (Character, Item, Location, etc)", fileName = "New Noun")]
+	[CreateAssetMenu(menuName = "Narramancer/Noun (Character, Item, Location, etc)", fileName = "New Noun")]
 	public class NounScriptableObject : ScriptableObject, IInstancable {
 
 		[SerializeField]
@@ -35,7 +35,20 @@ namespace Narramancer {
 
 		[SerializeField]
 		private Blackboard startingBlackboard = new Blackboard();
-		public Blackboard Blackboard => startingBlackboard;
+		public Blackboard Blackboard {
+			get {
+				var blackboard = startingBlackboard.Copy();
+				foreach (var assignment in BlackboardAssignments) {
+					var value = assignment.Assignment.GetValue();
+					blackboard.Set(assignment.Name, value);
+				}
+				return blackboard;
+			}
+		}
+
+		[SerializeField]
+		private List<NarramancerPortWithAssignment> blackboardAssignments = new List<NarramancerPortWithAssignment>();
+		public List<NarramancerPortWithAssignment> BlackboardAssignments => blackboardAssignments;
 
 	}
 }
