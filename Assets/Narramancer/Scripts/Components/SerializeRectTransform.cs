@@ -19,7 +19,8 @@ namespace Narramancer {
 
 		[Serializable]
 		public class SerializedRectTransform {
-			public Vector2 anchoredPosition;
+			public Vector3 anchoredPosition3D;
+			public Vector3 localScale;
 		}
 
 		public Promise TweenTo(Vector3 position, float speed) {
@@ -36,7 +37,7 @@ namespace Narramancer {
 			if (tweening) {
 				var vector = targetTweenPosition - transform.position;
 				var moveVector = vector.normalized * speed * Time.deltaTime;
-				if (vector==Vector3.zero || moveVector.sqrMagnitude > vector.sqrMagnitude) {
+				if (vector == Vector3.zero || moveVector.sqrMagnitude > vector.sqrMagnitude) {
 					transform.position = targetTweenPosition;
 					tweening = false;
 					var promise = this.promise;
@@ -53,7 +54,8 @@ namespace Narramancer {
 			base.Serialize(story);
 			var rectTransform = GetComponent<RectTransform>();
 			var serializedTransform = new SerializedRectTransform() {
-				anchoredPosition = rectTransform.anchoredPosition,
+				anchoredPosition3D = rectTransform.anchoredPosition3D,
+				localScale = rectTransform.localScale,
 			};
 			story.SaveTable.Set(Key("transform"), serializedTransform);
 		}
@@ -61,8 +63,12 @@ namespace Narramancer {
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
 			var serializedTransform = story.SaveTable.GetAndRemove<SerializedRectTransform>(Key("transform"));
-			var rectTransform = GetComponent<RectTransform>();
-			rectTransform.anchoredPosition = serializedTransform.anchoredPosition;
+			if (serializedTransform != null) {
+				var rectTransform = GetComponent<RectTransform>();
+				rectTransform.anchoredPosition3D = serializedTransform.anchoredPosition3D;
+				rectTransform.localScale = serializedTransform.localScale;
+			}
+
 		}
 	}
 }
