@@ -22,24 +22,7 @@ namespace Narramancer {
 			foreach (var variable in variables) {
 				var assignment = variable.Assignment;
 				if (variable != null) {
-					object value = null;
-					switch (assignment.type) {
-						case "int":
-							value = assignment.intValue;
-							break;
-						case "bool":
-							value = assignment.boolValue;
-							break;
-						case "float":
-							value = assignment.floatValue;
-							break;
-						case "string":
-							value = assignment.stringValue;
-							break;
-						default:
-							value = assignment.objectValue;
-							break;
-					}
+					object value = assignment.GetValue();
 					if (value != null) {
 						blackboard.Set(variable.VariableKey, value);
 					}

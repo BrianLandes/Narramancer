@@ -13,6 +13,7 @@ namespace Narramancer {
 			story.SaveTable.Set(Key("texture"), image.sprite.texture);
 			story.SaveTable.Set(Key("rect"), image.sprite.rect);
 			story.SaveTable.Set(Key("pivot"), image.sprite.pivot);
+			story.SaveTable.Set(Key("color"), image.color);
 		}
 
 		public override void Deserialize(StoryInstance map) {
@@ -21,7 +22,10 @@ namespace Narramancer {
 			var texture = map.SaveTable.GetAndRemove<Texture2D>(Key("texture"));
 			var rect = map.SaveTable.GetAndRemove<Rect>(Key("rect"));
 			var pivot = map.SaveTable.GetAndRemove<Vector2>(Key("pivot"));
+			pivot /= rect.size;
 			image.sprite = Sprite.Create(texture, rect, pivot);
+
+			image.color = map.SaveTable.Get<Color>(Key("color"));
 		}
 	}
 }

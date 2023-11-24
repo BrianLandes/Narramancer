@@ -125,7 +125,7 @@ namespace Narramancer {
 			typeof(Rigidbody2D)
 		};
 
-		public static void ShowTypeSelectionPopup( Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null) {
+		public static void ShowTypeSelectionPopup(Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null) {
 			var mousePosition = Event.current.mousePosition;
 			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
@@ -249,6 +249,10 @@ namespace Narramancer {
 				case "string":
 					var stringValue = element.FindPropertyRelative(nameof(VariableAssignment.stringValue));
 					stringValue.stringValue = EditorGUI.TextField(rect, label, stringValue.stringValue);
+					break;
+				case "color":
+					var colorValue = element.FindPropertyRelative(nameof(VariableAssignment.colorValue));
+					colorValue.colorValue = EditorGUI.ColorField(rect, label, colorValue.colorValue);
 					break;
 				default:
 					var objectType = Type.GetType(typeValue.stringValue);

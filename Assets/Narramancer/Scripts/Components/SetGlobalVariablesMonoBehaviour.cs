@@ -46,6 +46,7 @@ namespace Narramancer {
 						case "bool":
 						case "float":
 						case "string":
+						case "color":
 							// this area left blank intentionally
 							break;
 						default:

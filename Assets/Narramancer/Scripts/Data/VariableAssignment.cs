@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Narramancer {
 
@@ -13,8 +14,25 @@ namespace Narramancer {
 		public int intValue;
 		public float floatValue;
 		public string stringValue;
+		public Color colorValue;
 		public UnityEngine.Object objectValue;
 
+		public object GetValue() {
+			switch (type) {
+				case "int":
+					return intValue;
+				case "bool":
+					return boolValue;
+				case "float":
+					return floatValue;
+				case "string":
+					return stringValue;
+				case "color":
+					return colorValue;
+				default:
+					return objectValue;
+			}
+		}
 
 		public static string TypeToString(Type type) {
 			if (typeof(int) == type) {
@@ -28,6 +46,9 @@ namespace Narramancer {
 			}
 			if (typeof(string) == type) {
 				return "string";
+			}
+			if (typeof(Color) == type) {
+				return "color";
 			}
 			return type.AssemblyQualifiedName;
 		}
@@ -45,13 +66,16 @@ namespace Narramancer {
 			if (typeof(string).AssemblyQualifiedName.Equals(typeAssemblyQualifiedName, StringComparison.Ordinal)) {
 				return "string";
 			}
+			if (typeof(Color).AssemblyQualifiedName.Equals(typeAssemblyQualifiedName, StringComparison.Ordinal)) {
+				return "color";
+			}
 			return typeAssemblyQualifiedName;
 		}
 	}
 
 	public static class VariableAssignmentExtensions {
 
-		public static void MatchToVariables<T>(this List<VariableAssignment> assignments, List<T> variables) where T: NarramancerPort {
+		public static void MatchToVariables<T>(this List<VariableAssignment> assignments, List<T> variables) where T : NarramancerPort {
 			var existingAssignments = assignments.ToList();
 
 			assignments.Clear();
@@ -75,29 +99,12 @@ namespace Narramancer {
 			}
 		}
 
-		public static void ApplyAssignmentsToBlackboard<T>(this List<VariableAssignment> assignments, List<T> variables, Blackboard blackboard) where T: NarramancerPort {
+		public static void ApplyAssignmentsToBlackboard<T>(this List<VariableAssignment> assignments, List<T> variables, Blackboard blackboard) where T : NarramancerPort {
 
 			foreach (var assignment in assignments) {
 				var globalVariable = variables.FirstOrDefault(x => VariableAssignment.TypeToString(x.Type).Equals(assignment.type, StringComparison.Ordinal) && x.Id.Equals(assignment.id, StringComparison.Ordinal));
 				if (globalVariable != null) {
-					object value = null;
-					switch (assignment.type) {
-						case "int":
-							value = assignment.intValue;
-							break;
-						case "bool":
-							value = assignment.boolValue;
-							break;
-						case "float":
-							value = assignment.floatValue;
-							break;
-						case "string":
-							value = assignment.stringValue;
-							break;
-						default:
-							value = assignment.objectValue;
-							break;
-					}
+					object value = assignment.GetValue();
 					if (value != null) {
 						blackboard.Set(globalVariable.VariableKey, value);
 					}

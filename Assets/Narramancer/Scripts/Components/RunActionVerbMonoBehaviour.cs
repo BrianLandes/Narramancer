@@ -27,7 +27,7 @@ namespace Narramancer {
 		}
 
 		public void CreateInputs() {
-			if ( verb==null) { return; }
+			if (verb == null) { return; }
 
 			assignments.MatchToVariables(verb.Inputs);
 
@@ -73,6 +73,7 @@ namespace Narramancer {
 						case "bool":
 						case "float":
 						case "string":
+						case "color":
 							// this area left blank intentionally
 							break;
 						default:
