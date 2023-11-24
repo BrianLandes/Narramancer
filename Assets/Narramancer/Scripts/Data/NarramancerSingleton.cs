@@ -25,6 +25,11 @@ namespace Narramancer {
 		public static string RunAtStartFieldName => nameof(runAtStart);
 		public List<ActionVerb> RunAtStart { get => runAtStart; set => runAtStart = value; }
 
+		[SerializeField]
+		List<VerbGraph> recentlyOpenedGraphs = new List<VerbGraph>();
+		public static string RecentlyOpenedGraphsFieldName => nameof(recentlyOpenedGraphs);
+		public List<VerbGraph> RecentlyOpenedGraphs { get => recentlyOpenedGraphs; set => recentlyOpenedGraphs = value; }
+
 
 		[SerializeField]
 		private List<NarramancerPortWithAssignment> globalVariables = new List<NarramancerPortWithAssignment>();

@@ -15,7 +15,7 @@ namespace Narramancer {
 
 		// https://github.com/Siccity/xNode/wiki/Graph-Editors
 
-		private static List<NodeGraph> lastOpenedStack = new List<NodeGraph>();
+		private static List<VerbGraph> lastOpenedStack => NarramancerSingleton.Instance.RecentlyOpenedGraphs;
 		private static bool didBack = false;
 
 		public override void OnOpen() {
@@ -35,11 +35,11 @@ namespace Narramancer {
 			if (lastOpenedStack.Any()) {
 				var peek = lastOpenedStack.Last();
 				if (peek != window.graph) {
-					lastOpenedStack.Add(window.graph);
+					lastOpenedStack.Add(window.graph as VerbGraph);
 				}
 			}
 			else if (window.graph != null) {
-				lastOpenedStack.Add(window.graph);
+				lastOpenedStack.Add(window.graph as VerbGraph);
 			}
 
 			window.titleContent = new GUIContent(target.name);
@@ -142,7 +142,7 @@ namespace Narramancer {
 
 			var position = nodeEditorWindow.WindowToGridPosition(Event.current.mousePosition);
 
-			foreach( var draggedObject in objects.WithoutNulls() ) {
+			foreach (var draggedObject in objects.WithoutNulls()) {
 				switch (draggedObject) {
 					case ActionVerb actionVerb: {
 							if (target is ActionVerb) {
@@ -171,7 +171,7 @@ namespace Narramancer {
 
 				position.x += 200f;
 			}
-			
+
 		}
 
 		public override void AddContextMenuItemsForNewNodes(GenericMenu menu) {
