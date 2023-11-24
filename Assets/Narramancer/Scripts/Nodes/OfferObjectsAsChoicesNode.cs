@@ -23,12 +23,23 @@ namespace Narramancer {
 		[SerializeField]
 		private RunnableNode runWhenBackSelected = default;
 
-		// TODO: Predicate for Display Name
-		// TODO: Predicate for Disabled
+		[SerializeField]
+		[RequireInputFromSerializableType(nameof(type), "element")]
+		[RequireOutput(typeof(string), "display name")]
+		private ValueVerb displayNamePredicate;
+
+		[SerializeField]
+		[RequireInputFromSerializableType(nameof(type), "element")]
+		[RequireOutput(typeof(bool), "enabled")]
+		private ValueVerb enabledPredicate;
+
 		// TODO: Predicate for Custom Color
 		// TODO: Predicate for Show if Disabled
 		// TODO: Show a disabled choice if there are no elements that says 'None'
 		// TODO: allow 'Back' text to be an input
+
+		[SerializeField]
+		private bool showIfDisabled = true;
 
 		private const string INPUT_ELEMENTS = "Input Elements";
 		private const string INPUT_LIST = "Input List";
@@ -88,12 +99,28 @@ namespace Narramancer {
 			}
 
 			foreach (var element in elementsList) {
-				var displayText = element.ToString();
-				choicePrinter.AddChoice(displayText, () => {
-					runner.Blackboard.Set(ElementKey, element);
-					var nextNode = GetRunnableNodeFromPort(nameof(runWhenObjectSelected));
-					runner.Resume(nextNode);
-				});
+
+				var enabled = enabledPredicate == null || enabledPredicate.RunForValue<bool>(runner.Blackboard, type.Type, element);
+				if (enabled) {
+
+					var displayText = element.ToString();
+					if (displayNamePredicate != null) {
+						displayText = displayNamePredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
+					}
+					choicePrinter.AddChoice(displayText, () => {
+						runner.Blackboard.Set(ElementKey, element);
+						var nextNode = GetRunnableNodeFromPort(nameof(runWhenObjectSelected));
+						runner.Resume(nextNode);
+					});
+				}
+				else
+				if (showIfDisabled) {
+					var displayText = element.ToString();
+					if (displayNamePredicate != null) {
+						displayText = displayNamePredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
+					}
+					choicePrinter.AddDisabledChoice(displayText);
+				}
 			}
 
 			choicePrinter.AddChoice("Back", () => {
