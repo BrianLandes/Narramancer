@@ -24,39 +24,54 @@ namespace Narramancer {
 		[SerializeField]
 		private RelationshipInstance relaionshipInstance = default;
 
+		[Output(ShowBackingValue.Never)]
+		[SerializeField]
+		private NounInstance otherInstance = default;
 
 		public override object GetValue(object context, NodePort port) {
 			if (Application.isPlaying) {
-				switch (port.fieldName) {
-					case nameof(hasRelationship): {
-							var inputInstance = GetInstance(context);
 
-							var relationship = GetInputValue(context, nameof(this.relationship), this.relationship);
-							var other = GetInputValue(context, nameof(this.other), this.other);
+				var inputInstance = GetInstance(context);
+				var other = GetInputValue<NounInstance>(context, nameof(this.other), null);
+				RelationshipInstance GetRelationship() {
 
-							if (inputInstance != null && relationship != null && other != null) {
-								return inputInstance.HasRelationship(relationship, other, relationshipRequirement);
-							}
-							else {
-								Debug.LogError("Inputs were null", this);
-								return null;
-							}
-						}
+					if (inputInstance != null) {
 
-					case nameof(relaionshipInstance): {
-							var inputInstance = GetInstance(context);
+						var relationship = GetInputValue(context, nameof(this.relationship), this.relationship);
 
-							var relationship = GetInputValue(context, nameof(this.relationship), this.relationship);
-							var other = GetInputValue(context, nameof(this.other), this.other);
+						if (relationship != null) {
 
-							if (inputInstance != null && relationship != null && other != null) {
+							if (other != null) {
 								return inputInstance.GetRelationship(relationship, other, relationshipRequirement);
 							}
 							else {
-								Debug.LogError("Inputs were null", this);
-								return null;
+								return inputInstance.GetRelationship(relationship, relationshipRequirement);
 							}
 						}
+						else {
+							Debug.LogError("Relationship was null", this);
+							return null;
+						}
+					}
+					else {
+						Debug.LogError("Instance was null", this);
+						return null;
+					}
+				}
+
+				var relationshipInstance = GetRelationship();
+
+				switch (port.fieldName) {
+					case nameof(hasRelationship):
+						return relationshipInstance != null;
+					case nameof(relaionshipInstance):
+						return relationshipInstance;
+					case nameof(otherInstance):
+						if (other != null) {
+							return other;
+						}
+
+						return relationshipInstance.GetOther(inputInstance);
 				}
 
 			}
