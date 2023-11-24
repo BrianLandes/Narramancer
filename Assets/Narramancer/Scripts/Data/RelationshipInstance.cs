@@ -67,6 +67,20 @@ namespace Narramancer {
 			return relationship == this.Adjective && destination.UID == this.destination;
 		}
 
+		public NounInstance GetSource() {
+			return NarramancerSingleton.Instance.GetInstance(SourceUID);
+		}
+
+		public NounInstance GetDestination() {
+			return NarramancerSingleton.Instance.GetInstance(DestinationUID);
+		}
+
+		public NounInstance GetOther(NounInstance instance) {
+			if (instance.UID == SourceUID) {
+				return GetDestination();
+			}
+			return GetSource();
+		}
 	}
 
 
