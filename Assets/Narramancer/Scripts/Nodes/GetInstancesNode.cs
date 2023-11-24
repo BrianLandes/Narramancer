@@ -20,6 +20,9 @@ namespace Narramancer {
 		[NodeEnum]
 		TypeFilter filter = TypeFilter.All;
 
+		[SerializeField]
+		List<PropertyScriptableObject> mustHaveProperties = new List<PropertyScriptableObject>();
+
 		[Output]
 		[SerializeField]
 		[HideLabel]
@@ -27,20 +30,31 @@ namespace Narramancer {
 
 		public override object GetValue(object context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(instances))) {
-				switch (filter) {
-					case TypeFilter.All:
-						return NarramancerSingleton.Instance.GetInstances();
 
-					case TypeFilter.Characters:
-						return NarramancerSingleton.Instance.GetInstances().Where(x=>x.NounType == NounType.Character).ToList();
+				IEnumerable<NounInstance> GetInstancesFilteredByType() {
+					switch (filter) {
+						default:
+						case TypeFilter.All:
+							return NarramancerSingleton.Instance.GetInstances();
 
-					case TypeFilter.Items:
-						return NarramancerSingleton.Instance.GetInstances().Where(x => x.NounType == NounType.Item).ToList();
+						case TypeFilter.Characters:
+							return NarramancerSingleton.Instance.GetInstances().Where(x => x.NounType == NounType.Character);
 
-					case TypeFilter.Locations:
-						return NarramancerSingleton.Instance.GetInstances().Where(x => x.NounType == NounType.Location).ToList();
+						case TypeFilter.Items:
+							return NarramancerSingleton.Instance.GetInstances().Where(x => x.NounType == NounType.Item);
+
+						case TypeFilter.Locations:
+							return NarramancerSingleton.Instance.GetInstances().Where(x => x.NounType == NounType.Location);
+					}
 				}
-				
+
+				var resultList = GetInstancesFilteredByType();
+
+				if (mustHaveProperties.Any()) {
+					resultList = resultList.Where(x => mustHaveProperties.All(property => x.HasProperty(property)));
+				}
+
+				return resultList.ToList();
 			}
 			return null;
 		}
