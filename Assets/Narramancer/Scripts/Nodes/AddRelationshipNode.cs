@@ -23,7 +23,7 @@ namespace Narramancer {
 
 			var relationship = GetInputValue(runner.Blackboard, nameof(this.relationship), this.relationship);
 
-			if (instance != null && relationship != null) {
+			if (instance != null || relationship != null) {
 				var other = GetInputValue(runner.Blackboard, nameof(this.other), this.other);
 				instance.AddRelationship(relationship, other, sourceOrDestination);
 			}
