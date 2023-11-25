@@ -11,6 +11,7 @@ namespace Narramancer {
 	public class SaveDataWrapper {
 		public string title;
 		public string data;
+		public string thumbnail;
 		public List<UnityEngine.Object> objects;
 	}
 
@@ -50,9 +51,31 @@ namespace Narramancer {
 			var bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON, out wrapper.objects);
 			wrapper.data = System.Text.Encoding.UTF8.GetString(bytes);
 
+			var thumbnailTexture = Screenshot();
+			wrapper.thumbnail = Convert.ToBase64String(thumbnailTexture.EncodeToJPG());
+
 			var jsonString = JsonUtility.ToJson(wrapper);
 			return jsonString;
 		}
+
+		private static RenderTexture thumbnailRenderTexture;
+
+		public static Texture2D Screenshot() {
+			thumbnailRenderTexture = thumbnailRenderTexture != null ? thumbnailRenderTexture : new RenderTexture(128, 128, 24);
+
+			var initialRenderTexture = Camera.main.targetTexture;
+			Camera.main.targetTexture = thumbnailRenderTexture;
+			Camera.main.Render();
+			Camera.main.targetTexture = initialRenderTexture;
+
+			var texture2d = new Texture2D(thumbnailRenderTexture.width, thumbnailRenderTexture.height, TextureFormat.RGB24, false);
+			RenderTexture.active = thumbnailRenderTexture;
+			texture2d.ReadPixels(new Rect(0, 0, thumbnailRenderTexture.width, thumbnailRenderTexture.height), 0, 0);
+			texture2d.Apply();
+
+			return texture2d;
+		}
+
 		public static SaveDataWrapper DeserializeWrapper(string jsonData) {
 			var saveGameWrapper = JsonUtility.FromJson<SaveDataWrapper>(jsonData);
 			return saveGameWrapper;
@@ -63,6 +86,7 @@ namespace Narramancer {
 
 			var bytes = System.Text.Encoding.UTF8.GetBytes(saveGameWrapper.data);
 			var resultData = SerializationUtility.DeserializeValue<T>(bytes, DataFormat.JSON, saveGameWrapper.objects);
+
 			return resultData;
 		}
 
@@ -75,6 +99,13 @@ namespace Narramancer {
 			var saveData = ReadSaveData(saveName);
 			var classData = DeserializeData<T>(saveData);
 			return classData;
+		}
+
+		public static Texture2D DeserializeThumbnail(string thumbnail) {
+			var texture = new Texture2D(2, 2);
+			texture.wrapMode = TextureWrapMode.Clamp;
+			texture.LoadImage(Convert.FromBase64String(thumbnail));
+			return texture;
 		}
 
 		public static int CountSaveData() {
@@ -102,7 +133,7 @@ namespace Narramancer {
 			var saveNames = GetSaveDataNames();
 			var data = saveNames.Select(saveName => ReadSaveData(saveName));
 			var wrappers = data.Select(x => DeserializeWrapper(x));
-			return saveNames.Zip( wrappers, (name, wrapper)=> Tuple.Create(name,wrapper) ).ToArray();
+			return saveNames.Zip(wrappers, (name, wrapper) => Tuple.Create(name, wrapper)).ToArray();
 		}
 	}
 }
