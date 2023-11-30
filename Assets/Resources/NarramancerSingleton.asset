@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runOnGameStart: 1
   nouns: []
-  runAtStart: []
+  adjectives: []
+  runAtStart:
+  - {fileID: 11400000, guid: 23c4791f0bde6f3469f58f71c1bf7ecb, type: 2}
   globalVariables: []
   storyInstance:
     instances:
@@ -25,7 +27,7 @@ MonoBehaviour:
       noun: {fileID: 11400000, guid: e5a95aaf32ce714479f71c9e815e5925, type: 2}
       pronouns: 0
       properties:
-      - adjective: {fileID: 11400000, guid: 78fb1c64b5cd6da4da7cf666b6ca04c2, type: 2}
+      - adjective: {fileID: 0}
       stats: []
       relationships: []
       blackboard:
@@ -90,6 +92,24 @@ MonoBehaviour:
         - cube (GameObject) 859aa3c5-5f5f-4e58-9b38-138178b4098c -935942940
         values:
         - {fileID: 0}
+      objects:
+        keys: []
+    saveTable:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
       objects:
         keys: []
     timers: []
