@@ -57,11 +57,12 @@ namespace Narramancer {
 			}
 			return base.GetValue(context, port);
 		}
-
+#if UNITY_EDITOR
 		public void CreateChildAction() {
 			var rankedWeightedAction = PseudoEditorUtilities.CreateAndAddChild<RankedWeightedAction>(this, nameof(RankedWeightedAction).Nicify());
 			actions.Add(rankedWeightedAction);
 		}
+#endif
 
 	}
 }
