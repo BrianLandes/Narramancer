@@ -22,6 +22,10 @@ namespace Narramancer {
 		[SerializeField]
 		private GameObject gameObject = default;
 
+		[Output]
+		[SerializeField]
+		private Vector3 worldPosition = default;
+
 		public override object GetValue(object context, NodePort port) {
 			if (Application.isPlaying) {
 
@@ -35,6 +39,8 @@ namespace Narramancer {
 							return child;
 						case nameof(gameObject):
 							return child?.gameObject;
+						case nameof(worldPosition):
+							return child?.transform.position;
 					}
 
 				}
