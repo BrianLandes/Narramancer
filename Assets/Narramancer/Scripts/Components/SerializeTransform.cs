@@ -13,41 +13,77 @@ namespace Narramancer {
 
 
 		[SerializeMonoBehaviourField]
-		private Promise promise;
+		private Promise positionPromise;
 
 		[SerializeMonoBehaviourField]
-		private bool tweening = false;
+		private bool tweeningPosition = false;
 
 		[SerializeMonoBehaviourField]
 		private Vector3 targetTweenPosition;
 
 		[SerializeMonoBehaviourField]
-		private float speed;
+		private float positionSpeed;
+
+		[SerializeMonoBehaviourField]
+		private Promise rotationPromise;
+
+		[SerializeMonoBehaviourField]
+		private bool tweeningRotation = false;
+
+		[SerializeMonoBehaviourField]
+		private Quaternion targetTweenRotation;
+
+		[SerializeMonoBehaviourField]
+		private float rotationSpeed;
 
 		public Promise TweenTo(Vector3 position, float speed) {
 
-			tweening = true;
+			tweeningPosition = true;
 			targetTweenPosition = position;
-			this.speed = speed;
+			this.positionSpeed = speed;
 
-			promise = new Promise();
-			return promise;
+			positionPromise = new Promise();
+			return positionPromise;
+		}
+
+		public Promise TweenTo(Quaternion rotation, float speed) {
+
+			tweeningRotation = true;
+			targetTweenRotation = rotation;
+			this.rotationSpeed = speed;
+
+			rotationPromise = new Promise();
+			return rotationPromise;
 		}
 
 		private void Update() {
-			if (tweening) {
+			if (tweeningPosition) {
 				var vector = targetTweenPosition - transform.position;
-				var moveVector = vector.normalized * speed * Time.deltaTime;
+				var moveVector = vector.normalized * positionSpeed * Time.deltaTime;
 				if (moveVector.sqrMagnitude > vector.sqrMagnitude) {
 					transform.position = targetTweenPosition;
-					tweening = false;
-					var promise = this.promise;
-					this.promise = null;
+					tweeningPosition = false;
+					var promise = this.positionPromise;
+					this.positionPromise = null;
 					promise.Resolve();
 				}
 				else {
 					transform.position += moveVector;
 				}
+			}
+			if (tweeningRotation) {
+				var dot = Quaternion.Dot(targetTweenRotation, transform.rotation);
+				if (Mathf.Approximately(0, dot)) {
+					tweeningRotation = false;
+					var promise = this.rotationPromise;
+					this.rotationPromise = null;
+					promise.Resolve();
+				}
+				else {
+					var targetRotation = Quaternion.Lerp(transform.rotation, targetTweenRotation, rotationSpeed * Time.deltaTime);
+					transform.rotation = targetRotation;
+				}
+
 			}
 		}
 
