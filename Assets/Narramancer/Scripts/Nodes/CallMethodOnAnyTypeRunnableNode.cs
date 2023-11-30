@@ -57,5 +57,17 @@ namespace Narramancer {
 
 			this.ClearDynamicPortsExcept(existingPorts);
 		}
+
+
+		public override object GetValue(object context, NodePort port) {
+
+			if (port.fieldName.Equals(PASS_THROUGH)) {
+				var targetPort = GetInputPort(TARGET);
+				return targetPort.GetInputValue(context);
+			}
+
+			return base.GetValue(context, port);
+		}
+
 	}
 }
