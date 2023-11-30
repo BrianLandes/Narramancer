@@ -19,6 +19,10 @@ namespace Narramancer {
 			RandomInXZCircle,
 			RandomInYZCircle,
 			RandomInSphere,
+			LayoutInLine,
+			RandomInXYRect,
+			RandomInXZRect,
+			RandomInYZRect,
 		}
 		[SerializeField]
 		private SpawnLocationType spawnLocationType = default;
@@ -28,6 +32,15 @@ namespace Narramancer {
 
 		[SerializeField]
 		private float circleRadius = default;
+
+		[SerializeField]
+		private float rectWidth = default;
+
+		[SerializeField]
+		private float rectHeight = default;
+
+		[SerializeField]
+		private bool randomizeRotation = false;
 
 		private List<GameObject> spawns = new List<GameObject>();
 
@@ -70,6 +83,45 @@ namespace Narramancer {
 						newSpawn.transform.position = center.position + UnityEngine.Random.insideUnitSphere * circleRadius;
 					}
 					break;
+				case SpawnLocationType.LayoutInLine: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var position = center.position;
+						foreach (var spawn in spawns) {
+							if (spawn == null) {
+								continue;
+							}
+							spawn.transform.position = position;
+
+							position += transform.forward * circleRadius;
+						}
+						newSpawn.transform.position = position;
+					}
+					break;
+				case SpawnLocationType.RandomInXYRect: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var widthVariance = Probabilititties.Gaussian() * 0.33f * rectWidth;
+						var heightVariance = Probabilititties.Gaussian() * 0.33f * rectHeight;
+						newSpawn.transform.position = center.position + new Vector3(widthVariance, heightVariance, 0f);
+					}
+					break;
+				case SpawnLocationType.RandomInXZRect: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var widthVariance = Probabilititties.Gaussian() * 0.33f * rectWidth;
+						var heightVariance = Probabilititties.Gaussian() * 0.33f * rectHeight;
+						newSpawn.transform.position = center.position + new Vector3(widthVariance, 0f, heightVariance);
+					}
+					break;
+				case SpawnLocationType.RandomInYZRect: {
+						var center = spawnLocation != null ? spawnLocation : transform;
+						var widthVariance = Probabilititties.Gaussian() * 0.33f * rectWidth;
+						var heightVariance = Probabilititties.Gaussian() * 0.33f * rectHeight;
+						newSpawn.transform.position = center.position + new Vector3(0f, widthVariance, heightVariance);
+					}
+					break;
+			}
+
+			if (randomizeRotation) {
+				newSpawn.transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
 			}
 
 			newSpawn.name = newSpawn.name.Replace("(Clone)", $" ({Guid.NewGuid()})");
