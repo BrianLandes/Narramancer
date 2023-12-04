@@ -25,6 +25,10 @@ namespace Narramancer {
 			return Adjective.GetModifier<T>();
 		}
 
+		public AbstractPropertyModifierIngredient GetModifier(Type type) {
+			return Adjective.GetModifier(type);
+		}
+
 		public IEnumerable<T> GetModifiers<T>() where T : AbstractPropertyModifierIngredient {
 			return Adjective.Modifiers.OfType<T>();
 		}

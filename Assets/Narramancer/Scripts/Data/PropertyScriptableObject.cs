@@ -30,6 +30,10 @@ namespace Narramancer {
 			return modifiers.FirstOrDefault(modifier => modifier is T) as T;
 		}
 
+		public AbstractPropertyModifierIngredient GetModifier(Type type) {
+			return modifiers.FirstOrDefault(modifier => modifier.GetType() == type);
+		}
+
 		public List<T> GetModifiers<T>() where T : AbstractPropertyModifierIngredient {
 			return modifiers.Where(modifier => modifier is T).Cast<T>().ToList();
 		}
