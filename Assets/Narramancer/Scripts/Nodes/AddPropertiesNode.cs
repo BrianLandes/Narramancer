@@ -10,6 +10,10 @@ namespace Narramancer {
 		[SerializeField]
 		private List<PropertyScriptableObject> properties = default;
 
+		[SerializeField]
+		[Input(ShowBackingValue.Unconnected, ConnectionType.Multiple, TypeConstraint.Inherited)]
+		private PropertyScriptableObject property = default;
+
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
 
@@ -18,6 +22,10 @@ namespace Narramancer {
 
 			instance.AddProperties(properties);
 
+			var inputProperties = GetInputValues(runner.Blackboard, nameof(this.property), this.property);
+			if (inputProperties != null) {
+				instance.AddProperties(inputProperties);
+			}
 		}
 	}
 }
