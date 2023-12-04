@@ -14,7 +14,9 @@ namespace Narramancer {
 		public int intValue;
 		public float floatValue;
 		public string stringValue;
-		public Color colorValue;
+		public Color color;
+		public Vector2 vector2;
+		public Vector3 vector3;
 		public UnityEngine.Object objectValue;
 
 		public object GetValue() {
@@ -27,8 +29,12 @@ namespace Narramancer {
 					return floatValue;
 				case "string":
 					return stringValue;
-				case "color":
-					return colorValue;
+				case nameof(color):
+					return color;
+				case nameof(vector2):
+					return vector2;
+				case nameof(vector3):
+					return vector3;
 				default:
 					return objectValue;
 			}
@@ -48,7 +54,13 @@ namespace Narramancer {
 				return "string";
 			}
 			if (typeof(Color) == type) {
-				return "color";
+				return nameof(color);
+			}
+			if (typeof(Vector2) == type) {
+				return nameof(vector2);
+			}
+			if (typeof(Vector3) == type) {
+				return nameof(vector3);
 			}
 			return type.AssemblyQualifiedName;
 		}
@@ -67,7 +79,13 @@ namespace Narramancer {
 				return "string";
 			}
 			if (typeof(Color).AssemblyQualifiedName.Equals(typeAssemblyQualifiedName, StringComparison.Ordinal)) {
-				return "color";
+				return nameof(color);
+			}
+			if (typeof(Vector2).AssemblyQualifiedName.Equals(typeAssemblyQualifiedName, StringComparison.Ordinal)) {
+				return nameof(vector2);
+			}
+			if (typeof(Vector3).AssemblyQualifiedName.Equals(typeAssemblyQualifiedName, StringComparison.Ordinal)) {
+				return nameof(vector3);
 			}
 			return typeAssemblyQualifiedName;
 		}

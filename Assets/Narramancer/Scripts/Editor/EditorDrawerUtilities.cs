@@ -251,8 +251,16 @@ namespace Narramancer {
 					stringValue.stringValue = EditorGUI.TextField(rect, label, stringValue.stringValue);
 					break;
 				case "color":
-					var colorValue = element.FindPropertyRelative(nameof(VariableAssignment.colorValue));
+					var colorValue = element.FindPropertyRelative(nameof(VariableAssignment.color));
 					colorValue.colorValue = EditorGUI.ColorField(rect, label, colorValue.colorValue);
+					break;
+				case "vector2":
+					var vector2Value = element.FindPropertyRelative(nameof(VariableAssignment.vector2));
+					vector2Value.vector2Value = EditorGUI.Vector2Field(rect, label, vector2Value.vector2Value);
+					break;
+				case "vector3":
+					var vector3Value = element.FindPropertyRelative(nameof(VariableAssignment.vector3));
+					vector3Value.vector3Value = EditorGUI.Vector3Field(rect, label, vector3Value.vector3Value);
 					break;
 				default:
 					var objectType = Type.GetType(typeValue.stringValue);
