@@ -57,7 +57,7 @@ namespace Narramancer {
 					var left = leftPort.GetInputValue(context);
 					var right = rightPort.GetInputValue(context);
 
-					return left == right;
+					return left.Equals(right);
 			}
 			return null;
 		}
