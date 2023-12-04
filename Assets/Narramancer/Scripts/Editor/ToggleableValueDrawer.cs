@@ -12,8 +12,6 @@ namespace Narramancer {
 
 			EditorGUI.BeginProperty(position, label, property);
 
-			EditorGUI.BeginChangeCheck();
-
 			var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, position.height);
 			var propertyName = property.propertyPath.Nicify();
 			EditorGUI.LabelField(labelPosition, propertyName);
@@ -28,10 +26,8 @@ namespace Narramancer {
 				EditorGUI.PropertyField(valuePosition, value, GUIContent.none);
 			}
 
-			if ( EditorGUI.EndChangeCheck() ) {
-				property.serializedObject.ApplyModifiedProperties();
-			}
-			
+			property.serializedObject.ApplyModifiedProperties();
+
 			EditorGUI.EndProperty();
 		}
 	}
