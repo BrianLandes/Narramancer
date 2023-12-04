@@ -78,25 +78,7 @@ namespace Narramancer {
 
 		public static List<object> GetInputValueObjectList(this NodePort nodePort, object context) {
 			var value = nodePort.GetInputValue(context);
-			return ConvertObjectToList(value);
-		}
-
-		public static List<object> ConvertObjectToList(object value) {
-			var resultList = value as List<object>;
-			if (resultList != null) {
-				return resultList;
-			}
-
-			Assert.IsNotNull(value);
-			var type = value.GetType();
-			Assert.IsNotNull(type);
-
-			var toArrayMethod = type.GetMethod("ToArray");
-			Assert.IsNotNull(toArrayMethod);
-
-			var objectArray = toArrayMethod.Invoke(value, null) as object[];
-
-			return objectArray.ToList();
+			return AssemblyUtilities.ToListOfObjects(value);
 		}
 
 		public static IEnumerable<NodePort> GetConnections(this NodePort nodePort) {

@@ -48,20 +48,12 @@ namespace Narramancer {
 			base.Run(runner);
 
 			var inputPort = GetInputPort(LIST);
-			var inputValue = inputPort.GetInputValue(runner.Blackboard);
-
-			Type type = inputValue.GetType();
-
-			toArrayMethod = type.GetMethod("ToArray");
-
-			var inputArrayObjects = toArrayMethod.Invoke(inputValue, null);
-
-			var inputArray = inputArrayObjects as object[];
+			var inputValue = inputPort.GetInputValueObjectList(runner.Blackboard);
 
 			var chosenElementKey = Blackboard.UniqueKey(this, CHOSEN_ELEMENT);
 
-			if (inputArray.Length >= 1) {
-				var chosenElement = inputArray.ChooseOne();
+			if (inputValue.Count >= 1) {
+				var chosenElement = inputValue.ChooseOne();
 
 				// TODO: account for types that are NOT serializable
 				runner.Blackboard.Set(chosenElementKey, chosenElement);

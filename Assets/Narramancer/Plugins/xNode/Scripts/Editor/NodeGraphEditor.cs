@@ -20,7 +20,7 @@ namespace XNodeEditor {
 
         /// <summary> Called when opened by NodeEditorWindow </summary>
         public virtual void OnOpen() { }
-        
+
         /// <summary> Called when NodeEditorWindow gains focus </summary>
         public virtual void OnWindowFocus() { }
 
@@ -69,39 +69,45 @@ namespace XNodeEditor {
 
                 //Get node context menu path
                 string path = GetNodeMenuName(type);
-                if (string.IsNullOrEmpty(path)) continue;
+                if (string.IsNullOrEmpty(path))
+                    continue;
 
                 // Check if user is allowed to add more of given node type
                 XNode.Node.DisallowMultipleNodesAttribute disallowAttrib;
                 bool disallowed = false;
                 if (NodeEditorUtilities.GetAttrib(type, out disallowAttrib)) {
                     int typeCount = target.nodes.Count(x => x.GetType() == type);
-                    if (typeCount >= disallowAttrib.max) disallowed = true;
+                    if (typeCount >= disallowAttrib.max)
+                        disallowed = true;
                 }
 
                 // Add node entry to context menu
-                if (disallowed) menu.AddItem(new GUIContent(path), false, null);
-                else menu.AddItem(new GUIContent(path), false, () => {
-                    XNode.Node node = CreateNode(type, pos);
-                    NodeEditorWindow.current.AutoConnect(node);
-                });
+                if (disallowed)
+                    menu.AddItem(new GUIContent(path), false, null);
+                else
+                    menu.AddItem(new GUIContent(path), false, () => {
+                        XNode.Node node = CreateNode(type, pos);
+                        NodeEditorWindow.current.AutoConnect(node);
+                    });
             }
             menu.AddSeparator("");
-            if (NodeEditorWindow.copyBuffer != null && NodeEditorWindow.copyBuffer.Length > 0) menu.AddItem(new GUIContent("Paste"), false, () => NodeEditorWindow.current.PasteNodes(pos));
-            else menu.AddDisabledItem(new GUIContent("Paste"));
+            if (NodeEditorWindow.copyBuffer != null && NodeEditorWindow.copyBuffer.Length > 0)
+                menu.AddItem(new GUIContent("Paste"), false, () => NodeEditorWindow.current.PasteNodes(pos));
+            else
+                menu.AddDisabledItem(new GUIContent("Paste"));
             menu.AddItem(new GUIContent("Preferences"), false, () => NodeEditorReflection.OpenPreferences());
             menu.AddCustomContextMenuItems(target);
         }
 
-		/// <summary> Add items for the context menu when right-clicking on the header of one or more selected nodes. Override to add custom menu items. </summary>
-		public virtual void AddContextMenuItemsForSelectedNodes(GenericMenu menu) {
-			
-		}
+        /// <summary> Add items for the context menu when right-clicking on the header of one or more selected nodes. Override to add custom menu items. </summary>
+        public virtual void AddContextMenuItemsForSelectedNodes(GenericMenu menu) {
 
-		/// <summary> Returned gradient is used to color noodles </summary>
-		/// <param name="output"> The output this noodle comes from. Never null. </param>
-		/// <param name="input"> The output this noodle comes from. Can be null if we are dragging the noodle. </param>
-		public virtual Gradient GetNoodleGradient(XNode.NodePort output, XNode.NodePort input) {
+        }
+
+        /// <summary> Returned gradient is used to color noodles </summary>
+        /// <param name="output"> The output this noodle comes from. Never null. </param>
+        /// <param name="input"> The output this noodle comes from. Can be null if we are dragging the noodle. </param>
+        public virtual Gradient GetNoodleGradient(XNode.NodePort output, XNode.NodePort input) {
             Gradient grad = new Gradient();
 
             // If dragging the noodle, draw solid, slightly transparent
@@ -167,22 +173,31 @@ namespace XNodeEditor {
             return false;
         }
 
-        public static List<object> ToListOfObjects(object @this) {
-            if (@this == null) {
+        public static List<object> ToListOfObjects(object listObject) {
+            if (listObject == null) {
                 return null;
             }
-            var resultList = @this as List<object>;
+            var resultList = listObject as List<object>;
             if (resultList != null) {
                 return resultList;
             }
 
-            var type = @this.GetType();
+            var type = listObject.GetType();
 
             var toArrayMethod = type.GetMethod("ToArray");
 
-            var objectArray = toArrayMethod.Invoke(@this, null) as object[];
+            var arrayAsObject = toArrayMethod.Invoke(listObject, null);
+            var objectArray = arrayAsObject as object[];
+            if (objectArray != null) {
+                return objectArray.ToList();
+            }
 
-            return objectArray.ToList();
+            var array = arrayAsObject as Array;
+            resultList = new List<object>();
+            for (var ii = 0; ii < array.Length; ii++) {
+                resultList.Add(array.GetValue(ii));
+            }
+            return resultList;
         }
 
         /// <summary> Override to display custom tooltips </summary>
@@ -194,7 +209,7 @@ namespace XNodeEditor {
                 var context = window.selectedBlackboardHolder?.GetBlackboard();
                 if (context != null) {
                     object obj = port.node.GetValue(context, port);
-                    if (obj!=null && IsListType(obj.GetType())) {
+                    if (obj != null && IsListType(obj.GetType())) {
                         var objectList = ToListOfObjects(obj);
                         var list = objectList.Select(x => x.ToString());
                         tooltip += " = " + String.Join(", ", list);
@@ -202,7 +217,7 @@ namespace XNodeEditor {
                     else {
                         tooltip += " = " + (obj != null ? obj.ToString() : "null");
                     }
-                    
+
                 }
             }
             return tooltip;
@@ -210,7 +225,8 @@ namespace XNodeEditor {
 
         /// <summary> Deal with objects dropped into the graph through DragAndDrop </summary>
         public virtual void OnDropObjects(UnityEngine.Object[] objects) {
-            if (GetType() != typeof(NodeGraphEditor)) Debug.Log("No OnDropObjects override defined for " + GetType());
+            if (GetType() != typeof(NodeGraphEditor))
+                Debug.Log("No OnDropObjects override defined for " + GetType());
         }
 
         /// <summary> Create a node and save it in the graph asset </summary>
@@ -219,9 +235,12 @@ namespace XNodeEditor {
             XNode.Node node = target.AddNode(type);
             Undo.RegisterCreatedObjectUndo(node, "Create Node");
             node.position = position;
-            if (node.name == null || node.name.Trim() == "") node.name = NodeEditorUtilities.NodeDefaultName(type);
-            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(target))) AssetDatabase.AddObjectToAsset(node, target);
-            if (NodeEditorPreferences.GetSettings().autoSave) AssetDatabase.SaveAssets();
+            if (node.name == null || node.name.Trim() == "")
+                node.name = NodeEditorUtilities.NodeDefaultName(type);
+            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(target)))
+                AssetDatabase.AddObjectToAsset(node, target);
+            if (NodeEditorPreferences.GetSettings().autoSave)
+                AssetDatabase.SaveAssets();
             NodeEditorWindow.RepaintAll();
             return node;
         }
@@ -233,7 +252,8 @@ namespace XNodeEditor {
             Undo.RegisterCreatedObjectUndo(node, "Duplicate Node");
             node.name = original.name;
             AssetDatabase.AddObjectToAsset(node, target);
-            if (NodeEditorPreferences.GetSettings().autoSave) AssetDatabase.SaveAssets();
+            if (NodeEditorPreferences.GetSettings().autoSave)
+                AssetDatabase.SaveAssets();
             return node;
         }
 
@@ -253,7 +273,8 @@ namespace XNodeEditor {
 
         /// <summary> Safely remove a node and all its connections. </summary>
         public virtual void RemoveNode(XNode.Node node) {
-            if (!CanRemove(node)) return;
+            if (!CanRemove(node))
+                return;
 
             // Remove the node
             Undo.RecordObject(node, "Delete Node");
@@ -263,7 +284,8 @@ namespace XNodeEditor {
                     Undo.RecordObject(conn.node, "Delete Node");
             target.RemoveNode(node);
             Undo.DestroyObjectImmediate(node);
-            if (NodeEditorPreferences.GetSettings().autoSave) AssetDatabase.SaveAssets();
+            if (NodeEditorPreferences.GetSettings().autoSave)
+                AssetDatabase.SaveAssets();
         }
 
         [AttributeUsage(AttributeTargets.Class)]

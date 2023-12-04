@@ -66,7 +66,7 @@ namespace Narramancer {
 				if (inputPortA.IsConnected) {
 					var inputValueA = inputPortA.GetInputValue(context);
 
-					var inputArrayA = inputValueA.ToListOfObjects();
+					var inputArrayA = AssemblyUtilities.ToListOfObjects(inputValueA);
 					foreach (var element in inputArrayA) {
 						resultList.Add(element);
 					}
@@ -79,7 +79,7 @@ namespace Narramancer {
 
 					var inputValueB = inputPortB.GetInputValue(context);
 					if (inputValueB != null) {
-						var inputArrayB = inputValueB.ToListOfObjects();
+						var inputArrayB = AssemblyUtilities.ToListOfObjects(inputValueB);
 
 						foreach (var element in inputArrayB) {
 							resultList.Add(element);

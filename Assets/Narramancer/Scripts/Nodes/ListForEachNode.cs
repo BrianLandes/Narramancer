@@ -61,7 +61,7 @@ namespace Narramancer {
 			var inputListPort = GetInputPort(INPUT_LIST);
 			var value = inputListPort.GetInputValue(blackboard);
 			if (value != null) {
-				inputList.AddRange(NodeExtensions.ConvertObjectToList(value));
+				inputList.AddRange(AssemblyUtilities.ToListOfObjects(value));
 			}
 
 

@@ -93,7 +93,7 @@ namespace Narramancer {
 			if (listPort.IsConnected) {
 				var inputList = listPort.GetInputValue(runner.Blackboard);
 				if (inputList != null) {
-					var inputListAsList = inputList.ToListOfObjects();
+					var inputListAsList = AssemblyUtilities.ToListOfObjects(inputList);
 					elementsList.AddRange(inputListAsList);
 				}
 			}

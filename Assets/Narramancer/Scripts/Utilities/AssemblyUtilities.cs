@@ -216,10 +216,9 @@ namespace Narramancer {
 			var listField = fields.FirstOrDefault(x => IsListTypeOfType(x.FieldType, fieldType));
 			if (listField != null) {
 				var fieldValue = listField.GetValue(target);
-				var toArrayMethod = listField.FieldType.GetMethod("ToArray");
-				var fieldArray = toArrayMethod.Invoke(fieldValue, null) as object[];
+				var objectList = ToListOfObjects(fieldValue);
 
-				return fieldArray.Contains(value);
+				return objectList.Contains(value);
 			}
 			return false;
 		}
@@ -233,22 +232,31 @@ namespace Narramancer {
 			return false;
 		}
 
-		public static List<object> ToListOfObjects(this object @this) {
-			if (@this == null) {
+		public static List<object> ToListOfObjects(object listObject) {
+			if (listObject == null) {
 				return null;
 			}
-			var resultList = @this as List<object>;
+			var resultList = listObject as List<object>;
 			if (resultList != null) {
 				return resultList;
 			}
 
-			var type = @this.GetType();
+			var type = listObject.GetType();
 
 			var toArrayMethod = type.GetMethod("ToArray");
 
-			var objectArray = toArrayMethod.Invoke(@this, null) as object[];
+			var arrayAsObject = toArrayMethod.Invoke(listObject, null);
+			var objectArray = arrayAsObject as object[];
+			if (objectArray != null) {
+				return objectArray.ToList();
+			}
 
-			return objectArray.ToList();
+			var array = arrayAsObject as Array;
+			resultList = new List<object>();
+			for (var ii = 0; ii < array.Length; ii++) {
+				resultList.Add(array.GetValue(ii));
+			}
+			return resultList;
 		}
 
 		private static Regex typeNameRegex = new Regex(@"([a-zA-Z_\-0-9]*)\.([a-zA-Z_\-0-9]*), ([\.a-zA-Z_-]*), Version[=0-9\.]*");
@@ -272,7 +280,7 @@ namespace Narramancer {
 
 			var allTypes = GetAllTypes().ToList();
 
-			result = GetAllTypes().FirstOrDefault( type => (type.Namespace.IsNullOrEmpty() || type.Namespace.Equals(matchedNamespace)) && type.Name.Equals(className) );
+			result = GetAllTypes().FirstOrDefault(type => (type.Namespace.IsNullOrEmpty() || type.Namespace.Equals(matchedNamespace)) && type.Name.Equals(className));
 			if (result != null) {
 				return result;
 			}

@@ -181,7 +181,7 @@ namespace Narramancer {
 					return Enumerable.Empty<ReturnType>().ToList();
 				}
 				var value = outputNode.GetValue(context, resultOutput);
-				var objectList = NodeExtensions.ConvertObjectToList(value);
+				var objectList = AssemblyUtilities.ToListOfObjects(value);
 				var returnList = objectList.Cast<ReturnType>().ToList();
 				return returnList;
 			}
@@ -216,7 +216,7 @@ namespace Narramancer {
 					return Enumerable.Empty<ReturnType>().ToList();
 				}
 				var value = outputNode.GetValue(context, resultOutput);
-				var objectList = NodeExtensions.ConvertObjectToList(value);
+				var objectList = AssemblyUtilities.ToListOfObjects(value);
 				var returnList = objectList.Cast<ReturnType>().ToList();
 				return returnList;
 			}
