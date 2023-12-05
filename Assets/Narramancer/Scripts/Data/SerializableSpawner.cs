@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Narramancer {
 
@@ -43,6 +46,23 @@ namespace Narramancer {
 		private bool randomizeRotation = false;
 
 		private List<GameObject> spawns = new List<GameObject>();
+
+
+#if UNITY_EDITOR
+		[MenuItem("GameObject/Narramancer/Serializable Spawner", false, 10)]
+		static void CreateGameObject(MenuCommand menuCommand) {
+
+			GameObject gameObject = new GameObject("Spawner");
+			gameObject.AddComponent<SerializableSpawner>();
+
+			GameObjectUtility.SetParentAndAlign(gameObject, menuCommand.context as GameObject);
+
+			Undo.RegisterCreatedObjectUndo(gameObject, "Create " + gameObject.name);
+			Selection.activeObject = gameObject;
+		}
+#endif
+
+
 
 		private void Start() {
 			prefab.SetActive(false);
