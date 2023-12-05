@@ -249,59 +249,8 @@ namespace Narramancer {
 					case 2:
 
 						var runAtStartProperty = serializedObject.FindProperty(NarramancerSingleton.RunAtStartFieldName);
-
-						if (verbList == null) {
-							verbList = new ReorderableList(serializedObject, runAtStartProperty, true, true, true, true);
-							verbList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
-								var element = verbList.serializedProperty.GetArrayElementAtIndex(index);
-								EditorGUI.ObjectField(rect, element, GUIContent.none);
-							};
-							verbList.drawHeaderCallback = (rect) => {
-								var name = runAtStartProperty.propertyPath.Nicify();
-								EditorGUI.LabelField(rect, name);
-							};
-							verbList.onRemoveCallback = EditorDrawerUtilities.OnReorderableListRemoveCallbackRemoveChildAsset;
-							verbList.onAddCallback = list => {
-								var menu = new GenericMenu();
-
-								menu.AddItem(new GUIContent("Create new child"), false, () => {
-									serializedObject.Update();
-									var newChildGraph = PseudoEditorUtilities.CreateAndAddChild(typeof(ActionVerb), serializedObject.targetObject, "Run on Start") as VerbGraph;
-									runAtStartProperty = serializedObject.FindProperty(NarramancerSingleton.RunAtStartFieldName);
-									runAtStartProperty.InsertArrayElementAtIndex(runAtStartProperty.arraySize);
-									var newElement = runAtStartProperty.GetArrayElementAtIndex(runAtStartProperty.arraySize - 1);
-									newElement.objectReferenceValue = newChildGraph;
-									serializedObject.ApplyModifiedProperties();
-								});
-
-								menu.AddItem(new GUIContent("Add Existing"), false, () => {
-									openObjectPicker = true;
-									EditorGUIUtility.ShowObjectPicker<ActionVerb>(null, false, "", RUN_AT_START_VERB_PICKER);
-								});
-
-								menu.ShowAsContext();
-							};
-
-						}
-
-						verbList.DoLayoutList();
-
-
-						if (openObjectPicker && Event.current.commandName == "ObjectSelectorSelectionDone") {
-							openObjectPicker = false;
-							var selectedObject = EditorGUIUtility.GetObjectPickerObject();
-
-							switch (EditorGUIUtility.GetObjectPickerControlID()) {
-								case RUN_AT_START_VERB_PICKER:
-									runAtStartProperty.arraySize++;
-									var newVerb = runAtStartProperty.GetArrayElementAtIndex(runAtStartProperty.arraySize - 1);
-									newVerb.objectReferenceValue = selectedObject;
-									break;
-							}
-
-						}
-
-
+						EditorGUILayout.PropertyField(runAtStartProperty);
+						
 						break;
 #endregion
 

@@ -364,5 +364,17 @@ namespace Narramancer {
 			EditorGUIUtility.SetIconSize(Vector2.zero);
 
 		}
+
+
+		public static SerializedProperty CreateNewElement(this SerializedProperty listProperty) {
+			listProperty.InsertArrayElementAtIndex(listProperty.arraySize);
+			return listProperty.GetArrayElementAtIndex(listProperty.arraySize - 1);
+		}
+
+		public static SerializedProperty AddObject(this SerializedProperty listProperty, UnityEngine.Object @object ) {
+			var newElement = listProperty.CreateNewElement();
+			newElement.objectReferenceValue = @object;
+			return newElement;
+		}
 	}
 }

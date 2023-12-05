@@ -21,9 +21,8 @@ namespace Narramancer {
 		public List<AdjectiveScriptableObject> Adjectives { get => adjectives; set => adjectives = value; }
 
 		[SerializeField]
-		List<ActionVerb> runAtStart = new List<ActionVerb>();
+		ActionVerbList runAtStart = new ActionVerbList();
 		public static string RunAtStartFieldName => nameof(runAtStart);
-		public List<ActionVerb> RunAtStart { get => runAtStart; set => runAtStart = value; }
 
 		[SerializeField]
 		List<VerbGraph> recentlyOpenedGraphs = new List<VerbGraph>();
@@ -58,7 +57,7 @@ namespace Narramancer {
 
 				globalVariables.ApplyAssignmentsToBlackboard(storyInstance.Blackboard);
 
-				foreach (var verb in runAtStart) {
+				foreach (var verb in runAtStart.list) {
 					if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
 						var runner = CreateNodeRunner(verb.name);
 						runner.Start(runnableNode);
