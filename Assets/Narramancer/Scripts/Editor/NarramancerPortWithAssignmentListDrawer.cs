@@ -67,12 +67,10 @@ namespace Narramancer {
 
 			list.DoList(position);
 
-			EditorGUI.EndProperty();
 			if (Event.current.type == EventType.Layout) {
 				EditorGUILayout.Space(position.height);
 			}
 
-			property.serializedObject.ApplyModifiedProperties();
 
 			var targetObject = property.GetTargetObject<NarramancerPortWithAssignmentList>();
 
@@ -93,6 +91,8 @@ namespace Narramancer {
 					var selectedObjects = DragAndDrop.objectReferences;
 
 					void CreateNewVariable(Type type, string name, UnityEngine.Object @object) {
+						property.serializedObject.Update();
+
 						listProperty.InsertArrayElementAtIndex(listProperty.arraySize);
 						var newElement = listProperty.GetArrayElementAtIndex(listProperty.arraySize - 1);
 						var typeProperty = newElement.FindPropertyRelative(NarramancerPort.TypeFieldName);
@@ -105,6 +105,7 @@ namespace Narramancer {
 						var objectValue = assignmentProperty.FindPropertyRelative(nameof(VariableAssignment.objectValue));
 
 						objectValue.objectReferenceValue = @object;
+						property.serializedObject.ApplyModifiedProperties();
 					}
 
 					foreach (var selectedObject in selectedObjects.Where(x =>typeof(Component).IsAssignableFrom(x.GetType()))) {
@@ -113,27 +114,28 @@ namespace Narramancer {
 						CreateNewVariable(type, $"{selectedObject.name}.{type.Name}", selectedObject);
 					}
 
-					property.serializedObject.ApplyModifiedProperties();
-
+					
 
 					foreach (var selectedObject in selectedObjects.Where(x => typeof(GameObject).IsAssignableFrom(x.GetType())).Cast<GameObject>()) {
 
+						// TODO: figure out how to get this context menu to work
+						// Adding an element through menu only exists for a frame, can't figure out
 						//var menu = new GenericMenu();
 
 						//menu.AddItem(new GUIContent("GameObject"), false, () => {
-						//	property.serializedObject.Update();
+
 							CreateNewVariable(typeof(GameObject), selectedObject.name, selectedObject);
-							property.serializedObject.ApplyModifiedProperties();
+
 						//});
 
-						//foreach ( var component in selectedObject.GetComponents<Component>()) {
-						//	var type = component.GetType();
-						//	menu.AddItem(new GUIContent(type.Name.Nicify()), false, () => {
-						//		property.serializedObject.Update();
-						//		CreateNewVariable(type, $"{selectedObject.name}.{type.Name}", component);
-						//		property.serializedObject.ApplyModifiedProperties();
-						//	});
-						//}
+						foreach (var component in selectedObject.GetComponents<Component>()) {
+							var type = component.GetType();
+							//menu.AddItem(new GUIContent(type.Name.Nicify()), false, () => {
+
+								CreateNewVariable(type, $"{selectedObject.name}.{type.Name}", component);
+
+							//});
+						}
 
 						//menu.ShowAsContext();
 					}
@@ -143,6 +145,11 @@ namespace Narramancer {
 
 			}
 			#endregion
+
+			property.serializedObject.ApplyModifiedProperties();
+
+			EditorGUI.EndProperty();
+
 		}
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {

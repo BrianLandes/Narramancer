@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using XNode;
 
 namespace Narramancer {
@@ -20,19 +21,26 @@ namespace Narramancer {
 		public static string ScopeFieldName => nameof(scope);
 
 		[SerializeField]
+		private string scene = "";
+		public static string SceneFieldName => nameof(scene);
+		public string Scene => scene;
+
+		[SerializeField]
 		private string variableId = "";
 		public static string VariableIdFieldName => nameof(variableId);
+
+		[SerializeField]
+		private string variableName = "";
+		public static string VariableNameFieldName => nameof(variableName);
+
+		[SerializeField]
+		private string variableKey = "";
+		public static string VariableKeyFieldName => nameof(variableKey);
 
 		public static string PORT_NAME = "value";
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
-
-			var outputPort = GetOutputPort();
-
-			if (outputPort == null) {
-				return;
-			}
 
 			var outputNodePort = GetInputPort(PORT_NAME);
 			if (outputNodePort == null) {
@@ -43,14 +51,30 @@ namespace Narramancer {
 			switch (scope) {
 				case ScopeType.Scene:
 				case ScopeType.Global:
-					NarramancerSingleton.Instance.StoryInstance.Blackboard.Set(outputPort.VariableKey, inputValue);
+					NarramancerSingleton.Instance.StoryInstance.Blackboard.Set(variableKey, inputValue);
 					break;
 				case ScopeType.Verb:
-					runner.Blackboard.Set(outputPort.VariableKey, inputValue);
+					runner.Blackboard.Set(variableKey, inputValue);
 					break;
 			}
 			
 
+		}
+
+		public string GetVariableLabel() {
+			switch (scope) {
+				default:
+				case ScopeType.Scene:
+					return $"{scene}.{variableName}";
+				case ScopeType.Global:
+					return $"Global.{variableName}";
+				case ScopeType.Verb:
+					return $"{graph.name}.{variableName}";
+			}
+		}
+
+		public bool IsSceneScopeAndCurrentSceneIsNotLoaded() {
+			return scope == ScopeType.Scene && !SceneManager.GetSceneByName(scene).isLoaded;
 		}
 
 		public List<NarramancerPort> GetScopeVariables() {
@@ -59,7 +83,7 @@ namespace Narramancer {
 				case ScopeType.Scene:
 					var narramancerScene = GameObject.FindAnyObjectByType<NarramancerScene>();
 					if (narramancerScene == null) {
-						return null;
+						return Array.Empty<NarramancerPort>().ToList();
 					}
 					return narramancerScene.Variables.Cast<NarramancerPort>().ToList();
 				case ScopeType.Global:
@@ -74,7 +98,7 @@ namespace Narramancer {
 			}
 		}
 
-		private NarramancerPort GetOutputPort() {
+		private NarramancerPort GetVariable() {
 			if (variableId.IsNullOrEmpty()) {
 				return null;
 			}
@@ -85,15 +109,17 @@ namespace Narramancer {
 			return variables.FirstOrDefault(x => x.Id.Equals(variableId));
 		}
 
-		public void SetOutput(ScopeType scope, NarramancerPort outputPort) {
+		public void SetVariable(ScopeType scope, NarramancerPort outputPort) {
 			this.scope = scope;
 			variableId = outputPort.Id;
+			variableName = outputPort.Name;
+			variableKey = outputPort.VariableKey;
 			ApplyChanges();
 		}
 
 		public void ApplyChanges() {
 
-			var output = GetOutputPort();
+			var output = GetVariable();
 
 			if (output == null) {
 				ClearDynamicPorts();
@@ -109,6 +135,12 @@ namespace Narramancer {
 
 			this.ClearDynamicPortsExcept(nodePorts);
 
+			if (scope==ScopeType.Scene) {
+				var narramancerScene = GameObject.FindAnyObjectByType<NarramancerScene>();
+				if (narramancerScene != null) {
+					scene = narramancerScene.gameObject.scene.name;
+				}
+			}
 		}
 
 	}

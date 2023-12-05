@@ -18,93 +18,144 @@ namespace Narramancer {
 			serializedObject.Update();
 
 			var variableId = serializedObject.FindProperty(SetVariableNode.VariableIdFieldName);
+			var nameProperty = serializedObject.FindProperty(SetVariableNode.VariableNameFieldName);
+			var keyProperty = serializedObject.FindProperty(SetVariableNode.VariableKeyFieldName);
 
 			var scopeTypeProperty = serializedObject.FindProperty(SetVariableNode.ScopeFieldName);
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.PropertyField(scopeTypeProperty);
 			if (EditorGUI.EndChangeCheck()) {
 				variableId.stringValue = string.Empty;
+				nameProperty.stringValue = string.Empty;
+				keyProperty.stringValue = string.Empty;
 				serializedObject.ApplyModifiedProperties();
 				serializedObject.Update();
 			}
 
 			var variables = setVariableNode.GetScopeVariables();
 
-			if (variableId.stringValue.IsNullOrEmpty() && variables.Any()) {
-				variableId.stringValue = variables.First().Id;
-				serializedObject.ApplyModifiedProperties();
-
-				setVariableNode.ApplyChanges();
+			if ( setVariableNode.IsSceneScopeAndCurrentSceneIsNotLoaded() ) {
+				var text = $"Associated with a variable in a different scene: {setVariableNode.Scene}";
+				EditorGUILayout.HelpBox(text, MessageType.Info);
 			}
 
-			var buttonText = string.Empty;
+			if (variables == null) {
+				if (variableId.stringValue.IsNotNullOrEmpty()) {
 
-			var correspondingOutput = variables.FirstOrDefault(output => output.Id.Equals(variableId.stringValue));
-			if (correspondingOutput != null) {
+					var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
+					var originalColor = GUI.color;
+					if (nodePort != null) {
+						GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
+					}
 
-				buttonText = correspondingOutput.ToString();
+					var text = setVariableNode.GetVariableLabel();
+
+					EditorGUILayout.LabelField(new GUIContent(text, text));
+
+					GUI.color = originalColor;
+
+					if (nodePort != null) {
+
+						bool IsTypeThatCanShowBackend(Type type) {
+							return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
+								|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
+						}
+
+						if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
+							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+						}
+						else {
+							GUILayout.Space(-EditorGUIUtility.singleLineHeight);
+							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+						}
+
+					}
+				}
 			}
 			else {
-				buttonText = "(None)";
-			}
+				if (variableId.stringValue.IsNullOrEmpty() && variables.Any()) {
+					var firstVariable = variables.First();
+					variableId.stringValue = firstVariable.Id;
+					nameProperty.stringValue = firstVariable.Name;
+					keyProperty.stringValue = firstVariable.VariableKey;
+					serializedObject.ApplyModifiedProperties();
 
-			var originalColor = GUI.color;
-
-			var nodePort = correspondingOutput != null ? setVariableNode.GetInputPort(SetVariableNode.PORT_NAME) : null;
-
-			if (nodePort != null) {
-				GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
-			}
-
-			if (EditorGUILayout.DropdownButton(new GUIContent(buttonText, buttonText), FocusType.Passive)) {
-				GenericMenu context = new GenericMenu();
-
-				foreach (var variable in variables) {
-					context.AddItem(new GUIContent(variable.ToString()), variable.Id == variableId.stringValue, () => {
-						serializedObject.Update();
-						correspondingOutput = variable;
-						variableId.stringValue = correspondingOutput.Id;
-						serializedObject.ApplyModifiedProperties();
-
-						setVariableNode.ApplyChanges();
-					});
+					setVariableNode.ApplyChanges();
 				}
 
-				if (context.GetItemCount() == 0) {
-					context.AddDisabledItem(new GUIContent("(No valid values)"));
-				}
+				var buttonText = string.Empty;
 
-				Matrix4x4 originalMatrix = GUI.matrix;
-				GUI.matrix = Matrix4x4.identity;
-				context.ShowAsContext();
-				GUI.matrix = originalMatrix;
+				if (nameProperty.stringValue.IsNotNullOrEmpty()) {
 
-			}
-
-			GUI.color = originalColor;
-
-			if (nodePort != null) {
-
-				bool IsTypeThatCanShowBackend(Type type) {
-					return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
-						|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
-				}
-
-				if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
-					NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+					buttonText = nameProperty.stringValue;
 				}
 				else {
-					GUILayout.Space(-EditorGUIUtility.singleLineHeight);
-					NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+					buttonText = "(None)";
 				}
 
+				var originalColor = GUI.color;
+
+				var correspondingOutput = variables.FirstOrDefault(output => output.Id.Equals(variableId.stringValue));
+				var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
+
+				if (nodePort != null) {
+					GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
+				}
+
+				if (EditorGUILayout.DropdownButton(new GUIContent(buttonText, buttonText), FocusType.Passive)) {
+					GenericMenu context = new GenericMenu();
+
+					foreach (var variable in variables) {
+						context.AddItem(new GUIContent(variable.ToString()), variable.Id == variableId.stringValue, () => {
+							serializedObject.Update();
+							correspondingOutput = variable;
+							variableId.stringValue = correspondingOutput.Id;
+							nameProperty.stringValue = correspondingOutput.Name;
+							keyProperty.stringValue = correspondingOutput.VariableKey;
+							serializedObject.ApplyModifiedProperties();
+
+							setVariableNode.ApplyChanges();
+						});
+					}
+
+					if (context.GetItemCount() == 0) {
+						context.AddDisabledItem(new GUIContent("(No valid values)"));
+					}
+
+					Matrix4x4 originalMatrix = GUI.matrix;
+					GUI.matrix = Matrix4x4.identity;
+					context.ShowAsContext();
+					GUI.matrix = originalMatrix;
+
+				}
+
+				GUI.color = originalColor;
+
+				if (nodePort != null) {
+
+					bool IsTypeThatCanShowBackend(Type type) {
+						return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
+							|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
+					}
+
+					if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
+						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+					}
+					else {
+						GUILayout.Space(-EditorGUIUtility.singleLineHeight);
+						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+					}
+
+				}
+
+				serializedObject.ApplyModifiedProperties();
+
+				if (correspondingOutput != null && (nodePort == null || nodePort.ValueType != correspondingOutput.Type)) {
+					setVariableNode.ApplyChanges();
+				}
 			}
 
-			serializedObject.ApplyModifiedProperties();
-
-			if (correspondingOutput != null && (nodePort == null || nodePort.ValueType != correspondingOutput.Type)) {
-				setVariableNode.ApplyChanges();
-			}
+			
 		}
 	}
 }

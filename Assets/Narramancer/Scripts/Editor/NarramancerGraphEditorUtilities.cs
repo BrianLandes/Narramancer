@@ -179,7 +179,7 @@ namespace Narramancer {
 
 									if (actionVerb) {
 										var setVerbVariableNode = actionVerb.CreateNode<SetVariableNode>((lastRunnableNode ?? newNode).position + new Vector2(300, 0));
-										setVerbVariableNode.SetOutput(SetVariableNode.ScopeType.Verb, graphOutput);
+										setVerbVariableNode.SetVariable(SetVariableNode.ScopeType.Verb, graphOutput);
 										setVerbVariableNode.UpdatePorts();
 										newNode.UpdatePorts();
 										var getGraphVariableOutputPort = setVerbVariableNode.GetInputPort(outputPort.fieldName);
