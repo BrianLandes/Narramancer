@@ -10,7 +10,6 @@ namespace Narramancer {
 	[CustomEditor(typeof(NarramancerSingleton))]
 	public class NarramancerSingletonEditor : Editor {
 
-		ReorderableList verbList;
 		ReorderableList variableList;
 
 		private bool isInEditorMode = true; // vs runtime mode
@@ -20,10 +19,6 @@ namespace Narramancer {
 
 		string characterSearch;
 		string adjectiveSearch;
-		string verbSearch;
-
-		bool openObjectPicker = false;
-		const int RUN_AT_START_VERB_PICKER = 1 << 1;
 
 		UnityEngine.Object lastHoveredElement;
 		UnityEngine.Object draggedElement;
