@@ -143,22 +143,22 @@ namespace Narramancer {
 
 								}
 								else {
-									// create a graph input port
+									// create a verb input port
 									var inputName = inputPort.fieldName;
-									if (outputPort.node is GetVerbVariableNode getGraphVariableNode1) {
-										var graphPort = getGraphVariableNode1.GetInputGraphPort();
-										if (graphPort != null) {
-											inputName = graphPort.Name;
+									if (outputPort.node is GetVariableNode variableNode) {
+										var variable = variableNode.GetVariable();
+										if (variable != null) {
+											inputName = variable.Name;
 										}
 									}
 									inputPortNameTable[inputPort] = inputName;
 									var graphInput = newGraph.GetOrAddInput(inputPort.ValueType, inputName);
-									var getVerbVariableNode = newGraph.CreateNode<GetVerbVariableNode>(newNode.position + new Vector2(-300, 0));
-									getVerbVariableNode.SetInput(graphInput);
-									getVerbVariableNode.UpdatePorts();
+									var getVariableNode = newGraph.CreateNode<GetVariableNode>(newNode.position + new Vector2(-300, 0));
+									getVariableNode.SetVariable(SerializableVariableReference.ScopeType.Verb, graphInput);
+									getVariableNode.UpdatePorts();
 									newNode.UpdatePorts();
 									var newNodeInputPort = newNode.GetInputPort(inputPort.fieldName);
-									var getGraphVariableOutputPort = getVerbVariableNode.GetOutputPort(GetVerbVariableNode.OUTPUT_PORT_NAME);
+									var getGraphVariableOutputPort = getVariableNode.GetOutputPort(SerializableVariableReference.PORT_NAME);
 									if (!newNodeInputPort.IsConnectedTo(getGraphVariableOutputPort)) {
 										newNodeInputPort.Connect(getGraphVariableOutputPort);
 									}
@@ -179,7 +179,7 @@ namespace Narramancer {
 
 									if (actionVerb) {
 										var setVerbVariableNode = actionVerb.CreateNode<SetVariableNode>((lastRunnableNode ?? newNode).position + new Vector2(300, 0));
-										setVerbVariableNode.SetVariable(SetVariableNode.ScopeType.Verb, graphOutput);
+										setVerbVariableNode.SetVariable(SerializableVariableReference.ScopeType.Verb, graphOutput);
 										setVerbVariableNode.UpdatePorts();
 										newNode.UpdatePorts();
 										var getGraphVariableOutputPort = setVerbVariableNode.GetInputPort(outputPort.fieldName);
