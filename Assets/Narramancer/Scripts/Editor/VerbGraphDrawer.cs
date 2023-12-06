@@ -102,8 +102,8 @@ namespace Narramancer {
 							var name = requireInputAttribute.DefaultName.IsNotNullOrEmpty() ? requireInputAttribute.DefaultName : requireInputAttribute.RequiredType.Name;
 							var newInput = newVerbGraph.AddInput(requireInputAttribute.RequiredType, name);
 
-							var variableNode = newVerbGraph.AddNode<GetVerbVariableNode>(variableNodePosition) as GetVerbVariableNode;
-							variableNode.SetInput(newInput);
+							var variableNode = newVerbGraph.AddNode<GetVariableNode>(variableNodePosition) as GetVariableNode;
+							variableNode.SetVariable(SerializableVariableReference.ScopeType.Verb, newInput);
 
 							variableNodePosition.y += 100;
 						}
@@ -112,7 +112,7 @@ namespace Narramancer {
 							var name = requireOutputAttribute.DefaultName.IsNotNullOrEmpty() ? requireOutputAttribute.DefaultName : requireOutputAttribute.RequiredType.Name;
 							newVerbGraph.AddOutput(requireOutputAttribute.RequiredType, name);
 
-							// TODO: add SetGraphVariableNodes for RunnableGraph
+							// TODO: add SetVariableNodes for ActionVerb
 						}
 						else
 						if (attribute is RequireInputFromSerializableTypeAttribute requireInputFromSerializableTypeAttribute) {
@@ -123,8 +123,8 @@ namespace Narramancer {
 									requiredType.Name;
 								var newInput = newVerbGraph.AddInput(requiredType, name);
 
-								var variableNode = newVerbGraph.AddNode<GetVerbVariableNode>(variableNodePosition) as GetVerbVariableNode;
-								variableNode.SetInput(newInput);
+								var variableNode = newVerbGraph.AddNode<GetVariableNode>(variableNodePosition) as GetVariableNode;
+								variableNode.SetVariable(SerializableVariableReference.ScopeType.Verb, newInput);
 
 								variableNodePosition.y += 100;
 							}

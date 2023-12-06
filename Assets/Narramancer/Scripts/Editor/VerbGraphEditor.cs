@@ -225,7 +225,7 @@ namespace Narramancer {
 
 				var selectedNodesNoRoot = selectedNodes
 					.Where(@object => !(@object is RootNode))
-					.Where(@object => !(@object is GetVerbVariableNode))
+					.Where(@object => !(@object is GetVariableNode getVariableNode && getVariableNode.Scope == SerializableVariableReference.ScopeType.Verb))
 					.ToArray();
 				if (selectedNodesNoRoot.Count() >= 1) {
 					menu.AddItem(new GUIContent("Collapse"), false, () => {
