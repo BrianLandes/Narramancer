@@ -22,6 +22,8 @@ namespace Narramancer {
 		private ActionVerbList runOnStartVerbs = new ActionVerbList();
 		public static string RunOnStartVerbs => nameof(runOnStartVerbs);
 
+		private List<NodeRunner> nodeRunners = new List<NodeRunner>();
+		public List<NodeRunner> NodeRunners => nodeRunners;
 
 #if UNITY_EDITOR
 		[MenuItem("GameObject/Narramancer/Narramancer Scene", false, 10)]
@@ -40,6 +42,16 @@ namespace Narramancer {
 		private void Start() {
 
 			variables.list.ApplyAssignmentsToBlackboard(NarramancerSingleton.Instance.StoryInstance.Blackboard);
+
+			foreach (var verb in runOnStartVerbs.list) {
+				if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
+					var runner = NarramancerSingleton.Instance.CreateNodeRunner(verb.name);
+					runner.Start(runnableNode);
+					runner.name = verb.name;
+					nodeRunners.Add(runner);
+				}
+			}
 		}
+
 	}
 }
