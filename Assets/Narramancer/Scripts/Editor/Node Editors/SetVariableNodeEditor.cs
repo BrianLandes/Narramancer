@@ -1,161 +1,162 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
-using UnityEngine;
-using XNodeEditor;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using UnityEditor;
+//using UnityEngine;
+//using XNodeEditor;
 
-namespace Narramancer {
-	[CustomNodeEditor(typeof(SetVariableNode))]
-	public class SetVariableNodeEditor : ChainedRunnableNodeEditor {
+//namespace Narramancer {
+//	[CustomNodeEditor(typeof(SetVariableNode))]
+//	public class SetVariableNodeEditor : ChainedRunnableNodeEditor {
 
-		public override void OnBodyGUI() {
+//		public override void OnBodyGUI() {
 
-			OnTopGUI();
+//			OnTopGUI();
 
-			var setVariableNode = target as SetVariableNode;
+//			var setVariableNode = target as SetVariableNode;
 
-			serializedObject.Update();
+//			serializedObject.Update();
 
-			var variableId = serializedObject.FindProperty(SetVariableNode.VariableIdFieldName);
-			var nameProperty = serializedObject.FindProperty(SetVariableNode.VariableNameFieldName);
-			var keyProperty = serializedObject.FindProperty(SetVariableNode.VariableKeyFieldName);
 
-			var scopeTypeProperty = serializedObject.FindProperty(SetVariableNode.ScopeFieldName);
-			EditorGUI.BeginChangeCheck();
-			EditorGUILayout.PropertyField(scopeTypeProperty);
-			if (EditorGUI.EndChangeCheck()) {
-				variableId.stringValue = string.Empty;
-				nameProperty.stringValue = string.Empty;
-				keyProperty.stringValue = string.Empty;
-				serializedObject.ApplyModifiedProperties();
-				serializedObject.Update();
-			}
+//			var variableId = serializedObject.FindProperty(SetVariableNode.VariableIdFieldName);
+//			var nameProperty = serializedObject.FindProperty(SetVariableNode.VariableNameFieldName);
+//			var keyProperty = serializedObject.FindProperty(SetVariableNode.VariableKeyFieldName);
 
-			var variables = setVariableNode.GetScopeVariables();
+//			var scopeTypeProperty = serializedObject.FindProperty(SetVariableNode.ScopeFieldName);
+//			EditorGUI.BeginChangeCheck();
+//			EditorGUILayout.PropertyField(scopeTypeProperty);
+//			if (EditorGUI.EndChangeCheck()) {
+//				variableId.stringValue = string.Empty;
+//				nameProperty.stringValue = string.Empty;
+//				keyProperty.stringValue = string.Empty;
+//				serializedObject.ApplyModifiedProperties();
+//				serializedObject.Update();
+//			}
 
-			if ( setVariableNode.IsSceneScopeAndCurrentSceneIsNotLoaded() ) {
-				var text = $"Associated with a variable in a different scene: {setVariableNode.Scene}";
-				EditorGUILayout.HelpBox(text, MessageType.Info);
-			}
+//			var variables = setVariableNode.GetScopeVariables();
 
-			if (variables == null) {
-				if (variableId.stringValue.IsNotNullOrEmpty()) {
+//			if ( setVariableNode.IsSceneScopeAndCurrentSceneIsNotLoaded() ) {
+//				var text = $"Associated with a variable in a different scene: {setVariableNode.Scene}";
+//				EditorGUILayout.HelpBox(text, MessageType.Info);
+//			}
 
-					var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
-					var originalColor = GUI.color;
-					if (nodePort != null) {
-						GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
-					}
+//			if (variables == null) {
+//				if (variableId.stringValue.IsNotNullOrEmpty()) {
 
-					var text = setVariableNode.GetVariableLabel();
+//					var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
+//					var originalColor = GUI.color;
+//					if (nodePort != null) {
+//						GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
+//					}
 
-					EditorGUILayout.LabelField(new GUIContent(text, text));
+//					var text = setVariableNode.GetVariableLabel();
 
-					GUI.color = originalColor;
+//					EditorGUILayout.LabelField(new GUIContent(text, text));
 
-					if (nodePort != null) {
+//					GUI.color = originalColor;
 
-						bool IsTypeThatCanShowBackend(Type type) {
-							return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
-								|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
-						}
+//					if (nodePort != null) {
 
-						if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
-							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
-						}
-						else {
-							GUILayout.Space(-EditorGUIUtility.singleLineHeight);
-							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
-						}
+//						bool IsTypeThatCanShowBackend(Type type) {
+//							return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
+//								|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
+//						}
 
-					}
-				}
-			}
-			else {
-				if (variableId.stringValue.IsNullOrEmpty() && variables.Any()) {
-					var firstVariable = variables.First();
-					variableId.stringValue = firstVariable.Id;
-					nameProperty.stringValue = firstVariable.Name;
-					keyProperty.stringValue = firstVariable.VariableKey;
-					serializedObject.ApplyModifiedProperties();
+//						if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
+//							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+//						}
+//						else {
+//							GUILayout.Space(-EditorGUIUtility.singleLineHeight);
+//							NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+//						}
 
-					setVariableNode.ApplyChanges();
-				}
+//					}
+//				}
+//			}
+//			else {
+//				if (variableId.stringValue.IsNullOrEmpty() && variables.Any()) {
+//					var firstVariable = variables.First();
+//					variableId.stringValue = firstVariable.Id;
+//					nameProperty.stringValue = firstVariable.Name;
+//					keyProperty.stringValue = firstVariable.VariableKey;
+//					serializedObject.ApplyModifiedProperties();
 
-				var buttonText = string.Empty;
+//					setVariableNode.ApplyChanges();
+//				}
 
-				if (nameProperty.stringValue.IsNotNullOrEmpty()) {
+//				var buttonText = string.Empty;
 
-					buttonText = nameProperty.stringValue;
-				}
-				else {
-					buttonText = "(None)";
-				}
+//				if (nameProperty.stringValue.IsNotNullOrEmpty()) {
 
-				var originalColor = GUI.color;
+//					buttonText = nameProperty.stringValue;
+//				}
+//				else {
+//					buttonText = "(None)";
+//				}
 
-				var correspondingOutput = variables.FirstOrDefault(output => output.Id.Equals(variableId.stringValue));
-				var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
+//				var originalColor = GUI.color;
 
-				if (nodePort != null) {
-					GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
-				}
+//				var correspondingOutput = variables.FirstOrDefault(output => output.Id.Equals(variableId.stringValue));
+//				var nodePort = setVariableNode.GetInputPort(SetVariableNode.PORT_NAME);
 
-				if (EditorGUILayout.DropdownButton(new GUIContent(buttonText, buttonText), FocusType.Passive)) {
-					GenericMenu context = new GenericMenu();
+//				if (nodePort != null) {
+//					GUI.color = NodeEditorPreferences.GetTypeColor(nodePort.ValueType);
+//				}
 
-					foreach (var variable in variables) {
-						context.AddItem(new GUIContent(variable.ToString()), variable.Id == variableId.stringValue, () => {
-							serializedObject.Update();
-							correspondingOutput = variable;
-							variableId.stringValue = correspondingOutput.Id;
-							nameProperty.stringValue = correspondingOutput.Name;
-							keyProperty.stringValue = correspondingOutput.VariableKey;
-							serializedObject.ApplyModifiedProperties();
+//				if (EditorGUILayout.DropdownButton(new GUIContent(buttonText, buttonText), FocusType.Passive)) {
+//					GenericMenu context = new GenericMenu();
 
-							setVariableNode.ApplyChanges();
-						});
-					}
+//					foreach (var variable in variables) {
+//						context.AddItem(new GUIContent(variable.ToString()), variable.Id == variableId.stringValue, () => {
+//							serializedObject.Update();
+//							correspondingOutput = variable;
+//							variableId.stringValue = correspondingOutput.Id;
+//							nameProperty.stringValue = correspondingOutput.Name;
+//							keyProperty.stringValue = correspondingOutput.VariableKey;
+//							serializedObject.ApplyModifiedProperties();
 
-					if (context.GetItemCount() == 0) {
-						context.AddDisabledItem(new GUIContent("(No valid values)"));
-					}
+//							setVariableNode.ApplyChanges();
+//						});
+//					}
 
-					Matrix4x4 originalMatrix = GUI.matrix;
-					GUI.matrix = Matrix4x4.identity;
-					context.ShowAsContext();
-					GUI.matrix = originalMatrix;
+//					if (context.GetItemCount() == 0) {
+//						context.AddDisabledItem(new GUIContent("(No valid values)"));
+//					}
 
-				}
+//					Matrix4x4 originalMatrix = GUI.matrix;
+//					GUI.matrix = Matrix4x4.identity;
+//					context.ShowAsContext();
+//					GUI.matrix = originalMatrix;
 
-				GUI.color = originalColor;
+//				}
 
-				if (nodePort != null) {
+//				GUI.color = originalColor;
 
-					bool IsTypeThatCanShowBackend(Type type) {
-						return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
-							|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
-					}
+//				if (nodePort != null) {
 
-					if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
-						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
-					}
-					else {
-						GUILayout.Space(-EditorGUIUtility.singleLineHeight);
-						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
-					}
+//					bool IsTypeThatCanShowBackend(Type type) {
+//						return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
+//							|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
+//					}
 
-				}
+//					if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
+//						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+//					}
+//					else {
+//						GUILayout.Space(-EditorGUIUtility.singleLineHeight);
+//						NodeEditorGUILayout.PortField(GUIContent.none, nodePort, serializedObject);
+//					}
 
-				serializedObject.ApplyModifiedProperties();
+//				}
 
-				if (correspondingOutput != null && (nodePort == null || nodePort.ValueType != correspondingOutput.Type)) {
-					setVariableNode.ApplyChanges();
-				}
-			}
+//				serializedObject.ApplyModifiedProperties();
+
+//				if (correspondingOutput != null && (nodePort == null || nodePort.ValueType != correspondingOutput.Type)) {
+//					setVariableNode.ApplyChanges();
+//				}
+//			}
 
 			
-		}
-	}
-}
+//		}
+//	}
+//}
