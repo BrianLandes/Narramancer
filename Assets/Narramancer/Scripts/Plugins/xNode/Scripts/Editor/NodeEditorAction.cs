@@ -364,17 +364,16 @@ namespace XNodeEditor {
             }
         }
 
-        public GameObject selectedObject;
-        public IBlackboardHolder selectedBlackboardHolder;
+        public NodeRunnerUnityObjectPairing selectedNodeRunnerPairing;
 
 		public void ObjectSelection() {
-            var currentObject = Selection.activeObject as GameObject ;
-            var currentSelection = currentObject?.GetComponentInChildren<IBlackboardHolder>();
-			if (currentSelection != null) {
-                selectedObject = currentObject;
-                selectedBlackboardHolder = currentSelection;
-                return;
-            }
+   //         var currentObject = Selection.activeObject as GameObject ;
+   //         var currentSelection = currentObject?.GetComponentInChildren<IBlackboardHolder>();
+			//if (currentSelection != null) {
+   //             selectedObject = currentObject;
+   //             selectedNodeRunner = currentSelection;
+   //             return;
+   //         }
 
 		}
 

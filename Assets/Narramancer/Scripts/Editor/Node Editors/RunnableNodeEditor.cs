@@ -48,9 +48,8 @@ namespace Narramancer {
 
 		private NodeRunner GetNodeRunner() {
 			if (Application.isPlaying) {
-				var currentObject = Selection.activeObject as GameObject;
-				var currentSelection = currentObject?.GetComponentInChildren<INodeRunnerHolder>();
-				var runner = currentSelection?.GetNodeRunner();
+				var selectedNodeHolder = NodeEditorWindow.current.selectedNodeRunnerPairing;
+				var runner = selectedNodeHolder?.nodeRunner;
 				return runner ?? lastNodeRunner;
 			}
 			return null;

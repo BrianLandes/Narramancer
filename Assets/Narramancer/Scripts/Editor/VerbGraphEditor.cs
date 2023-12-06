@@ -125,11 +125,75 @@ namespace Narramancer {
 
 			GUILayout.EndArea();
 
-			if (window.selectedBlackboardHolder != null && window.selectedObject != null) {
-				if (GUI.Button(new Rect(0, 40, 100, 30), window.selectedObject.name)) {
-					EditorGUIUtility.PingObject(window.selectedObject);
+			#region Selected Drop Down Box
+			GUILayout.BeginArea(new Rect(0, 40, 200, Screen.height));
+			GUILayout.BeginVertical();
+
+			IEnumerable< NodeRunnerUnityObjectPairing > GetPossiblePairings() {
+				var narramancerScenes = GameObject.FindObjectsOfType<NarramancerScene>();
+				foreach( var scene in narramancerScenes) {
+					foreach (var nodeRunner in scene.NodeRunners) {
+						yield return new NodeRunnerUnityObjectPairing() {
+							name = $"{scene.gameObject.name} - {nodeRunner.name}" ,
+							nodeRunner = nodeRunner,
+							unityObject = scene.gameObject
+						};
+					}
+					yield return new NodeRunnerUnityObjectPairing() {
+						name = scene.gameObject.name,
+						nodeRunner = null, // applying null here will allow the GameObject it self to show up even if nothing is running
+						unityObject = scene.gameObject
+					};
+
 				}
+
+				// TODO: include RunActionVerbMonoBehaviours
+
+				// TODO: include NarramancerSingleton
 			}
+
+			if (window.selectedNodeRunnerPairing == null || window.selectedNodeRunnerPairing.unityObject == null) {
+				var possibleHolders = GetPossiblePairings();
+				window.selectedNodeRunnerPairing = possibleHolders.FirstOrDefault();
+			}
+
+			var selectionText = window.selectedNodeRunnerPairing != null ? window.selectedNodeRunnerPairing.name : "(None)";
+
+			if (EditorGUILayout.DropdownButton(new GUIContent(selectionText, selectionText), FocusType.Passive)) {
+				GenericMenu context = new GenericMenu();
+
+				var possibleHolders = GetPossiblePairings();
+				if (possibleHolders.Any()) {
+					foreach (var holder in possibleHolders) {
+						bool IsHolderSelected() {
+							if ( window.selectedNodeRunnerPairing == null) {
+								return false;
+							}
+							return holder.unityObject == window.selectedNodeRunnerPairing.unityObject && holder.nodeRunner == window.selectedNodeRunnerPairing.nodeRunner;
+						}
+
+						context.AddItem(new GUIContent(holder.name, holder.name), IsHolderSelected(), () => {
+							EditorGUIUtility.PingObject(holder.unityObject);
+							Selection.activeObject = holder.unityObject;
+							window.selectedNodeRunnerPairing = holder;
+						});
+					}
+					
+				} else {
+					context.AddDisabledItem(new GUIContent("(No valid values)"));
+				}
+
+				
+
+				Matrix4x4 originalMatrix = GUI.matrix;
+				GUI.matrix = Matrix4x4.identity;
+				context.ShowAsContext();
+				GUI.matrix = originalMatrix;
+			}
+
+			GUILayout.EndVertical();
+			GUILayout.EndArea();
+			#endregion
 
 		}
 

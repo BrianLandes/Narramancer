@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace Narramancer {
-	public class RunActionVerbMonoBehaviour : SerializableMonoBehaviour, IBlackboardHolder, INodeRunnerHolder {
+	public class RunActionVerbMonoBehaviour : SerializableMonoBehaviour {
 
 		[SerializeField]
 		private ActionVerb verb = default;
@@ -50,14 +50,6 @@ namespace Narramancer {
 				runner.Start(runnableNode);
 			}
 
-		}
-
-		public object GetBlackboard() {
-			return runner.Blackboard;
-		}
-
-		public NodeRunner GetNodeRunner() {
-			return runner;
 		}
 
 		public override void Deserialize(StoryInstance map) {

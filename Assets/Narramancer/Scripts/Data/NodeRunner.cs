@@ -51,6 +51,9 @@ namespace Narramancer {
 		[SerializeField]
 		List<NodeRunnerEvent> recentlyRunNodes = new List<NodeRunnerEvent>();
 
+		[SerializeField]
+		public string name = "Node Runner";
+
 		#endregion
 
 		#region Public Properties
@@ -257,7 +260,6 @@ namespace Narramancer {
 		#endregion
 
 		#endregion
-
 
 		#region Private Processing Methods
 
