@@ -59,6 +59,21 @@ namespace Narramancer {
 							property.serializedObject.ApplyModifiedProperties();
 						});
 					}
+					else
+					if (property.serializedObject.targetObject is MonoBehaviour monoBehaviour) {
+						menu.AddItem(new GUIContent("Create new child"), false, () => {
+							// TODO: name input dialog
+							Undo.RecordObject(monoBehaviour.gameObject, "Create Verb");
+							var newVerbGraph = ScriptableObject.CreateInstance< ActionVerb>();
+							newVerbGraph.name = monoBehaviour.gameObject.name + " Verb";
+							if (newVerbGraph is ActionVerb) {
+								newVerbGraph.AddNode<RootNode>();
+							}
+							listProperty = property.FindPropertyRelative(nameof(ActionVerbList.list));
+							listProperty.AddObject(newVerbGraph);
+							property.serializedObject.ApplyModifiedProperties();
+						});
+					}
 
 					menu.AddItem(new GUIContent("Add Existing..."), false, () => {
 						openObjectPicker = true;
