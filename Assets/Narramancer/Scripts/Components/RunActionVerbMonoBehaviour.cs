@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Narramancer {
 	public class RunActionVerbMonoBehaviour : SerializableMonoBehaviour {
@@ -19,6 +22,22 @@ namespace Narramancer {
 		[SerializeField, HideInInspector]
 		private List<VariableAssignment> assignments = new List<VariableAssignment>();
 		public static string AssignmentsFieldName => nameof(assignments);
+
+#if UNITY_EDITOR
+		[MenuItem("GameObject/Narramancer/Run Action Verb", false, 10)]
+		static void CreateGameObject(MenuCommand menuCommand) {
+
+			GameObject gameObject = new GameObject("Run Action Verb");
+			gameObject.AddComponent<RunActionVerbMonoBehaviour>();
+
+			GameObjectUtility.SetParentAndAlign(gameObject, menuCommand.context as GameObject);
+
+			Undo.RegisterCreatedObjectUndo(gameObject, "Create " + gameObject.name);
+			Selection.activeObject = gameObject;
+		}
+#endif
+
+
 
 		private void Start() {
 			if (!valuesOverwrittenByDeserialize && runOnStart) {
