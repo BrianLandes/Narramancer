@@ -226,6 +226,29 @@ namespace Narramancer {
 							newNode.Noun = nounScriptableObject;
 							break;
 						}
+					case GameObject gameObject: {
+							var menu = new GenericMenu();
+
+							menu.AddItem(new GUIContent("GameObject"), false, () => {
+								var newNode = CreateNode(typeof(UnityObjectNode), position) as UnityObjectNode;
+								newNode.SetObject(gameObject);
+							});
+
+							foreach( var component in gameObject.GetComponents<Component>() ) {
+
+								menu.AddItem(new GUIContent(component.GetType().Name), false, () => {
+									var newNode = CreateNode(typeof(UnityObjectNode), position) as UnityObjectNode;
+									newNode.SetObject(component);
+								});
+							}
+
+
+							Matrix4x4 originalMatrix = GUI.matrix;
+							GUI.matrix = Matrix4x4.identity;
+							menu.ShowAsContext();
+							GUI.matrix = originalMatrix;
+							break;
+						}
 					case UnityEngine.Object unityObject: {
 							var newNode = CreateNode(typeof(UnityObjectNode), position) as UnityObjectNode;
 							newNode.SetObject(unityObject);
