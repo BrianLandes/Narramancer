@@ -8,6 +8,7 @@ using UnityEditor;
 
 namespace Narramancer {
 
+	[DefaultExecutionOrder(-100)]
 	public class NarramancerScene : MonoBehaviour {
 
 
