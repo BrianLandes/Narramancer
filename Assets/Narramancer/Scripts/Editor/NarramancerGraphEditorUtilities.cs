@@ -35,7 +35,9 @@ namespace Narramancer {
 				node.position = selectedNode.position - centerPoint;
 
 				Undo.RegisterCreatedObjectUndo(node, "Duplicate Node");
-				AssetDatabase.AddObjectToAsset(node, newGraph);
+				if (PseudoEditorUtilities.IsObjectAnAsset(newGraph)) {
+					AssetDatabase.AddObjectToAsset(node, newGraph);
+				}
 
 				substitutes.Add(selectedNode, node);
 			}

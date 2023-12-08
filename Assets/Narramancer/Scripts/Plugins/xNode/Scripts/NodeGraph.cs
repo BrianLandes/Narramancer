@@ -56,7 +56,9 @@ namespace XNode {
 #if UNITY_EDITOR
             for (int i = 0; i < nodes.Count; i++) {
                 var node = nodes[i];
-                AssetDatabase.RemoveObjectFromAsset(node);
+                if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(this))) {
+                    AssetDatabase.RemoveObjectFromAsset(node);
+                }
             }
 #endif
             if (Application.isPlaying) {

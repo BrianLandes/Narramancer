@@ -106,7 +106,9 @@ namespace Narramancer {
 		public static T CreateAndAddChild<T>(Object parentObject, string name = null) where T : ScriptableObject {
 			var child = ScriptableObject.CreateInstance<T>();
 			child.name = name ?? $"{typeof(T).Name.Nicify()}";
-			AddAsset(child, parentObject);
+			if (IsObjectAnAsset(parentObject)) {
+				AddAsset(child, parentObject);
+			}
 			return child;
 		}
 
