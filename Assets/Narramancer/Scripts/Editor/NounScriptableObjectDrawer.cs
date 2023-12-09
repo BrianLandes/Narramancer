@@ -29,9 +29,6 @@ namespace Narramancer {
 			var displayName = serializedObject.FindProperty("displayName");
 			EditorGUILayout.PropertyField(displayName, true);
 
-			var pronouns = serializedObject.FindProperty("pronouns");
-			EditorGUILayout.PropertyField(pronouns, true);
-
 			if (propertiesList == null) {
 				var properties = serializedObject.FindProperty("properties");
 				propertiesList = propertiesList != null ? propertiesList : new ReorderableList(serializedObject, properties, true, true, true, true);

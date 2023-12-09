@@ -15,10 +15,6 @@ namespace Narramancer {
 		public string DisplayName => displayName.activated ? displayName.value : name;
 
 		[SerializeField]
-		private Pronouns pronouns = Pronouns.Nonbinary;
-		public Pronouns Pronouns => pronouns;
-
-		[SerializeField]
 		private List<PropertyAssignment> properties = new List<PropertyAssignment>();
 		public IEnumerable<PropertyAssignment> Properties => properties;
 

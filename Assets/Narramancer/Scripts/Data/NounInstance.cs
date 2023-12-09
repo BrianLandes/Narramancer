@@ -23,10 +23,6 @@ namespace Narramancer {
 		public bool HasNoun() => Noun != null;
 
 		[SerializeField]
-		private Pronouns pronouns;
-		public Pronouns Pronouns => pronouns;
-
-		[SerializeField]
 		private List<PropertyInstance> properties = new List<PropertyInstance>();
 
 		[SerializeField]
@@ -52,7 +48,6 @@ namespace Narramancer {
 
 			this.displayName = instancable.DisplayName;
 			this.uid = instancable.ID;
-			this.pronouns = instancable.Pronouns;
 			this.noun = instancable as NounScriptableObject;
 			foreach (var assignment in instancable.Properties) {
 				var property = assignment.property;
@@ -183,42 +178,6 @@ namespace Narramancer {
 				return displayName;
 			}
 			return base.ToString();
-		}
-
-		public string SubjectPronoun() {
-			switch (pronouns) {
-				case Pronouns.Female:
-					return "she";
-				case Pronouns.Male:
-					return "he";
-				case Pronouns.Nonbinary:
-				default:
-					return "they";
-			}
-		}
-
-		public string ObjectPronoun() {
-			switch (pronouns) {
-				case Pronouns.Female:
-					return "her";
-				case Pronouns.Male:
-					return "him";
-				case Pronouns.Nonbinary:
-				default:
-					return "them";
-			}
-		}
-
-		public string PossessivePronoun() {
-			switch (pronouns) {
-				case Pronouns.Female:
-					return "her";
-				case Pronouns.Male:
-					return "his";
-				case Pronouns.Nonbinary:
-				default:
-					return "their";
-			}
 		}
 
 		#endregion

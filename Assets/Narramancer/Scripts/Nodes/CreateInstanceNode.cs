@@ -12,11 +12,6 @@ namespace Narramancer {
 		[SerializeField]
 		private string displayName = "";
 
-		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
-		[SerializeField]
-		[NodeEnum]
-		private Pronouns pronouns = Pronouns.Nonbinary;
-
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		SerializableSpawner spawner;
@@ -38,8 +33,6 @@ namespace Narramancer {
 
 			public NounUID ID { get; set; }
 
-			public Pronouns Pronouns { get; set; }
-
 			public IEnumerable<PropertyAssignment> Properties { get; set; } = Enumerable.Empty<PropertyAssignment>();
 
 			public IEnumerable<StatAssignment> Stats { get; set; } = Enumerable.Empty<StatAssignment>();
@@ -55,7 +48,6 @@ namespace Narramancer {
 			var instancable = new Instancable() {
 				DisplayName = GetInputValue(runner.Blackboard, nameof(displayName), displayName),
 				ID = new NounUID(),
-				Pronouns = GetInputValue(runner.Blackboard, nameof(pronouns), pronouns),
 				Properties = properties,
 				Stats = stats,
 			};

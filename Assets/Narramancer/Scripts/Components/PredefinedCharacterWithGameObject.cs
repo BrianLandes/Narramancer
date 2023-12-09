@@ -14,10 +14,6 @@ namespace Narramancer {
 		public NounUID ID => uid;
 
 		[SerializeField]
-		private Pronouns pronouns = Pronouns.Nonbinary;
-		public Pronouns Pronouns => pronouns;
-
-		[SerializeField]
 		private List<PropertyAssignment> properties = new List<PropertyAssignment>();
 		public IEnumerable<PropertyAssignment> Properties => properties;
 
