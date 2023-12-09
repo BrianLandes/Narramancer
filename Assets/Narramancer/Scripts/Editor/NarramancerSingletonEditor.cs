@@ -14,10 +14,8 @@ namespace Narramancer {
 
 		private bool isInEditorMode = true; // vs runtime mode
 		private int editorTab;
-		private int nounTypeFilter = 0;
 		private int adjectiveTypeFilter;
 
-		string characterSearch;
 		string adjectiveSearch;
 
 		UnityEngine.Object lastHoveredElement;
@@ -103,50 +101,8 @@ namespace Narramancer {
 #region Nouns
 					case 0:
 
-						if (singleton.Nouns.Any(x => x == null)) {
-							foreach (var noun in singleton.Nouns.ToArray()) {
-								if (noun == null) {
-									singleton.Nouns.Remove(noun);
-								}
-							}
-						}
-
-
-						var buttonContent = new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
-						buttonContent.text = "Create new Noun...";
-						if (GUILayout.Button(buttonContent)) {
-							var path = EditorUtility.SaveFilePanelInProject("Create New Character", "Character", "asset", "Choose a directory and name", "Assets/Scriptable Objects/Characters");
-							if (path.IsNotNullOrEmpty()) {
-								var newCharacter = ScriptableObject.CreateInstance<NounScriptableObject>();
-								newCharacter.name = Path.GetFileNameWithoutExtension(path);
-								singleton.Nouns.Add(newCharacter);
-								EditorUtility.SetDirty(singleton);
-								AssetDatabase.CreateAsset(newCharacter, path);
-								AssetDatabase.Refresh();
-								AssetDatabase.SaveAssets();
-							}
-						}
-
-						nounTypeFilter = GUILayout.Toolbar(nounTypeFilter, new string[] { "All", "Characters", "Items", "Locations" });
-						NounScriptableObject[] nouns = null;
-
-						switch (nounTypeFilter) {
-							default:
-							case 0:
-								nouns = singleton.Nouns.ToArray();
-								break;
-							case 1:
-								nouns = singleton.Nouns.Where(noun => noun.NounType == NounType.Character).ToArray();
-								break;
-							case 2:
-								nouns = singleton.Nouns.Where(noun => noun.NounType == NounType.Item).ToArray();
-								break;
-							case 3:
-								nouns = singleton.Nouns.Where(noun => noun.NounType == NounType.Location).ToArray();
-								break;
-						}
-
-						EditorDrawerUtilities.DrawSearchableListOfUnityObjectsWithDragSupport(ref characterSearch, nouns, ref draggedElement, ref lastHoveredElement);
+						var nounsProperty = serializedObject.FindProperty(NarramancerSingleton.NounsFieldName);
+						EditorGUILayout.PropertyField(nounsProperty);
 
 						break;
 #endregion

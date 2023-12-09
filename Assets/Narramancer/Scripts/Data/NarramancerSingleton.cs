@@ -12,8 +12,9 @@ namespace Narramancer {
 		public bool runOnGameStart = true;
 
 		[SerializeField]
-		List<NounScriptableObject> nouns = new List<NounScriptableObject>();
-		public List<NounScriptableObject> Nouns { get => nouns; set => nouns = value; }
+		NounScriptableObjectList nouns = new NounScriptableObjectList();
+		public List<NounScriptableObject> Nouns => nouns.list;
+		public static string NounsFieldName => nameof(nouns);
 
 		[SerializeField]
 		List<AdjectiveScriptableObject> adjectives = new List<AdjectiveScriptableObject>();
