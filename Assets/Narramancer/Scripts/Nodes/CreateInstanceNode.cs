@@ -15,11 +15,6 @@ namespace Narramancer {
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		[NodeEnum]
-		private NounType nounType = NounType.Character;
-
-		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
-		[SerializeField]
-		[NodeEnum]
 		private Pronouns pronouns = Pronouns.Nonbinary;
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
@@ -40,7 +35,6 @@ namespace Narramancer {
 
 		public class Instancable : IInstancable {
 			public string DisplayName { get; set; }
-			public NounType NounType { get; set; }
 
 			public NounUID ID { get; set; }
 
@@ -61,7 +55,6 @@ namespace Narramancer {
 			var instancable = new Instancable() {
 				DisplayName = GetInputValue(runner.Blackboard, nameof(displayName), displayName),
 				ID = new NounUID(),
-				NounType = GetInputValue(runner.Blackboard, nameof(nounType), nounType),
 				Pronouns = GetInputValue(runner.Blackboard, nameof(pronouns), pronouns),
 				Properties = properties,
 				Stats = stats,

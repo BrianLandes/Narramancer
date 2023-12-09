@@ -13,10 +13,6 @@ namespace Narramancer {
 		public string DisplayName { get => displayName; set => displayName = value; }
 
 		[SerializeField]
-		private NounType nounType;
-		public NounType NounType { get => nounType; set => nounType = value; }
-
-		[SerializeField]
 		private NounUID uid;
 		public NounUID UID => uid;
 
@@ -55,7 +51,6 @@ namespace Narramancer {
 		public NounInstance(IInstancable instancable) {
 
 			this.displayName = instancable.DisplayName;
-			this.nounType = instancable.NounType;
 			this.uid = instancable.ID;
 			this.pronouns = instancable.Pronouns;
 			this.noun = instancable as NounScriptableObject;

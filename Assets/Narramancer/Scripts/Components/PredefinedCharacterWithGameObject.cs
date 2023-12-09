@@ -10,10 +10,6 @@ namespace Narramancer {
 		public string DisplayName => displayName;
 
 		[SerializeField]
-		private NounType nounType = NounType.Character;
-		public NounType NounType => nounType;
-
-		[SerializeField]
 		private NounUID uid = new NounUID();
 		public NounUID ID => uid;
 

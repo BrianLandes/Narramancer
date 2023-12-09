@@ -15,9 +15,6 @@ namespace Narramancer {
 		public string DisplayName => displayName.activated ? displayName.value : name;
 
 		[SerializeField]
-		private NounType nounType = NounType.Character;
-		public NounType NounType => nounType;
-		[SerializeField]
 		private Pronouns pronouns = Pronouns.Nonbinary;
 		public Pronouns Pronouns => pronouns;
 

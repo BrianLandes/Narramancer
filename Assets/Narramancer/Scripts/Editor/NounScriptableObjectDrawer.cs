@@ -29,13 +29,8 @@ namespace Narramancer {
 			var displayName = serializedObject.FindProperty("displayName");
 			EditorGUILayout.PropertyField(displayName, true);
 
-			var nounType = serializedObject.FindProperty("nounType");
-			EditorGUILayout.PropertyField(nounType, true);
-
-			if (((NounType)nounType.enumValueIndex) == NounType.Character) {
-				var pronouns = serializedObject.FindProperty("pronouns");
-				EditorGUILayout.PropertyField(pronouns, true);
-			}
+			var pronouns = serializedObject.FindProperty("pronouns");
+			EditorGUILayout.PropertyField(pronouns, true);
 
 			if (propertiesList == null) {
 				var properties = serializedObject.FindProperty("properties");
