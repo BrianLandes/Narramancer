@@ -59,6 +59,8 @@ namespace Narramancer {
 							property.serializedObject.ApplyModifiedProperties();
 						});
 					}
+#if NARRAMANCER_SCENE_GRAPH
+// TODO: fix kinks with Scene Graphs
 					else
 					if (property.serializedObject.targetObject is MonoBehaviour monoBehaviour) {
 						menu.AddItem(new GUIContent("Create new child"), false, () => {
@@ -74,6 +76,7 @@ namespace Narramancer {
 							property.serializedObject.ApplyModifiedProperties();
 						});
 					}
+#endif
 
 					menu.AddItem(new GUIContent("Add Existing..."), false, () => {
 						openObjectPicker = true;
@@ -116,7 +119,7 @@ namespace Narramancer {
 
 			}
 
-			#region Accept DragAndDrop
+#region Accept DragAndDrop
 			if (Event.current.type == EventType.DragUpdated) {
 				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
 			}
@@ -134,7 +137,7 @@ namespace Narramancer {
 				}
 
 			}
-			#endregion
+#endregion
 
 			property.serializedObject.ApplyModifiedProperties();
 
