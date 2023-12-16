@@ -199,7 +199,6 @@ namespace Narramancer {
 			var instance = stats.FirstOrDefault(stat => stat.Adjective == statObject);
 			if (instance == null) {
 				instance = InstantiateAndAddStat(statObject);
-				stats.Add(instance);
 			}
 
 			return instance;
