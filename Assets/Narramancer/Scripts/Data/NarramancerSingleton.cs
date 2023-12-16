@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -42,6 +43,8 @@ namespace Narramancer {
 		public static string StoryInstanceFieldName => nameof(storyInstance);
 
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
+
+		public event Action<NounInstance> OnCreateInstance;
 
 		public override void OnPreprocessBuild() {
 			Clear();
@@ -172,7 +175,9 @@ namespace Narramancer {
 		}
 
 		public NounInstance CreateInstance(IInstancable instancable) {
-			return storyInstance.CreateInstance(instancable);
+			var instance = storyInstance.CreateInstance(instancable);
+			OnCreateInstance?.Invoke(instance);
+			return instance;
 		}
 
 		public void RemoveInstance(NounInstance instance) {
