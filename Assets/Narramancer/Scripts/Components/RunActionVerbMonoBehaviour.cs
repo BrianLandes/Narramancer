@@ -75,28 +75,31 @@ namespace Narramancer {
 			base.Deserialize(map);
 
 			// apply CERTAIN types of values (that are specifically NOT serialized/desiralized)
-			foreach (var assignment in assignments) {
-				var globalVariable = verb.Inputs.FirstOrDefault(x => VariableAssignment.TypeToString(x.Type).Equals(assignment.type, StringComparison.Ordinal) && x.Id.Equals(assignment.id, StringComparison.Ordinal));
-				if (globalVariable != null) {
-					object value = null;
-					switch (assignment.type) {
-						case "int":
-						case "bool":
-						case "float":
-						case "string":
-						case "color":
-							// this area left blank intentionally
-							break;
-						default:
-							value = assignment.objectValue;
-							break;
-					}
-					if (value != null) {
-						runner.Blackboard.Set(globalVariable.VariableKey, value);
-					}
+			if (runner != null) {
+				foreach (var assignment in assignments) {
+					var globalVariable = verb.Inputs.FirstOrDefault(x => VariableAssignment.TypeToString(x.Type).Equals(assignment.type, StringComparison.Ordinal) && x.Id.Equals(assignment.id, StringComparison.Ordinal));
+					if (globalVariable != null) {
+						object value = null;
+						switch (assignment.type) {
+							case "int":
+							case "bool":
+							case "float":
+							case "string":
+							case "color":
+								// this area left blank intentionally
+								break;
+							default:
+								value = assignment.objectValue;
+								break;
+						}
+						if (value != null) {
+							runner.Blackboard.Set(globalVariable.VariableKey, value);
+						}
 
+					}
 				}
 			}
+
 		}
 
 	}
