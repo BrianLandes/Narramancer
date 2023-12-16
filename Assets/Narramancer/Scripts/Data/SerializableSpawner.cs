@@ -47,6 +47,9 @@ namespace Narramancer {
 
 		private List<GameObject> spawns = new List<GameObject>();
 
+		[SerializeField]
+		private bool spawnForEachNoun = false;
+
 
 #if UNITY_EDITOR
 		[MenuItem("GameObject/Narramancer/Serializable Spawner", false, 10)]
@@ -66,6 +69,26 @@ namespace Narramancer {
 
 		private void Start() {
 			prefab.SetActive(false);
+
+			#region Spawn for any existing nouns
+			if (!valuesOverwrittenByDeserialize && spawnForEachNoun) {
+				foreach (var instance in NarramancerSingleton.Instance.GetInstances()) {
+					var newGameObject = Spawn();
+					instance.GameObject = newGameObject;
+				}
+			}
+			NarramancerSingleton.Instance.OnCreateInstance += OnCreateInstance;
+			#endregion
+		}
+
+		private void OnCreateInstance(NounInstance instance) {
+			var newGameObject = Spawn();
+			instance.GameObject = newGameObject;
+		}
+
+		public override void OnDestroy() {
+			base.OnDestroy();
+			NarramancerSingleton.Instance.OnCreateInstance -= OnCreateInstance;
 		}
 
 		public GameObject Spawn() {
