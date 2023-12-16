@@ -25,7 +25,7 @@ namespace Narramancer {
 
 		public string VariableKey {
 			get {
-				return $"{ToString()} {id} {GetHashCode()}";
+				return $"{ToString()} {id}";
 			}
 		}
 
