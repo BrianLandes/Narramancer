@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Narramancer {
 
 	[CustomNodeEditor(typeof(ChooseRankedWeightedActionNode))]
-	public class ChooseRankedWeightedActionNodeEditor : RunnableNodeEditor {
+	public class ChooseRankedWeightedActionNodeEditor : AbstractInstanceInputChainedRunnableNodeEditor {
 
 		public override void OnBodyGUI() {
 			base.OnBodyGUI();
