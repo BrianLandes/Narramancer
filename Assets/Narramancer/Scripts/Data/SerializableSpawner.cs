@@ -77,7 +77,9 @@ namespace Narramancer {
 					instance.GameObject = newGameObject;
 				}
 			}
-			NarramancerSingleton.Instance.OnCreateInstance += OnCreateInstance;
+			if (spawnForEachNoun) {
+				NarramancerSingleton.Instance.OnCreateInstance += OnCreateInstance;
+			}
 			#endregion
 		}
 
