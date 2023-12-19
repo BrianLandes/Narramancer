@@ -18,6 +18,7 @@ namespace Narramancer {
 
 		[SerializeMonoBehaviourField]
 		private NodeRunner runner = default;
+		public NodeRunner Runner => runner;
 
 		[SerializeField, HideInInspector]
 		private List<VariableAssignment> assignments = new List<VariableAssignment>();
