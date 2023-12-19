@@ -6,15 +6,20 @@ namespace Narramancer {
 	[CustomPropertyDrawer(typeof(ToggleableFloat))]
 	[CustomPropertyDrawer(typeof(ToggleableInt))]
 	[CustomPropertyDrawer(typeof(ToggleableString))]
+	[CanEditMultipleObjects]
 	public class ToggleableValueDrawer : PropertyDrawer {
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
 			EditorGUI.BeginProperty(position, label, property);
 
+			property.serializedObject.Update();
+
 			var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, position.height);
 			var propertyName = property.propertyPath.Nicify();
 			EditorGUI.LabelField(labelPosition, propertyName);
+
+			EditorGUI.BeginChangeCheck();
 
 			var activated = property.FindPropertyRelative(nameof(ToggleableFloat.activated));
 			var activatedPosition = new Rect(position.x + labelPosition.width, position.y, 25, position.height);
@@ -26,7 +31,9 @@ namespace Narramancer {
 				EditorGUI.PropertyField(valuePosition, value, GUIContent.none);
 			}
 
-			property.serializedObject.ApplyModifiedProperties();
+			if (EditorGUI.EndChangeCheck()) {
+				property.serializedObject.ApplyModifiedProperties();
+			}
 
 			EditorGUI.EndProperty();
 		}
