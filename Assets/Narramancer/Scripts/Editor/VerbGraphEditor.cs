@@ -129,25 +129,26 @@ namespace Narramancer {
 			GUILayout.BeginArea(new Rect(0, 40, 200, Screen.height));
 			GUILayout.BeginVertical();
 
-			IEnumerable< NodeRunnerUnityObjectPairing > GetPossiblePairings() {
+			IEnumerable<NodeRunnerUnityObjectPairing> GetPossiblePairings() {
 				var narramancerScenes = GameObject.FindObjectsOfType<NarramancerScene>();
-				foreach( var scene in narramancerScenes) {
+				foreach (var scene in narramancerScenes) {
 					foreach (var nodeRunner in scene.NodeRunners) {
 						yield return new NodeRunnerUnityObjectPairing() {
-							name = $"{scene.gameObject.name} - {nodeRunner.name}" ,
+							name = $"{scene.gameObject.name} - {nodeRunner.name}",
 							nodeRunner = nodeRunner,
 							unityObject = scene.gameObject
 						};
 					}
-					yield return new NodeRunnerUnityObjectPairing() {
-						name = scene.gameObject.name,
-						nodeRunner = null, // applying null here will allow the GameObject it self to show up even if nothing is running
-						unityObject = scene.gameObject
-					};
-
 				}
 
-				// TODO: include RunActionVerbMonoBehaviours
+				var runActionVerbMonoBehaviours = GameObject.FindObjectsOfType<RunActionVerbMonoBehaviour>();
+				foreach (var runActionVerb in runActionVerbMonoBehaviours) {
+					yield return new NodeRunnerUnityObjectPairing() {
+						name = $"{runActionVerb.gameObject.name} - {runActionVerb.Runner.name}",
+						nodeRunner = runActionVerb.Runner,
+						unityObject = runActionVerb.gameObject
+					};
+				}
 
 				// TODO: include NarramancerSingleton
 			}
@@ -166,7 +167,7 @@ namespace Narramancer {
 				if (possibleHolders.Any()) {
 					foreach (var holder in possibleHolders) {
 						bool IsHolderSelected() {
-							if ( window.selectedNodeRunnerPairing == null) {
+							if (window.selectedNodeRunnerPairing == null) {
 								return false;
 							}
 							return holder.unityObject == window.selectedNodeRunnerPairing.unityObject && holder.nodeRunner == window.selectedNodeRunnerPairing.nodeRunner;
@@ -178,12 +179,13 @@ namespace Narramancer {
 							window.selectedNodeRunnerPairing = holder;
 						});
 					}
-					
-				} else {
+
+				}
+				else {
 					context.AddDisabledItem(new GUIContent("(No valid values)"));
 				}
 
-				
+
 
 				Matrix4x4 originalMatrix = GUI.matrix;
 				GUI.matrix = Matrix4x4.identity;
@@ -234,7 +236,7 @@ namespace Narramancer {
 								newNode.SetObject(gameObject);
 							});
 
-							foreach( var component in gameObject.GetComponents<Component>() ) {
+							foreach (var component in gameObject.GetComponents<Component>()) {
 
 								menu.AddItem(new GUIContent(component.GetType().Name), false, () => {
 									var newNode = CreateNode(typeof(UnityObjectNode), position) as UnityObjectNode;
