@@ -7,10 +7,15 @@ namespace Narramancer {
 		[SerializeMonoBehaviourField]
 		private NounInstance instance;
 
+		public NounInstance GetInstance() {
+			return NarramancerSingleton.Instance.GetInstances().FirstOrDefault(instance => instance.GameObject == gameObject);
+			;
+		}
+
 		public override void Serialize(StoryInstance story) {
 
 			if (instance == null) {
-				instance = NarramancerSingleton.Instance.GetInstances().FirstOrDefault(instance => instance.GameObject == gameObject);
+				instance = GetInstance();
 			}
 
 			base.Serialize(story);
@@ -22,7 +27,7 @@ namespace Narramancer {
 			if (instance != null) {
 				instance.GameObject = gameObject;
 			}
-			
+
 		}
 	}
 }
