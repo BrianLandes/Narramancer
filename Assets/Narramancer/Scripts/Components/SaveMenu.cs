@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,7 +60,7 @@ namespace Narramancer {
 			textComponent.text = title;
 
 			var buttonComponent = newSlot.GetComponentInChildren<Button>();
-			buttonComponent.onClick.AddListener(() => OverwriteSave(saveName));
+			buttonComponent.onClick.AddListener(() => Save(saveName));
 
 			var thumbnailChild = GetThumbnailChild(newSlot);
 			var imageComponent = thumbnailChild.GetComponent<Image>();
@@ -68,26 +70,25 @@ namespace Narramancer {
 			currentSlots.Add(newSlot);
 		}
 
-		public void OverwriteSave(string saveName) {
-
-			var story = NarramancerSingleton.Instance.PrepareStoryForSave();
-
-			var jsonString = SaveLoadUtilities.SerializeData(story);
-
-			SaveLoadUtilities.WriteSaveData(saveName, jsonString);
-
-			OnEnable();
-		}
-
 		public void CreateNewSave() {
 
+			var saveName = "SaveSlot_" + (SaveLoadUtilities.CountSaveData() + 1).ToString("D3");
+			Save(saveName);
+		}
+
+		public async void Save(string saveName) {
+			var canvas = GetComponentInParent<Canvas>();
+			canvas?.gameObject.SetActive(false);
+
+			await Task.Delay(1);
+
 			var story = NarramancerSingleton.Instance.PrepareStoryForSave();
 
 			var jsonString = SaveLoadUtilities.SerializeData(story);
 
-			var saveName = "SaveSlot_" + (SaveLoadUtilities.CountSaveData() + 1).ToString("D3");
-
 			SaveLoadUtilities.WriteSaveData(saveName, jsonString);
+
+			canvas?.gameObject.SetActive(true);
 
 			OnEnable();
 		}

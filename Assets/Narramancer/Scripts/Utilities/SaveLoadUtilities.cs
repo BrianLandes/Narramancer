@@ -61,18 +61,7 @@ namespace Narramancer {
 		private static RenderTexture thumbnailRenderTexture;
 
 		public static Texture2D Screenshot() {
-			thumbnailRenderTexture = thumbnailRenderTexture != null ? thumbnailRenderTexture : new RenderTexture(128, 128, 24);
-
-			var initialRenderTexture = Camera.main.targetTexture;
-			Camera.main.targetTexture = thumbnailRenderTexture;
-			Camera.main.Render();
-			Camera.main.targetTexture = initialRenderTexture;
-
-			var texture2d = new Texture2D(thumbnailRenderTexture.width, thumbnailRenderTexture.height, TextureFormat.RGB24, false);
-			RenderTexture.active = thumbnailRenderTexture;
-			texture2d.ReadPixels(new Rect(0, 0, thumbnailRenderTexture.width, thumbnailRenderTexture.height), 0, 0);
-			texture2d.Apply();
-
+			var texture2d = ScreenCapture.CaptureScreenshotAsTexture();
 			return texture2d;
 		}
 
