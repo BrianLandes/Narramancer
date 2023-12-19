@@ -30,13 +30,14 @@ namespace Narramancer {
 
 
 		public override object GetValue(object context, NodePort port) {
-			if (!Application.isPlaying) {
-				return null;
+
+			if (Application.isPlaying && port.fieldName.Equals("value")) {
+				var instance = GetInstance(context);
+				var value = instance?.Blackboard.Get(key, port.ValueType);
+				return value;
 			}
 
-			var instance = GetInstance(context);
-			var value = instance.Blackboard.Get(key, port.ValueType);
-			return value;
+			return base.GetValue(context, port);
 		}
 	}
 }
