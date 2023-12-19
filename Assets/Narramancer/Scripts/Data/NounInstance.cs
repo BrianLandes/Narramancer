@@ -106,13 +106,13 @@ namespace Narramancer {
 		}
 
 		public void AddProperties(params PropertyScriptableObject[] properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				AddProperty(property);
 			}
 		}
 
 		public void AddProperties(IEnumerable<PropertyScriptableObject> properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				AddProperty(property);
 			}
 		}
@@ -131,25 +131,25 @@ namespace Narramancer {
 		}
 
 		public void RemoveProperties(params PropertyScriptableObject[] properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				RemoveProperty(property);
 			}
 		}
 
 		public void RemoveProperties(IEnumerable<PropertyScriptableObject> properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				RemoveProperty(property);
 			}
 		}
 
 		public void RemoveProperties(params PropertyInstance[] properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				RemoveProperty(property);
 			}
 		}
 
 		public void RemoveProperties(IEnumerable<PropertyInstance> properties) {
-			foreach (var property in properties) {
+			foreach (var property in properties.WithoutNulls()) {
 				RemoveProperty(property);
 			}
 		}
