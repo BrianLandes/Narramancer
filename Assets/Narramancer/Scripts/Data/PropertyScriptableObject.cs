@@ -13,6 +13,10 @@ namespace Narramancer {
 		protected IngredientList<AbstractPropertyModifierIngredient> modifiers = new IngredientList<AbstractPropertyModifierIngredient>();
 		public List<AbstractPropertyModifierIngredient> Modifiers => modifiers.ToList();
 
+		[SerializeField]
+		protected List<NamedPrimitiveValue> staticNamedValues = new List<NamedPrimitiveValue>();
+
+
 #if UNITY_EDITOR
 		[SerializeField]
 		private ReferenceList references = new ReferenceList();
@@ -38,5 +42,8 @@ namespace Narramancer {
 			return modifiers.Where(modifier => modifier is T).Cast<T>().ToList();
 		}
 
+		public object GetNamedValue(string name) {
+			return staticNamedValues.FirstOrDefault(value => value.name.Equals(name))?.value.GetValue();
+		}
 	}
 }
