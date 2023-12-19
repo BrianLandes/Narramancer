@@ -35,6 +35,9 @@ namespace Narramancer {
 			if (adjective == null) {
 				return base.ToString();
 			}
+			if (adjective.OverrideName.activated) {
+				return adjective.OverrideName.value;
+			}
 			return adjective.name;
 		}
 	}
