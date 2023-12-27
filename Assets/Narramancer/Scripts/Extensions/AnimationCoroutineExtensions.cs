@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Narramancer {
 	public static class AnimationCoroutineExtensions {
@@ -10,6 +11,12 @@ namespace Narramancer {
 			if (coroutine != null) {
 				@this.StopCoroutine(coroutine);
 			}
+		}
+
+		public static void RestartCoroutine(this MonoBehaviour @this, ref Coroutine coroutine, IEnumerator animation) {
+			@this.StopCoroutineMaybe(coroutine);
+
+			coroutine = @this.StartCoroutine(animation);
 		}
 
 		public static IEnumerator FadeIn(this CanvasGroup @this, float speed = 10f) {
@@ -34,5 +41,24 @@ namespace Narramancer {
 			yield return @this;
 			callback?.Invoke();
 		}
+
+		public static IEnumerator ScrollToBottom(this ScrollRect @this, float speed = 10f) {
+			while (@this.verticalNormalizedPosition > 0f) {
+				yield return new WaitForEndOfFrame();
+
+				@this.verticalNormalizedPosition -= speed * Time.deltaTime;
+			}
+			@this.verticalNormalizedPosition = 0f;
+		}
+
+		public static IEnumerator ScrollToTop(this ScrollRect @this, float speed = 10f) {
+			while (@this.verticalNormalizedPosition < 1f) {
+				yield return new WaitForEndOfFrame();
+
+				@this.verticalNormalizedPosition += speed * Time.deltaTime;
+			}
+			@this.verticalNormalizedPosition = 1f;
+		}
+
 	}
 }
