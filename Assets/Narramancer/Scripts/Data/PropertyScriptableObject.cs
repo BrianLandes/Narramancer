@@ -14,8 +14,7 @@ namespace Narramancer {
 		public List<AbstractPropertyModifierIngredient> Modifiers => modifiers.ToList();
 
 		[SerializeField]
-		protected List<NamedPrimitiveValue> staticNamedValues = new List<NamedPrimitiveValue>();
-
+		protected NamedPrimitiveValueList staticNamedValues = new NamedPrimitiveValueList();
 
 #if UNITY_EDITOR
 		[SerializeField]
@@ -43,7 +42,7 @@ namespace Narramancer {
 		}
 
 		public object GetNamedValue(string name) {
-			return staticNamedValues.FirstOrDefault(value => value.name.Equals(name))?.value.GetValue();
+			return staticNamedValues.list.FirstOrDefault(value => value.name.Equals(name))?.value.GetValue();
 		}
 	}
 }

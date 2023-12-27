@@ -1,7 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Narramancer {
+
+	[Serializable]
+	public class NamedPrimitiveValueList {
+		public List<NamedPrimitiveValue> list = new List<NamedPrimitiveValue>();
+	}
+
 	[Serializable]
 	public class NamedPrimitiveValue {
 		[SerializeField]

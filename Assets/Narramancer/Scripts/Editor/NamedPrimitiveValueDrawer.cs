@@ -22,7 +22,7 @@ namespace Narramancer {
 
 			var buttonWidth = 30f;
 
-			var valueRect = new Rect(position.x + position.width * 0.5f, position.y, position.width * 0.5f - buttonWidth, position.height);
+			var valueRect = new Rect(position.x + nameRect.width + 4, position.y, position.width * 0.5f - buttonWidth - 4, position.height);
 			var valueProperty = property.FindPropertyRelative(nameof(NamedPrimitiveValue.value));
 			EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
 
