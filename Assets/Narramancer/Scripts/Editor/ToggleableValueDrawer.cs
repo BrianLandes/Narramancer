@@ -13,7 +13,7 @@ namespace Narramancer {
 
 			EditorGUI.BeginProperty(position, label, property);
 
-			property.serializedObject.Update();
+			//property.serializedObject.Update();
 
 			var labelPosition = new Rect(position.x, position.y, EditorGUIUtility.labelWidth, position.height);
 			var propertyName = property.propertyPath.Nicify();
