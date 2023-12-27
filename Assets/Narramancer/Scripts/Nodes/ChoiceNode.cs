@@ -27,10 +27,8 @@ namespace Narramancer {
 
 
 		[SerializeField]
-		[Input(connectionType = ConnectionType.Override,
-			backingValue = ShowBackingValue.Unconnected,
-			typeConstraint = TypeConstraint.Inherited)]
-		private string displayText = default;
+		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
+		private string displayText = "";
 
 		[SerializeField]
 		private ToggleableValue<Color> customColor = new ToggleableValue<Color>(false, Color.white);
