@@ -9,7 +9,7 @@ using UnityEditor;
 namespace Narramancer {
 
 	[DefaultExecutionOrder(-100)]
-	public class NarramancerScene : MonoBehaviour {
+	public class NarramancerScene : SerializableMonoBehaviour {
 
 
 
@@ -23,6 +23,7 @@ namespace Narramancer {
 		private ActionVerbList runOnStartVerbs = new ActionVerbList();
 		public static string RunOnStartVerbs => nameof(runOnStartVerbs);
 
+		[SerializeMonoBehaviourField]
 		private List<NodeRunner> nodeRunners = new List<NodeRunner>();
 		public List<NodeRunner> NodeRunners => nodeRunners;
 
@@ -41,17 +42,19 @@ namespace Narramancer {
 #endif
 
 		private void Start() {
+			if (!valuesOverwrittenByDeserialize) {
+				variables.list.ApplyAssignmentsToBlackboard(NarramancerSingleton.Instance.StoryInstance.Blackboard);
 
-			variables.list.ApplyAssignmentsToBlackboard(NarramancerSingleton.Instance.StoryInstance.Blackboard);
-
-			foreach (var verb in runOnStartVerbs.list) {
-				if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
-					var runner = NarramancerSingleton.Instance.CreateNodeRunner(verb.name);
-					runner.Start(runnableNode);
-					runner.name = verb.name;
-					nodeRunners.Add(runner);
+				foreach (var verb in runOnStartVerbs.list) {
+					if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
+						var runner = NarramancerSingleton.Instance.CreateNodeRunner(verb.name);
+						runner.Start(runnableNode);
+						runner.name = verb.name;
+						nodeRunners.Add(runner);
+					}
 				}
 			}
+
 		}
 
 	}
