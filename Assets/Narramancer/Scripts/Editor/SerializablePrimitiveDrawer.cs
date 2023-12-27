@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Narramancer {
 
-	[CustomPropertyDrawer(typeof(SerializablePrimitive))]
+	[CustomPropertyDrawer(typeof(SerializablePrimitive), false)]
 	[CanEditMultipleObjects]
 	public class SerializablePrimitiveDrawer : PropertyDrawer {
 
@@ -12,7 +12,7 @@ namespace Narramancer {
 
 			EditorGUI.BeginProperty(position, label, property);
 
-			//property.serializedObject.Update();
+			property.serializedObject.Update();
 
 			EditorGUI.BeginChangeCheck();
 
