@@ -2,11 +2,36 @@ using Narramancer.SerializableActionHelper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Narramancer {
-	public class ChoicePrinter : SerializableMonoBehaviour {
+
+	public interface IChoicePrinter {
+
+		public static IChoicePrinter GetChoicePrinter() {
+			var choicePrinter = GameObject.FindObjectsOfType<ChoicePrinter>(true).FirstOrDefault();
+			if (choicePrinter != null) {
+				return choicePrinter;
+			}
+			var textAndChoicePrinter = GameObject.FindObjectsOfType<TextAndChoicePrinter>(true).FirstOrDefault();
+			if (textAndChoicePrinter != null) {
+				return textAndChoicePrinter;
+			}
+			return null;
+		}
+
+		void ClearChoices();
+
+		void AddChoice(string displayText, Action callbackAction);
+
+		void AddDisabledChoice(string displayText);
+
+		void ShowChoices();
+	}
+
+	public class ChoicePrinter : SerializableMonoBehaviour, IChoicePrinter {
 
 
 		[SerializeField]
@@ -127,9 +152,7 @@ namespace Narramancer {
 		public void ShowParentCanvas() {
 			parentCanvasGroup.gameObject.SetActive(true);
 
-			this.StopCoroutineMaybe(hideParentCoroutine);
-
-			hideParentCoroutine = StartCoroutine(parentCanvasGroup.FadeIn(fadeParentSpeed));
+			this.RestartCoroutine(ref hideParentCoroutine, parentCanvasGroup.FadeIn(fadeParentSpeed));
 		}
 
 

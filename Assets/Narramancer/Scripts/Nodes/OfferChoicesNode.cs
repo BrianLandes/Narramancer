@@ -32,7 +32,7 @@ namespace Narramancer {
 		public override void Run(NodeRunner runner) {
 			runner.Suspend();
 
-			var choicePrinter = this.FindObjectsOfType<ChoicePrinter>(true).FirstOrDefault();
+			var choicePrinter = IChoicePrinter.GetChoicePrinter();
 			choicePrinter.ClearChoices();
 
 			foreach (var choiceNode in ChoiceNodes) {
