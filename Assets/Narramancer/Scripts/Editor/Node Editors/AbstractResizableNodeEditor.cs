@@ -1,6 +1,4 @@
-#if ODIN_INSPECTOR
-using Sirenix.Utilities.Editor;
-#endif
+
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
