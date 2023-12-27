@@ -6,6 +6,26 @@ using UnityEngine;
 namespace Narramancer {
 	public class PrintTextNode : ChainedRunnableNode {
 
+		[SerializeField, HideInInspector]
+		private int width = 300;
+		public static string WidthFieldName => nameof(width);
+
+		[SerializeField, HideInInspector]
+		private int height = 80;
+		public static string HeightFieldName => nameof(height);
+
+		[SerializeField]
+		private bool clearPreviousText = true;
+		public static string ClearPreviousTextFieldName => nameof(clearPreviousText);
+
+		[SerializeField]
+		private bool waitForContinue = true;
+		public static string WaitForContinueFieldName => nameof(waitForContinue);
+
+		[SerializeField, HideInInspector]
+		private bool enableRichText = false;
+		public static string EnableRichTextFieldName => nameof(enableRichText);
+
 		[TextArea(6, 12)]
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		public string text;
@@ -13,14 +33,34 @@ namespace Narramancer {
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
 
-			runner.Suspend();
+			if (waitForContinue) {
+				runner.Suspend();
+			}
+			
+
 
 			var inputText = GetInputValue(runner.Blackboard, nameof(text), text);
+
+			foreach (var input in DynamicInputs) {
+				var inputObject = input.GetInputValue(runner.Blackboard);
+				var replacementText = string.Empty;
+				if (inputObject != null) {
+					replacementText = inputObject.ToString();
+				}
+				var expression = "{" + input.fieldName + "}";
+				while(inputText.IndexOf(expression)>=0) {
+					inputText = inputText.Replace(expression, replacementText);
+				}
+				
+			}
 
 			var textPrinter = this.FindObjectsOfType<TextPrinter>(true).FirstOrDefault();
 			// TODO: cache textPrinter
 			textPrinter.SetText(inputText, () => {
-				runner.Resume();
+				if (waitForContinue) {
+					runner.Resume();
+				}
+				
 			});
 		}
 	}
