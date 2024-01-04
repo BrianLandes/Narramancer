@@ -6,6 +6,11 @@ using UnityEngine;
 namespace Narramancer {
 	public class PrintTextNode : ChainedRunnableNode {
 
+		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
+		[SerializeField]
+		private TextPrinter textPrinter;
+		public static string TextPrinterFieldName => nameof(textPrinter);
+
 		[SerializeField, HideInInspector]
 		private int width = 300;
 		public static string WidthFieldName => nameof(width);
@@ -54,14 +59,17 @@ namespace Narramancer {
 				
 			}
 
-			var textPrinter = this.FindObjectsOfType<TextPrinter>(true).FirstOrDefault();
-			// TODO: cache textPrinter
+			var textPrinter = GetInputValue(runner.Blackboard, nameof(this.textPrinter), this.textPrinter);
+			if (textPrinter == null) {
+				textPrinter = this.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(textPrinter => textPrinter.isMainTextPrinter);
+			}
 			textPrinter.SetText(inputText, () => {
 				if (waitForContinue) {
 					runner.Resume();
 				}
 				
-			});
+			},
+			clearPreviousText);
 		}
 	}
 }

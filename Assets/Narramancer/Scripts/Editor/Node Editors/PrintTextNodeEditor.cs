@@ -104,6 +104,9 @@ namespace Narramancer {
 			clearPreviousTextProperty.boolValue = GUILayout.Toggle(clearPreviousTextProperty.boolValue, new GUIContent("Clear Previous Text",
 				"Whether to clear and replace any previously printed text, or simply append to it."));
 
+			var textPrinterPort = target.GetInputPort(PrintTextNode.TextPrinterFieldName);
+			NodeEditorGUILayout.PortField(textPrinterPort, serializedObject);
+
 			var textPort = target.GetInputPort(nameof(PrintTextNode.text));
 			NodeEditorGUILayout.PortField(textPort, serializedObject);
 
