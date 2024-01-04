@@ -9,8 +9,10 @@ namespace Narramancer {
 
 	public class TextPrinter : SerializableMonoBehaviour {
 
+		public bool isMainTextPrinter = true;
+
 		[SerializeField]
-		Text textField = default;
+		protected Text textField = default;
 
 		[SerializeField, Min(0.01f)]
 		float revealSpeed = 80f;
@@ -31,12 +33,12 @@ namespace Narramancer {
 		[SerializeMonoBehaviourField]
 		protected Promise promise = default;
 
-		Coroutine revealTextCoroutine = default;
+		protected Coroutine revealTextCoroutine = default;
 		Coroutine hideParentCoroutine = default;
 
 		public bool IsRevealingText { get; set; }
 
-		private void Start() {
+		void Start() {
 			if (!valuesOverwrittenByDeserialize) {
 				if (revealTextCoroutine == null) {
 					parentCanvasGroup.alpha = 0f;
@@ -45,15 +47,18 @@ namespace Narramancer {
 			}
 		}
 
-		public virtual void SetText(string text, Action callback) {
+		public virtual void SetText(string text, Action callback, bool clearPreviousText = true) {
 			ShowParentCanvas();
-			textField.text = "";
-			continueIndicator.SetActive(false);
-			targetText = text;
-			if (revealTextCoroutine != null) {
-				StopCoroutine(revealTextCoroutine);
+			var previousText = string.Empty;
+			if (!clearPreviousText && targetText.IsNotNullOrEmpty()) {
+				previousText = targetText + "\n";
 			}
-			revealTextCoroutine = StartCoroutine(RevealText(text));
+			textField.text = "";
+			continueIndicator?.SetActive(false);
+			targetText = previousText + text;
+
+			this.RestartCoroutine(ref revealTextCoroutine, RevealText(text, previousText));
+
 			if (callback != null) {
 				promise = new Promise();
 				promise.WhenDone(callback);
@@ -67,42 +72,39 @@ namespace Narramancer {
 		Regex tagRegex = new Regex(@"<[/a-zA-Z0-9=#]*>");
 		Regex openTagRegex = new Regex(@"<[0-9a-zA-Z=#]*>");
 		Regex closeTagRegex = new Regex(@"<\/[0-9a-zA-Z=#]*>");
-		Regex colorStartRegex = new Regex(@"<color=[#0-9a-z]*>");
-		Regex colorEndRegex = new Regex(@"</color>");
 
-		string RemoveMatch( string text, Match match) {
-			return text.Substring(0, match.Index) + text.Substring(match.Index + match.Length);
-		}
-
-		IEnumerator RevealText(string text) {
+		IEnumerator RevealText(string text, string seenText = "") {
 
 			var tagsInText = tagRegex.Matches(text);
 
 			IsRevealingText = true;
 
 			var position = 0f;
-			var ii = 0;
+			var textIndex = 0;
 			do {
 
 				position += Time.deltaTime * revealSpeed;
-				ii = Mathf.Min(text.Length-1, Mathf.FloorToInt(position));
+				textIndex = Mathf.Min(text.Length-1, Mathf.FloorToInt(position));
 				#region Skip over whitespace
-				if (text[ii] == ' ') {
-					ii++;
+				if (text[textIndex] == ' ') {
+					textIndex++;
 					position += 1;
 				}
 				#endregion
 
 				#region Skip over any tags
-				var intersectedMatch = tagsInText.FirstOrDefault(match => match.Index <= ii && match.Index + match.Length > ii);
+				var intersectedMatch = tagsInText.FirstOrDefault(match => match.Index <= textIndex && match.Index + match.Length > textIndex);
 				if (intersectedMatch != null) {
-					ii += intersectedMatch.Length;
+					textIndex += intersectedMatch.Length;
 					position += intersectedMatch.Length;
 				}
 				#endregion
 
-				var visibleText = text.Substring(0, ii);
-				var invisibleText = text.Substring(ii);
+				if ( textIndex >= text.Length ) {
+					break;
+				}
+				var visibleText = text.Substring(0, textIndex);
+				var invisibleText = text.Substring(textIndex);
 
 				#region Account for closing tags that we haven't yet revealed
 				var openTagsInVisible = openTagRegex.Matches(visibleText);
@@ -114,7 +116,7 @@ namespace Narramancer {
 					var firstCloseTagIndex = closeTagsInInvisible.OrderBy(match => match.Index).FirstOrDefault()?.Index;
 					var nestedOpenTagsInInvisible = openTagsInInvisible.Count(match => match.Index < firstCloseTagIndex);
 
-					for (var jj = 0; jj < difference; jj++) {
+					for (var jj = 0; jj < difference && nestedOpenTagsInInvisible + jj < closeTagsInInvisible.Count(); jj++) {
 						var match = closeTagsInInvisible[nestedOpenTagsInInvisible + jj];
 						var tag = invisibleText.Substring(match.Index, match.Length);
 						visibleText += tag;
@@ -133,14 +135,14 @@ namespace Narramancer {
 
 				var subText = $"{visibleText}<color=black>{invisibleText}</color>";
 
-				textField.text = subText;
+				textField.text = seenText + subText;
 
 				yield return new WaitForEndOfFrame();
 
-			} while (ii < text.Length-1);
+			} while (textIndex < text.Length-1);
 
-			textField.text = text;
-			continueIndicator.SetActive(true);
+			textField.text = seenText + text;
+			continueIndicator?.SetActive(true);
 			IsRevealingText = false;
 		}
 
@@ -149,7 +151,7 @@ namespace Narramancer {
 				SkipTextReveal();
 			}
 			else {
-				continueIndicator.SetActive(false);
+				continueIndicator?.SetActive(false);
 				HideParentCanvas();
 				targetText = null;
 				promise?.Resolve();
@@ -159,7 +161,7 @@ namespace Narramancer {
 		public void SkipTextReveal() {
 			this.StopCoroutineMaybe(revealTextCoroutine);
 			textField.text = targetText;
-			continueIndicator.SetActive(true);
+			continueIndicator?.SetActive(true);
 			IsRevealingText = false;
 		}
 
@@ -170,11 +172,11 @@ namespace Narramancer {
 
 			if (targetText.IsNotNullOrEmpty()) {
 				textField.text = targetText;
-				continueIndicator.SetActive(true);
+				continueIndicator?.SetActive(true);
 				parentCanvasGroup.gameObject.SetActive(true);
 			}
 			else {
-				continueIndicator.SetActive(false);
+				continueIndicator?.SetActive(false);
 				parentCanvasGroup.gameObject.SetActive(false);
 			}
 		}
