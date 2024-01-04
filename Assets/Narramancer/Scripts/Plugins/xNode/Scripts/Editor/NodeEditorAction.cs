@@ -36,6 +36,9 @@ namespace XNodeEditor {
         private Vector2 lastMousePosition;
         private float dragThreshold = 1f;
 
+        [NonSerialized] public UnityEngine.Object selectedNodeRunnerUnityObject;
+        [NonSerialized] public NodeRunner selectedNodeRunner;
+
         public void Controls() {
             wantsMouseMove = true;
             Event e = Event.current;
@@ -363,19 +366,6 @@ namespace XNodeEditor {
                     break;
             }
         }
-
-        public NodeRunnerUnityObjectPairing selectedNodeRunnerPairing;
-
-		public void ObjectSelection() {
-   //         var currentObject = Selection.activeObject as GameObject ;
-   //         var currentSelection = currentObject?.GetComponentInChildren<IBlackboardHolder>();
-			//if (currentSelection != null) {
-   //             selectedObject = currentObject;
-   //             selectedNodeRunner = currentSelection;
-   //             return;
-   //         }
-
-		}
 
         private void RecalculateDragOffsets(Event current) {
             dragOffset = new Vector2[Selection.objects.Length + selectedReroutes.Count];

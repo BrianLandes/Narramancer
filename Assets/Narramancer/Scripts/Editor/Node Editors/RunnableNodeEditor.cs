@@ -10,8 +10,6 @@ namespace Narramancer {
 
 		GUIStyle timeStyle;
 
-		NodeRunner lastNodeRunner;
-
 		public override void OnHeaderGUI() {
 
 			base.OnHeaderGUI();
@@ -21,7 +19,7 @@ namespace Narramancer {
 				timeStyle.alignment = TextAnchor.UpperRight;
 			}
 
-			lastNodeRunner = GetNodeRunner();
+			var lastNodeRunner = GetNodeRunner();
 
 			if (lastNodeRunner != null) {
 
@@ -48,9 +46,7 @@ namespace Narramancer {
 
 		private NodeRunner GetNodeRunner() {
 			if (Application.isPlaying) {
-				var selectedNodeHolder = NodeEditorWindow.current.selectedNodeRunnerPairing;
-				var runner = selectedNodeHolder?.nodeRunner;
-				return runner ?? lastNodeRunner;
+				return NodeEditorWindow.current.selectedNodeRunner;
 			}
 			return null;
 		}
@@ -76,7 +72,7 @@ namespace Narramancer {
 
 			var runnableNode = target as RunnableNode;
 
-			lastNodeRunner = GetNodeRunner();
+			var lastNodeRunner = GetNodeRunner();
 
 			if (lastNodeRunner != null && ColorUtility.TryParseHtmlString("#EF476F", out var color)) {
 

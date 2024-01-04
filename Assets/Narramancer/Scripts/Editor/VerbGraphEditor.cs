@@ -129,54 +129,44 @@ namespace Narramancer {
 			GUILayout.BeginArea(new Rect(0, 40, 200, Screen.height));
 			GUILayout.BeginVertical();
 
-			IEnumerable<NodeRunnerUnityObjectPairing> GetPossiblePairings() {
+			IEnumerable<UnityEngine.Object> GetPossibleNodeRunnerObjects() {
 				var narramancerScenes = GameObject.FindObjectsOfType<NarramancerScene>();
 				foreach (var scene in narramancerScenes) {
-					foreach (var nodeRunner in scene.NodeRunners) {
-						yield return new NodeRunnerUnityObjectPairing() {
-							name = $"{scene.gameObject.name} - {nodeRunner.name}",
-							nodeRunner = nodeRunner,
-							unityObject = scene.gameObject
-						};
-					}
+					yield return scene;
 				}
 
 				var runActionVerbMonoBehaviours = GameObject.FindObjectsOfType<RunActionVerbMonoBehaviour>();
 				foreach (var runActionVerb in runActionVerbMonoBehaviours) {
-					yield return new NodeRunnerUnityObjectPairing() {
-						name = $"{runActionVerb.gameObject.name} - {runActionVerb.Runner.name}",
-						nodeRunner = runActionVerb.Runner,
-						unityObject = runActionVerb.gameObject
-					};
+					yield return runActionVerb;
 				}
 
 				// TODO: include NarramancerSingleton
 			}
 
-			if (window.selectedNodeRunnerPairing == null || window.selectedNodeRunnerPairing.unityObject == null) {
-				var possibleHolders = GetPossiblePairings();
-				window.selectedNodeRunnerPairing = possibleHolders.FirstOrDefault();
+			if (window.selectedNodeRunnerUnityObject == null ) {
+				window.selectedNodeRunnerUnityObject = GetPossibleNodeRunnerObjects().FirstOrDefault();
 			}
 
-			var selectionText = window.selectedNodeRunnerPairing != null ? window.selectedNodeRunnerPairing.name : "(None)";
+			var selectionText = window.selectedNodeRunnerUnityObject != null ? window.selectedNodeRunnerUnityObject.name : "(None)";
 
 			if (EditorGUILayout.DropdownButton(new GUIContent(selectionText, selectionText), FocusType.Passive)) {
 				GenericMenu context = new GenericMenu();
 
-				var possibleHolders = GetPossiblePairings();
-				if (possibleHolders.Any()) {
-					foreach (var holder in possibleHolders) {
-						bool IsHolderSelected() {
-							if (window.selectedNodeRunnerPairing == null) {
-								return false;
-							}
-							return holder.unityObject == window.selectedNodeRunnerPairing.unityObject && holder.nodeRunner == window.selectedNodeRunnerPairing.nodeRunner;
-						}
+				var possibleObjects = GetPossibleNodeRunnerObjects();
+				if (possibleObjects.Any()) {
+					var usedNames = new HashSet<string>();
+					foreach (var unityObject in possibleObjects) {
 
-						context.AddItem(new GUIContent(holder.name, holder.name), IsHolderSelected(), () => {
-							EditorGUIUtility.PingObject(holder.unityObject);
-							Selection.activeObject = holder.unityObject;
-							window.selectedNodeRunnerPairing = holder;
+						var name = unityObject.name;
+						while (usedNames.Contains(name)) {
+							name += "*";
+						}
+						usedNames.Add(name);
+						context.AddItem(new GUIContent(name, name), unityObject == window.selectedNodeRunnerUnityObject, () => {
+							EditorGUIUtility.PingObject(unityObject);
+							Selection.activeObject = unityObject;
+							window.selectedNodeRunnerUnityObject = unityObject;
+							window.selectedNodeRunner = null;
 						});
 					}
 
@@ -185,13 +175,64 @@ namespace Narramancer {
 					context.AddDisabledItem(new GUIContent("(No valid values)"));
 				}
 
-
-
 				Matrix4x4 originalMatrix = GUI.matrix;
 				GUI.matrix = Matrix4x4.identity;
 				context.ShowAsContext();
 				GUI.matrix = originalMatrix;
 			}
+
+			if (!Application.isPlaying) {
+				window.selectedNodeRunner = null;
+			} else {
+
+				IEnumerable<NodeRunner> GetPossibleNodeRunners() {
+					if (window.selectedNodeRunnerUnityObject != null) {
+						if (window.selectedNodeRunnerUnityObject is NarramancerScene scene) {
+							foreach (var nodeRunner in scene.NodeRunners) {
+								yield return nodeRunner;
+							}
+						}
+						else
+						if (window.selectedNodeRunnerUnityObject is RunActionVerbMonoBehaviour runActionVerb) {
+							yield return runActionVerb.Runner;
+						}
+					}
+
+					// TODO: include NarramancerSingleton
+				}
+
+
+				if (window.selectedNodeRunner == null) {
+					window.selectedNodeRunner = GetPossibleNodeRunners().FirstOrDefault();
+				}
+
+				selectionText = window.selectedNodeRunner != null ? window.selectedNodeRunner.name : "(None)";
+
+				if (EditorGUILayout.DropdownButton(new GUIContent(selectionText, selectionText), FocusType.Passive)) {
+					GenericMenu context = new GenericMenu();
+
+					var possibleNodeRunners = GetPossibleNodeRunners();
+					if (possibleNodeRunners.Any()) {
+						foreach (var nodeRunner in possibleNodeRunners) {
+
+							context.AddItem(new GUIContent(nodeRunner.name, nodeRunner.name), window.selectedNodeRunner == nodeRunner, () => {
+								window.selectedNodeRunner = nodeRunner;
+							});
+						}
+
+					}
+					else {
+						context.AddDisabledItem(new GUIContent("(No valid values)"));
+					}
+
+					Matrix4x4 originalMatrix = GUI.matrix;
+					GUI.matrix = Matrix4x4.identity;
+					context.ShowAsContext();
+					GUI.matrix = originalMatrix;
+				}
+
+			}
+
 
 			GUILayout.EndVertical();
 			GUILayout.EndArea();

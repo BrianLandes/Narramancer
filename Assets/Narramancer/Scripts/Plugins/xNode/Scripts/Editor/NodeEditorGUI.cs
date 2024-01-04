@@ -25,7 +25,6 @@ namespace XNodeEditor {
             if (graph == null) return;
             ValidateGraphEditor();
             Controls();
-            ObjectSelection();
 
             var rect = new Rect(Vector2.zero, position.size);
             DrawGrid(rect, zoom, panOffset);
