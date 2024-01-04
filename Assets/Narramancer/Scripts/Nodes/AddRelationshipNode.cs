@@ -14,6 +14,7 @@ namespace Narramancer {
 		NounInstance other = default;
 
 		[SerializeField]
+		[NodeEnum]
 		SourceOrDestination sourceOrDestination = SourceOrDestination.Source;
 
 		public override void Run(NodeRunner runner) {

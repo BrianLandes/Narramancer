@@ -26,7 +26,9 @@ namespace Narramancer {
 			var variable = this.variable.GetVariable(VerbGraph);
 
 			if (variable == null) {
-				ClearDynamicPorts();
+				if (Scope != SerializableVariableReference.ScopeType.Scene) {
+					ClearDynamicPorts();
+				}
 			}
 			else {
 

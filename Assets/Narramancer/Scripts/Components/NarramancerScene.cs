@@ -12,6 +12,11 @@ namespace Narramancer {
 	public class NarramancerScene : SerializableMonoBehaviour {
 
 
+		[SerializeField]
+		NounScriptableObjectList nouns = new NounScriptableObjectList();
+		public List<NounScriptableObject> Nouns => nouns.list;
+		public static string NounsFieldName => nameof(nouns);
+
 
 		[SerializeField]
 		private NarramancerPortWithAssignmentList variables = new NarramancerPortWithAssignmentList();
@@ -44,6 +49,22 @@ namespace Narramancer {
 		private void Start() {
 			if (!valuesOverwrittenByDeserialize) {
 				variables.list.ApplyAssignmentsToBlackboard(NarramancerSingleton.Instance.StoryInstance.Blackboard);
+
+				var newInstances = new List<NounInstance>();
+
+				foreach (var typicalNoun in nouns.list) {
+					var instance = NarramancerSingleton.Instance.GetInstance(typicalNoun);
+					if (instance == null) {
+						instance = NarramancerSingleton.Instance.CreateInstance(typicalNoun);
+						newInstances.Add(instance);
+					}
+				}
+
+				// Establish Relationships
+				// Must occur after all initial instances have been created
+				foreach (var instance in newInstances) {
+					instance.AddRelationships(instance.Noun.Relationships, newInstances);
+				}
 
 				foreach (var verb in runOnStartVerbs.list) {
 					if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {

@@ -67,7 +67,7 @@ namespace Narramancer {
 					var inputValueA = inputPortA.GetInputValue(context);
 
 					var inputArrayA = AssemblyUtilities.ToListOfObjects(inputValueA);
-					foreach (var element in inputArrayA) {
+					foreach (var element in inputArrayA.WithoutNulls()) {
 						resultList.Add(element);
 					}
 
@@ -81,7 +81,7 @@ namespace Narramancer {
 					if (inputValueB != null) {
 						var inputArrayB = AssemblyUtilities.ToListOfObjects(inputValueB);
 
-						foreach (var element in inputArrayB) {
+						foreach (var element in inputArrayB.WithoutNulls()) {
 							resultList.Add(element);
 						}
 					}
@@ -92,7 +92,7 @@ namespace Narramancer {
 
 					var inputElements = elementsPort.GetInputValues(context);
 					if (inputElements != null) {
-						foreach (var element in inputElements) {
+						foreach (var element in inputElements.WithoutNulls()) {
 							resultList.Add(element);
 						}
 					}
