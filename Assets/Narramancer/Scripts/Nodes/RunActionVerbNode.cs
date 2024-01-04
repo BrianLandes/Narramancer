@@ -15,12 +15,19 @@ namespace Narramancer {
 		[VerbRequired]
 		[GraphHideLabel]
 		[FormerlySerializedAs("runnableGraph")]
+		[Input(ShowBackingValue.Unconnected,ConnectionType.Override, TypeConstraint.Inherited)]
 		public ActionVerb actionVerb;
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
 
+			var actionVerb = GetInputValue(runner.Blackboard, nameof(this.actionVerb), this.actionVerb);
+
 			if (actionVerb != null && actionVerb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
+
+				NarramancerPort GetCorrespondingRunnableGraphPort(Type type, string name) {
+					return actionVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
+				}
 
 				foreach (var inputPort in DynamicInputs) {
 					try {
@@ -63,12 +70,8 @@ namespace Narramancer {
 		}
 
 
-		private NarramancerPort GetCorrespondingRunnableGraphPort(Type type, string name) {
-			return actionVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
-		}
-
 		public override object GetValue(object context, NodePort port) {
-
+			var actionVerb = GetInputValue(context, nameof(this.actionVerb), this.actionVerb);
 			if (Application.isPlaying && actionVerb != null) {
 				foreach (var outputPort in actionVerb.Outputs) {
 
