@@ -40,18 +40,27 @@ namespace Narramancer {
 
 		Coroutine scrollCoroutine = default;
 
-		private void Start() {
+		void Start() {
 			choiceButtonPrefab.SetActive(false);
+			if (!valuesOverwrittenByDeserialize) {
+				textField.text = targetText = string.Empty;
+				continueIndicator.SetActive(false);
+			}
 		}
 
 		#region Text Printer
 
-		public override void SetText(string text, Action callback) {
+		public override void SetText(string text, Action callback, bool clearPreviousText = true) {
 			this.StopCoroutineMaybe( scrollCoroutine);
-			base.SetText(text, callback);
+			base.SetText(text, callback, clearPreviousText);
 
 			Canvas.ForceUpdateCanvases();
-			scrollRect.verticalNormalizedPosition = 1f;
+			if (clearPreviousText) {
+				scrollRect.verticalNormalizedPosition = 1f;
+			}
+			else {
+				this.RestartCoroutine(ref scrollCoroutine, scrollRect.ScrollToBottom() );
+			}
 		}
 
 		public override void OnContinue() {
