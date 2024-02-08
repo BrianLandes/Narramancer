@@ -1,0 +1,58 @@
+This document contains licensing and attribution information for third-party software components included in the Narramancer asset package for Unity.
+
+Unity Asset Store Package:
+
+Asset Name: Narramancer
+Version: 0.4
+Author: Brian Landes (Professional Bad Guys)
+
+
+Third-Party Components:
+
+
+Odin Serializer
+
+Name: OdinSerializer
+Author: TeamSirenix
+Description: OdinSerializer is an open-source version of the custom serializer built for and used by Odin - Inspector & Serializer
+Version: 2022.11.9 - 8d9fc0bc
+URL: https://github.com/TeamSirenix/odin-serializer/tree/master
+License: Apache-2.0 license
+License URL: https://github.com/TeamSirenix/odin-serializer/tree/master?tab=Apache-2.0-1-ov-file#readme
+License Summary: A permissive license whose main conditions require preservation of copyright and license notices. Contributors provide an express grant of patent rights. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+
+xNode
+
+Name: xNode
+Author: Thor Brigsted (Siccity)
+Description: A unity framework for node-based behaviour trees
+URL: https://github.com/Siccity/xNode
+Version: 1.8.0
+License: MIT License
+License URL: https://github.com/Siccity/xNode?tab=MIT-1-ov-file#readme
+License Summary: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+
+SerializableDictionary
+
+Name: Unity-SerializableDictionary
+Author: Mathieu Le Ber (azixMcAze)
+Description: A serializable dictionary class for Unity.
+URL: https://github.com/azixMcAze/Unity-SerializableDictionary
+Version: 1.1.0
+License: MIT License
+License URL: https://github.com/azixMcAze/Unity-SerializableDictionary?tab=MIT-1-ov-file
+License Summary: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+
+SerializableAction
+
+Name: SerializableAction (UndoPro)
+Author: Seneral
+Description: SerializableAction is a component of UndoPro that allows for the serialization of simple C# methods and callbacks.
+URL: https://github.com/Seneral/UndoPro/tree/master/UndoPro/SerializableAction
+Version: LTS v1.0.0
+License: MIT License
+License URL: https://github.com/Seneral/UndoPro?tab=License-1-ov-file
+License Summary: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
