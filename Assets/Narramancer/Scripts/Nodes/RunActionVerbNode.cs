@@ -63,7 +63,7 @@ namespace Narramancer {
 				this.BuildIONodeGraphPorts(actionVerb);
 
 				name = actionVerb.name;
-				name = "Run Graph: " + name.Nicify();
+				name = "Run ActionVerb: " + name.Nicify();
 			}
 
 			base.UpdatePorts();
