@@ -1,0 +1,4010 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8866369795522732314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c090957052ae174a86949b7f52cd00e, type: 3}
+  m_Name: Get Property
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2328, y: -648}
+  ports:
+    keys:
+    - property
+    - hasProperty
+    - propertyInstance
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    values:
+    - _fieldName: property
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: hasProperty
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: enabled
+        node: {fileID: 7611077347471880690}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -6236451787984622064}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: propertyInstance
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: Narramancer.PropertyInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Selected Element
+        node: {fileID: 6997171544493747774}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: -8866369795522732314}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: -1937346135554350095}
+        reroutePoints: []
+      - fieldName: instance
+        node: {fileID: -5723769072132631007}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: c59dd73b-1b2a-437c-af31-82063e6244d4
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 8f95dc53-9155-4ceb-a51f-98708e87af83
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  property: {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+  hasProperty: 0
+  propertyInstance:
+    adjective: {fileID: 0}
+--- !u!114 &-8472367019864558451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52aea610b6bdb9440a741480fb5dfe99, type: 3}
+  m_Name: Offer Choices
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2280, y: -424}
+  ports:
+    keys:
+    - choiceNodes
+    - thisNode
+    values:
+    - _fieldName: choiceNodes
+      _node: {fileID: -8472367019864558451}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: thisChoice
+        node: {fileID: 7611077347471880690}
+        reroutePoints: []
+      - fieldName: thisChoice
+        node: {fileID: -8251491557652931836}
+        reroutePoints: []
+      - fieldName: thisChoice
+        node: {fileID: -3672757178469974554}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -8472367019864558451}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: runWhenObjectSelected
+        node: {fileID: 6997171544493747774}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  choiceNodes: {fileID: 0}
+--- !u!114 &-8251491557652931836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2984, y: -312}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -8251491557652931836}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -8472367019864558451}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -8251491557652931836}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -1937346135554350095}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -8251491557652931836}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: result
+        node: {fileID: -6236451787984622064}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -8251491557652931836}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Put on stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-8128354556522446403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2920, y: 168}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -8128354556522446403}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -4615560440672692123}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -8128354556522446403}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 5011907736400056512}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -8128354556522446403}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasProperty
+        node: {fileID: 7878152744015794582}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -8128354556522446403}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Take off stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-7726571267121988495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86df35602cb44144a9653418bd5781f1, type: 3}
+  m_Name: List Union
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -456, y: -488}
+  ports:
+    keys:
+    - List A
+    - List B
+    - Elements
+    - Results
+    values:
+    - _fieldName: List A
+      _node: {fileID: -7726571267121988495}
+      _typeQualifiedName: System.Collections.Generic.List`1[[System.String, mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: List B
+      _node: {fileID: -7726571267121988495}
+      _typeQualifiedName: System.Collections.Generic.List`1[[System.String, mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Elements
+      _node: {fileID: -7726571267121988495}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: value
+        node: {fileID: 1415177512709109431}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -3010002677675143581}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -4438122368778717246}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -7201890699062893359}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -4408773414320687283}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: 974488919808495557}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Results
+      _node: {fileID: -7726571267121988495}
+      _typeQualifiedName: System.Collections.Generic.List`1[[System.String, mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: List
+        node: {fileID: 6675017297674645534}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  listType:
+    typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    list: 0
+  useReplacement: 1
+--- !u!114 &-7201890699062893359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -808, y: -536}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: -7201890699062893359}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Luke
+--- !u!114 &-6236451787984622064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3caae6a01cef8345b668e54ce65bc33, type: 3}
+  m_Name: Not
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2712, y: -200}
+  ports:
+    keys:
+    - value
+    - result
+    values:
+    - _fieldName: value
+      _node: {fileID: -6236451787984622064}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasProperty
+        node: {fileID: -8866369795522732314}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: result
+      _node: {fileID: -6236451787984622064}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: enabled
+        node: {fileID: -8251491557652931836}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: 0
+  result: 0
+--- !u!114 &-6156559776683314053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2920, y: 360}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -6156559776683314053}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -4615560440672692123}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -6156559776683314053}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 6892910309893733931}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -6156559776683314053}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: result
+        node: {fileID: -681475407068592226}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -6156559776683314053}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Put on stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-5739749219817483675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2920, y: 568}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -5739749219817483675}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -4615560440672692123}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -5739749219817483675}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -5739749219817483675}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -5739749219817483675}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Back
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-5723769072132631007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f29850043bb9b34191ae3db5290f69f, type: 3}
+  m_Name: Remove Properties
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 3896, y: -536}
+  ports:
+    keys:
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: instance
+      _node: {fileID: -5723769072132631007}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: passThroughInstance
+        node: {fileID: -8866369795522732314}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: -5723769072132631007}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: -5723769072132631007}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -5723769072132631007}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -5723769072132631007}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: 7611077347471880690}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: 1ace900f-d463-4d22-aa36-cfb269cfc809
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 00b5bc3d-f9f4-4aaa-8e5f-77b76d4ebddc
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  properties:
+  - {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+--- !u!114 &-4615560440672692123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52aea610b6bdb9440a741480fb5dfe99, type: 3}
+  m_Name: Offer Choices
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2216, y: 248}
+  ports:
+    keys:
+    - choiceNodes
+    - thisNode
+    values:
+    - _fieldName: choiceNodes
+      _node: {fileID: -4615560440672692123}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: thisChoice
+        node: {fileID: -8128354556522446403}
+        reroutePoints: []
+      - fieldName: thisChoice
+        node: {fileID: -6156559776683314053}
+        reroutePoints: []
+      - fieldName: thisChoice
+        node: {fileID: -5739749219817483675}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -4615560440672692123}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: runWhenObjectSelected
+        node: {fileID: 1680714276572974270}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  choiceNodes: {fileID: 0}
+--- !u!114 &-4438122368778717246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -744, y: -264}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: -4438122368778717246}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Lillian
+--- !u!114 &-4409792310397931302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60c5b9c406564224aaf3e87dddc7db3c, type: 3}
+  m_Name: Get Instances
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1096, y: 424}
+  ports:
+    keys:
+    - instances
+    values:
+    - _fieldName: instances
+      _node: {fileID: -4409792310397931302}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Input List
+        node: {fileID: 1680714276572974270}
+        reroutePoints: []
+      - fieldName: List B
+        node: {fileID: -1744615471425878097}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  mustHaveProperties:
+  - {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+  instances: []
+--- !u!114 &-4408773414320687283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1128, y: -536}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: -4408773414320687283}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Karina
+--- !u!114 &-3672757178469974554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2984, y: -104}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -3672757178469974554}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -8472367019864558451}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -3672757178469974554}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -3672757178469974554}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -3672757178469974554}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Back
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-3010002677675143581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1096, y: -376}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: -3010002677675143581}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Arturo
+--- !u!114 &-2100574797895878916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 616, y: 184}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -2100574797895878916}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: 5882787045069522880}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -2100574797895878916}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 1680714276572974270}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -2100574797895878916}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -2100574797895878916}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: See all people who are on stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-1937346135554350095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedb40b23d75aa48a1213cdc7e05f06, type: 3}
+  m_Name: Add Properties
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 3896, y: -280}
+  ports:
+    keys:
+    - property
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: property
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: passThroughInstance
+        node: {fileID: -8866369795522732314}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -1937346135554350095}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -8251491557652931836}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: d6b31096-ae91-4799-a0f4-d69f9df6b08b
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 9c8ee361-c3f2-4cff-b5d5-77e16d0616a5
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  properties:
+  - {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+  property: {fileID: 0}
+--- !u!114 &-1919600461514130172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44967ffb892acf049bf02b5691bf264f, type: 3}
+  m_Name: Sequence Of Nodes
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -536, y: 8}
+  ports:
+    keys:
+    - nodes
+    - thisNode
+    values:
+    - _fieldName: nodes
+      _node: {fileID: -1919600461514130172}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 6675017297674645534}
+        reroutePoints: []
+      - fieldName: thisNode
+        node: {fileID: 5882787045069522880}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -1919600461514130172}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: runNode
+        node: {fileID: 7927551452980075578}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  nodes: {fileID: 0}
+--- !u!114 &-1744615471425878097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 078896fc58d2b414ea5cd69840ebc94c, type: 3}
+  m_Name: List Subtract
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1384, y: 40}
+  ports:
+    keys:
+    - List A
+    - List B
+    - Elements
+    - Result
+    values:
+    - _fieldName: List A
+      _node: {fileID: -1744615471425878097}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: instances
+        node: {fileID: 2142986797231639532}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: List B
+      _node: {fileID: -1744615471425878097}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: instances
+        node: {fileID: -4409792310397931302}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Elements
+      _node: {fileID: -1744615471425878097}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Result
+      _node: {fileID: -1744615471425878097}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Input List
+        node: {fileID: 6997171544493747774}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  listType:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+--- !u!114 &-800041131006896736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 616, y: -88}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: -800041131006896736}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: 5882787045069522880}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: -800041131006896736}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 6997171544493747774}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: -800041131006896736}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: -800041131006896736}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: See all people who are NOT on stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &-681475407068592226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3caae6a01cef8345b668e54ce65bc33, type: 3}
+  m_Name: Not
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2648, y: 472}
+  ports:
+    keys:
+    - value
+    - result
+    values:
+    - _fieldName: value
+      _node: {fileID: -681475407068592226}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasProperty
+        node: {fileID: 7878152744015794582}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: result
+      _node: {fileID: -681475407068592226}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: enabled
+        node: {fileID: -6156559776683314053}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: 0
+  result: 0
+--- !u!114 &-324746328761386397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1cebdc42c2a84949af3f30d1393883c, type: 3}
+  m_Name: Route
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 4232, y: 632}
+  ports:
+    keys:
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: thenRunNode
+      _node: {fileID: -324746328761386397}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 3577079948285936589}
+        reroutePoints:
+        - {x: 2884.146, y: 665.40356}
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: -324746328761386397}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -3672757178469974554}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: -1937346135554350095}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: -5723769072132631007}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: 5011907736400056512}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: 6892910309893733931}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: -5739749219817483675}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d5b317199bcfcd41864297551d63821, type: 3}
+  m_Name: Adding and Removing Properties Verb
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 7927551452980075578}
+  - {fileID: 5882787045069522880}
+  - {fileID: -2100574797895878916}
+  - {fileID: 1680714276572974270}
+  - {fileID: -4409792310397931302}
+  - {fileID: 3963393208591951986}
+  - {fileID: -7726571267121988495}
+  - {fileID: 1415177512709109431}
+  - {fileID: -3010002677675143581}
+  - {fileID: -4438122368778717246}
+  - {fileID: -7201890699062893359}
+  - {fileID: -4408773414320687283}
+  - {fileID: 974488919808495557}
+  - {fileID: 6675017297674645534}
+  - {fileID: 5727306150536897606}
+  - {fileID: -1919600461514130172}
+  - {fileID: -800041131006896736}
+  - {fileID: 6997171544493747774}
+  - {fileID: 2142986797231639532}
+  - {fileID: -8472367019864558451}
+  - {fileID: 7611077347471880690}
+  - {fileID: -8866369795522732314}
+  - {fileID: -8251491557652931836}
+  - {fileID: -6236451787984622064}
+  - {fileID: -3672757178469974554}
+  - {fileID: 3577079948285936589}
+  - {fileID: -1937346135554350095}
+  - {fileID: -5723769072132631007}
+  - {fileID: -324746328761386397}
+  - {fileID: -1744615471425878097}
+  - {fileID: -4615560440672692123}
+  - {fileID: -8128354556522446403}
+  - {fileID: 7878152744015794582}
+  - {fileID: -6156559776683314053}
+  - {fileID: -681475407068592226}
+  - {fileID: -5739749219817483675}
+  - {fileID: 6892910309893733931}
+  - {fileID: 5011907736400056512}
+  - {fileID: 4270212084706521863}
+  panOffset: {x: -1866.8507, y: -216.88187}
+  inputs: []
+  outputs: []
+  references:
+    objects: []
+--- !u!114 &974488919808495557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1048, y: -264}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: 974488919808495557}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Graysen
+--- !u!114 &1415177512709109431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7a72f0fcafc2014e93d56babafac3be, type: 3}
+  m_Name: String Literal
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -840, y: -440}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: 1415177512709109431}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Elements
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  value: Cora
+--- !u!114 &1680714276572974270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a4b9f59fce41543a122313009d377d, type: 3}
+  m_Name: Offer Objects As Choices
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1512, y: 232}
+  ports:
+    keys:
+    - runWhenObjectSelected
+    - runWhenBackSelected
+    - thisNode
+    - Input Elements
+    - Input List
+    - Selected Element
+    values:
+    - _fieldName: runWhenObjectSelected
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -4615560440672692123}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: runWhenBackSelected
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 3577079948285936589}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -2100574797895878916}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Input Elements
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Input List
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: instances
+        node: {fileID: -4409792310397931302}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Selected Element
+      _node: {fileID: 1680714276572974270}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: 7878152744015794582}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  type:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+  runWhenObjectSelected: {fileID: 0}
+  runWhenBackSelected: {fileID: 0}
+  displayNamePredicate: {fileID: 0}
+  enabledPredicate: {fileID: 0}
+  showIfDisabled: 1
+--- !u!114 &2142986797231639532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60c5b9c406564224aaf3e87dddc7db3c, type: 3}
+  m_Name: Get Instances
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1160, y: -56}
+  ports:
+    keys:
+    - instances
+    values:
+    - _fieldName: instances
+      _node: {fileID: 2142986797231639532}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: List A
+        node: {fileID: -1744615471425878097}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  mustHaveProperties: []
+  instances: []
+--- !u!114 &3577079948285936589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1cebdc42c2a84949af3f30d1393883c, type: 3}
+  m_Name: Route
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2168, y: 712}
+  ports:
+    keys:
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: thenRunNode
+      _node: {fileID: 3577079948285936589}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 5882787045069522880}
+        reroutePoints:
+        - {x: 2158.606, y: 855.8893}
+        - {x: 423.99988, y: 439.2262}
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 3577079948285936589}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: runWhenBackSelected
+        node: {fileID: 1680714276572974270}
+        reroutePoints: []
+      - fieldName: runWhenBackSelected
+        node: {fileID: 6997171544493747774}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+--- !u!114 &3963393208591951986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee6c43bf65151ab44a0da224d3604b19, type: 3}
+  m_Name: Create Instance
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 216, y: -312}
+  ports:
+    keys:
+    - displayName
+    - spawner
+    - instance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: displayName
+      _node: {fileID: 3963393208591951986}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Element
+        node: {fileID: 6675017297674645534}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: spawner
+      _node: {fileID: 3963393208591951986}
+      _typeQualifiedName: Narramancer.SerializableSpawner, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: 3963393208591951986}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: 5727306150536897606}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: 3963393208591951986}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 5727306150536897606}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 3963393208591951986}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: 6675017297674645534}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  displayName: 
+  spawner: {fileID: 0}
+  properties: []
+  stats: []
+  instance:
+    displayName: 
+    uid:
+      Value: 7b24c0d8-f753-4037-96a1-908c7222db06
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+--- !u!114 &4270212084706521863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1edcb20799f45b8418a031d1b9b3e379, type: 3}
+  m_Name: Any Instance Passes Predicate
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1203.0234, y: 653.4123}
+  ports:
+    keys:
+    - instances
+    - result
+    - firstCharacter
+    values:
+    - _fieldName: instances
+      _node: {fileID: 4270212084706521863}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: result
+      _node: {fileID: 4270212084706521863}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: firstCharacter
+      _node: {fileID: 4270212084706521863}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  instances: []
+  predicate: {fileID: 0}
+  result: 0
+  firstCharacter:
+    displayName: 
+    uid:
+      Value: 6b8b1301-38c5-4198-b28f-90cda30c3aeb
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+--- !u!114 &5011907736400056512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f29850043bb9b34191ae3db5290f69f, type: 3}
+  m_Name: Remove Properties
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 3832, y: 136}
+  ports:
+    keys:
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: instance
+      _node: {fileID: 5011907736400056512}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: passThroughInstance
+        node: {fileID: 7878152744015794582}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: 5011907736400056512}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: 5011907736400056512}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: 5011907736400056512}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 5011907736400056512}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -8128354556522446403}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: 1ace900f-d463-4d22-aa36-cfb269cfc809
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 00b5bc3d-f9f4-4aaa-8e5f-77b76d4ebddc
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  properties:
+  - {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+--- !u!114 &5727306150536897606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedb40b23d75aa48a1213cdc7e05f06, type: 3}
+  m_Name: Add Properties
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 680, y: -376}
+  ports:
+    keys:
+    - property
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: property
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: 3963393208591951986}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 5727306150536897606}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: 3963393208591951986}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: a39c8e5a-950f-4950-92cb-4a77f0b3601b
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: a7748c33-c1b9-48dd-822e-e2719f52fed0
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  properties: []
+  property: {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+--- !u!114 &5882787045069522880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52aea610b6bdb9440a741480fb5dfe99, type: 3}
+  m_Name: Offer Choices
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 40, y: 40}
+  ports:
+    keys:
+    - choiceNodes
+    - thisNode
+    values:
+    - _fieldName: choiceNodes
+      _node: {fileID: 5882787045069522880}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: thisChoice
+        node: {fileID: -2100574797895878916}
+        reroutePoints: []
+      - fieldName: thisChoice
+        node: {fileID: -800041131006896736}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 5882787045069522880}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: nodes
+        node: {fileID: -1919600461514130172}
+        reroutePoints: []
+      - fieldName: thenRunNode
+        node: {fileID: 3577079948285936589}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  choiceNodes: {fileID: 0}
+--- !u!114 &6675017297674645534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38b6e3fd445cfe4409840a145959d986, type: 3}
+  m_Name: List For Each
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -136, y: -328}
+  ports:
+    keys:
+    - thenRunNode
+    - thisNode
+    - List
+    - Elements
+    - Element
+    - Index
+    values:
+    - _fieldName: thenRunNode
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 3963393208591951986}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: nodes
+        node: {fileID: -1919600461514130172}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: List
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: System.Collections.Generic.List`1[[System.String, mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Results
+        node: {fileID: -7726571267121988495}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Elements
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Element
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: displayName
+        node: {fileID: 3963393208591951986}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Index
+      _node: {fileID: 6675017297674645534}
+      _typeQualifiedName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  listType:
+    typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+    list: 0
+--- !u!114 &6892910309893733931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dedb40b23d75aa48a1213cdc7e05f06, type: 3}
+  m_Name: Add Properties
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 3832, y: 392}
+  ports:
+    keys:
+    - property
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    - thenRunNode
+    - thisNode
+    values:
+    - _fieldName: property
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: passThroughInstance
+        node: {fileID: 7878152744015794582}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -324746328761386397}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 6892910309893733931}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -6156559776683314053}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thenRunNode: {fileID: 0}
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: d6b31096-ae91-4799-a0f4-d69f9df6b08b
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 9c8ee361-c3f2-4cff-b5d5-77e16d0616a5
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  properties:
+  - {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+  property: {fileID: 0}
+--- !u!114 &6997171544493747774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a4b9f59fce41543a122313009d377d, type: 3}
+  m_Name: Offer Objects As Choices
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 1624, y: -296}
+  ports:
+    keys:
+    - runWhenObjectSelected
+    - runWhenBackSelected
+    - thisNode
+    - Input Elements
+    - Input List
+    - Selected Element
+    values:
+    - _fieldName: runWhenObjectSelected
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -8472367019864558451}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: runWhenBackSelected
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: 3577079948285936589}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thenRunNode
+        node: {fileID: -800041131006896736}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 1
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Input Elements
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Input List
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Result
+        node: {fileID: -1744615471425878097}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Selected Element
+      _node: {fileID: 6997171544493747774}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: -8866369795522732314}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  type:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+  runWhenObjectSelected: {fileID: 0}
+  runWhenBackSelected: {fileID: 0}
+  displayNamePredicate: {fileID: 0}
+  enabledPredicate: {fileID: 0}
+  showIfDisabled: 1
+--- !u!114 &7611077347471880690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69be34c7882f34647b9a2a6c6984b1a8, type: 3}
+  m_Name: Choice
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2984, y: -504}
+  ports:
+    keys:
+    - thisChoice
+    - thenRunNode
+    - enabled
+    - displayText
+    values:
+    - _fieldName: thisChoice
+      _node: {fileID: 7611077347471880690}
+      _typeQualifiedName: Narramancer.ChoiceNode, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      connections:
+      - fieldName: choiceNodes
+        node: {fileID: -8472367019864558451}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thenRunNode
+      _node: {fileID: 7611077347471880690}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -5723769072132631007}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: enabled
+      _node: {fileID: 7611077347471880690}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasProperty
+        node: {fileID: -8866369795522732314}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: displayText
+      _node: {fileID: 7611077347471880690}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  thisChoice: {fileID: 0}
+  thenRunNode: {fileID: 0}
+  enabled: 1
+  displayText: Take off stage
+  customColor:
+    activated: 0
+    value: {r: 1, g: 1, b: 1, a: 1}
+  displayWhenDisabled: 0
+--- !u!114 &7878152744015794582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c090957052ae174a86949b7f52cd00e, type: 3}
+  m_Name: Get Property
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 2264, y: 24}
+  ports:
+    keys:
+    - property
+    - hasProperty
+    - propertyInstance
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    values:
+    - _fieldName: property
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: hasProperty
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: enabled
+        node: {fileID: -8128354556522446403}
+        reroutePoints: []
+      - fieldName: value
+        node: {fileID: -681475407068592226}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: propertyInstance
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: Narramancer.PropertyInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Selected Element
+        node: {fileID: 1680714276572974270}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: 7878152744015794582}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: 6892910309893733931}
+        reroutePoints: []
+      - fieldName: instance
+        node: {fileID: 5011907736400056512}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: c59dd73b-1b2a-437c-af31-82063e6244d4
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: 8f95dc53-9155-4ceb-a51f-98708e87af83
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  property: {fileID: 11400000, guid: ac7f851bdfcceb648a0fce114a281c6e, type: 2}
+  hasProperty: 0
+  propertyInstance:
+    adjective: {fileID: 0}
+--- !u!114 &7927551452980075578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d1fffb334f4d4c43b7e6e88f4ce0ea7, type: 3}
+  m_Name: Root
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1048, y: 24}
+  ports:
+    keys:
+    - runNode
+    values:
+    - _fieldName: runNode
+      _node: {fileID: 7927551452980075578}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -1919600461514130172}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  runNode: {fileID: 0}
