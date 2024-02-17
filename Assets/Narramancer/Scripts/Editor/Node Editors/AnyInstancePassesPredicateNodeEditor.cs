@@ -10,11 +10,13 @@ namespace Narramancer {
 			var node = target as AnyInstancePassesPredicateNode;
 			var ioGraph = node.Predicate as VerbGraph;
 
-			var needsUpdate = !HasMatchingNodeInputsGraphInputs(node, ioGraph);
-			if (needsUpdate) {
-				node.RebuildPorts();
+			if (ioGraph != null) {
+				var needsUpdate = !HasMatchingNodeInputsGraphInputs(node, ioGraph);
+				if (needsUpdate) {
+					node.RebuildPorts();
+				}
 			}
-
+			
 			base.OnBodyGUI();
 		}
 
