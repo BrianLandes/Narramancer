@@ -7,7 +7,7 @@ namespace Narramancer {
 	[CreateNodeMenu("Noun/Choose Ranked Weighted Action")]
 	public class ChooseRankedWeightedActionNode : AbstractInstanceInputChainedRunnableNode {
 
-		public List<RankedWeightedAction> actions;
+		public List<RankedWeightedAction> actions = new List<RankedWeightedAction>();
 
 		[SerializeField]
 		[HideInInspector]
