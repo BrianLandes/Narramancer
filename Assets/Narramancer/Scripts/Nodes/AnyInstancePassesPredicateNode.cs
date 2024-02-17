@@ -27,7 +27,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Strict)]
-		private NounInstance firstCharacter = default;
+		private NounInstance firstInstance = default;
 
 		public void RebuildPorts() {
 
@@ -88,7 +88,7 @@ namespace Narramancer {
 					case nameof(result):
 						return GetFirstInstanceThatPassesPredicate(context) != null;
 
-					case nameof(firstCharacter):
+					case nameof(firstInstance):
 						return GetFirstInstanceThatPassesPredicate(context);
 				}
 			}
