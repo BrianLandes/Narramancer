@@ -4,12 +4,16 @@ using XNodeEditor;
 
 namespace Narramancer {
 
-	[CustomNodeEditor(typeof(GetFlagNode))]
-	[CustomNodeEditor(typeof(IsFlagRaisedNode))]
-	public class FlagNodeEditor : NodeEditor {
+	[CustomNodeEditor(typeof(RaiseFlagNode))]
+	[CustomNodeEditor(typeof(SetFlagNode))]
+	[CustomNodeEditor(typeof(RemoveFlagNode))]
+	public class ChainedRunnabledFlagNodeEditor : ChainedRunnableNodeEditor {
 
 		public override void OnBodyGUI() {
-			base.OnBodyGUI();
+
+			OnTopGUI();
+
+			OnBaseBodyGUI();
 
 			var flagProperty = serializedObject.FindProperty("flag");
 			if (flagProperty.objectReferenceValue == null) {
@@ -27,6 +31,8 @@ namespace Narramancer {
 					}
 				}
 			}
+
 		}
+
 	}
 }
