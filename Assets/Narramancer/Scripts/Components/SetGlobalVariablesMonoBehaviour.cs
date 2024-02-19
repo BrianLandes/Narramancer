@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Narramancer {
 	[DefaultExecutionOrder(-1)]
@@ -31,6 +34,20 @@ namespace Narramancer {
 			var blackboard = NarramancerSingleton.Instance.StoryInstance.Blackboard;
 			assignments.ApplyAssignmentsToBlackboard(NarramancerSingleton.Instance.GlobalVariables, blackboard);
 		}
+
+#if UNITY_EDITOR
+		[MenuItem("GameObject/Narramancer/Set Global Variables", false, 10)]
+		static void CreateGameObject(MenuCommand menuCommand) {
+
+			GameObject gameObject = new GameObject("Set Global Variables");
+			gameObject.AddComponent<SetGlobalVariablesMonoBehaviour>();
+
+			GameObjectUtility.SetParentAndAlign(gameObject, menuCommand.context as GameObject);
+
+			Undo.RegisterCreatedObjectUndo(gameObject, "Create " + gameObject.name);
+			Selection.activeObject = gameObject;
+		}
+#endif
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
