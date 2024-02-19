@@ -264,6 +264,29 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   choiceNodes: {fileID: 0}
+--- !u!114 &-8284896212889874861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3215fbcef6bcaf84788f9de4504a3061, type: 3}
+  m_Name: Ranked Weighted Action
+  m_EditorClassIdentifier: 
+  staticRank:
+    activated: 1
+    value: 1
+  rankGraph: {fileID: 0}
+  staticWeight:
+    activated: 1
+    value: 1
+  weightGraph: {fileID: 0}
+  effectGraph: {fileID: 0}
+  references:
+    objects: []
 --- !u!114 &-8251491557652931836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1406,6 +1429,29 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   value: Arturo
+--- !u!114 &-2669161646303980858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3215fbcef6bcaf84788f9de4504a3061, type: 3}
+  m_Name: Ranked Weighted Action
+  m_EditorClassIdentifier: 
+  staticRank:
+    activated: 1
+    value: 1
+  rankGraph: {fileID: 0}
+  staticWeight:
+    activated: 1
+    value: 1
+  weightGraph: {fileID: 0}
+  effectGraph: {fileID: 0}
+  references:
+    objects: []
 --- !u!114 &-2100574797895878916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2160,7 +2206,6 @@ MonoBehaviour:
   - {fileID: -5739749219817483675}
   - {fileID: 6892910309893733931}
   - {fileID: 5011907736400056512}
-  - {fileID: 4270212084706521863}
   panOffset: {x: -1866.8507, y: -216.88187}
   inputs: []
   outputs: []
@@ -2653,7 +2698,7 @@ MonoBehaviour:
         values: []
       objects:
         keys: []
---- !u!114 &4270212084706521863
+--- !u!114 &4948732830463037936
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2662,98 +2707,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1edcb20799f45b8418a031d1b9b3e379, type: 3}
-  m_Name: Any Instance Passes Predicate
+  m_Script: {fileID: 11500000, guid: 3215fbcef6bcaf84788f9de4504a3061, type: 3}
+  m_Name: Ranked Weighted Action
   m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -1203.0234, y: 653.4123}
-  ports:
-    keys:
-    - instances
-    - result
-    - firstCharacter
-    values:
-    - _fieldName: instances
-      _node: {fileID: 4270212084706521863}
-      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
-        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
-        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      _useTriangleHandle: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-    - _fieldName: result
-      _node: {fileID: 4270212084706521863}
-      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 2
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      _useTriangleHandle: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-    - _fieldName: firstCharacter
-      _node: {fileID: 4270212084706521863}
-      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 2
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      _useTriangleHandle: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-  instances: []
-  predicate: {fileID: 0}
-  result: 0
-  firstCharacter:
-    displayName: 
-    uid:
-      Value: 6b8b1301-38c5-4198-b28f-90cda30c3aeb
-    noun: {fileID: 0}
-    properties: []
-    stats: []
-    relationships: []
-    blackboard:
-      ints:
-        keys: []
-        values: 
-      bools:
-        keys: []
-        values: 
-      floats:
-        keys: []
-        values: []
-      strings:
-        keys: []
-        values: []
-      unityObjects:
-        keys: []
-        values: []
-      objects:
-        keys: []
+  staticRank:
+    activated: 1
+    value: 1
+  rankGraph: {fileID: 0}
+  staticWeight:
+    activated: 1
+    value: 1
+  weightGraph: {fileID: 0}
+  effectGraph: {fileID: 0}
+  references:
+    objects: []
 --- !u!114 &5011907736400056512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4008,3 +3975,26 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   runNode: {fileID: 0}
+--- !u!114 &8364296869701643212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3215fbcef6bcaf84788f9de4504a3061, type: 3}
+  m_Name: Ranked Weighted Action
+  m_EditorClassIdentifier: 
+  staticRank:
+    activated: 1
+    value: 1
+  rankGraph: {fileID: 0}
+  staticWeight:
+    activated: 1
+    value: 1
+  weightGraph: {fileID: 0}
+  effectGraph: {fileID: 0}
+  references:
+    objects: []
