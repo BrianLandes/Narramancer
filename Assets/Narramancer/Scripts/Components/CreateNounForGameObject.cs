@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Narramancer {
-	public class PredefinedCharacterWithGameObject : SerializableMonoBehaviour, IInstancable {
+	public class CreateNounForGameObject : SerializableMonoBehaviour, IInstancable {
 
 		[SerializeField]
 		private string displayName = "";
@@ -12,6 +15,9 @@ namespace Narramancer {
 		[SerializeField]
 		private NounUID uid = new NounUID();
 		public NounUID ID => uid;
+
+		[SerializeField]
+		private bool destroyNounWithGameObject = false;
 
 		[SerializeField]
 		private List<PropertyAssignment> properties = new List<PropertyAssignment>();
@@ -30,6 +36,7 @@ namespace Narramancer {
 		public Blackboard Blackboard => startingBlackboard;
 
 		public NounInstance Instance { get; private set; }
+
 		private void Start() {
 			if ( !valuesOverwrittenByDeserialize) {
 				Instance = NarramancerSingleton.Instance.CreateInstance(this);
@@ -48,6 +55,27 @@ namespace Narramancer {
 
 			Instance = map.SaveTable.Get<NounInstance>(Key("Instance"));
 			Instance.GameObject = gameObject;
+		}
+
+#if UNITY_EDITOR
+		[MenuItem("GameObject/Narramancer/Create Noun For GameObject", false, 10)]
+		static void CreateGameObject(MenuCommand menuCommand) {
+
+			GameObject gameObject = new GameObject("Create Noun");
+			gameObject.AddComponent<CreateNounForGameObject>();
+
+			GameObjectUtility.SetParentAndAlign(gameObject, menuCommand.context as GameObject);
+
+			Undo.RegisterCreatedObjectUndo(gameObject, "Create " + gameObject.name);
+			Selection.activeObject = gameObject;
+		}
+#endif
+
+		public override void OnDestroy() {
+			base.OnDestroy();
+			if ( destroyNounWithGameObject) {
+				NarramancerSingleton.Instance.RemoveInstance(Instance);
+			}
 		}
 	}
 
