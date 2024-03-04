@@ -10,15 +10,23 @@ namespace Narramancer {
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
-			EditorGUI.BeginProperty(position, label, property);
-
 			property.serializedObject.Update();
 
-			EditorGUI.BeginChangeCheck();
+			EditorGUI.BeginProperty(position, label, property);
 
 			var nameRect = new Rect(position.x, position.y, position.width * 0.5f, position.height);
 			var nameProperty = property.FindPropertyRelative(nameof(NamedPrimitiveValue.name));
+
+
+			EditorGUI.BeginChangeCheck();
+			property.serializedObject.Update();
+
 			EditorGUI.PropertyField(nameRect, nameProperty, GUIContent.none);
+
+			if (EditorGUI.EndChangeCheck()) {
+				property.serializedObject.ApplyModifiedProperties();
+			}
+
 
 			var buttonWidth = 30f;
 
@@ -27,7 +35,7 @@ namespace Narramancer {
 			EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
 
 			var buttonRect = new Rect(valueRect.x + valueRect.width, position.y, buttonWidth, position.height);
-			if ( GUI.Button(buttonRect, "Type")) {
+			if (GUI.Button(buttonRect, "Type")) {
 				EditorDrawerUtilities.ShowTypeSelectionPopup(type => {
 					property.serializedObject.Update();
 					var typeProperty = valueProperty.FindPropertyRelative(nameof(SerializablePrimitive.type));
@@ -36,11 +44,9 @@ namespace Narramancer {
 				});
 			}
 
-			if (EditorGUI.EndChangeCheck()) {
-				property.serializedObject.ApplyModifiedProperties();
-			}
-
 			EditorGUI.EndProperty();
+
+
 		}
 	}
 }
