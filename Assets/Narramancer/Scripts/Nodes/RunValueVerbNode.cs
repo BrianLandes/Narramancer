@@ -14,7 +14,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[VerbRequired]
-		[GraphHideLabel]
+		[HideLabelInNode]
 		[FormerlySerializedAs("behaviorGraph")]
 		public ValueVerb valueVerb;
 

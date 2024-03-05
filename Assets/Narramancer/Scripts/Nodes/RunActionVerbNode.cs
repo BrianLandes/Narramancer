@@ -14,7 +14,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[VerbRequired]
-		[GraphHideLabel]
+		[HideLabelInNode]
 		[FormerlySerializedAs("runnableGraph")]
 		[Input(ShowBackingValue.Unconnected,ConnectionType.Override, TypeConstraint.Inherited)]
 		public ActionVerb actionVerb;

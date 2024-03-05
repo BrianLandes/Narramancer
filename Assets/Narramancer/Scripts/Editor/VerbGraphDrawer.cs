@@ -49,7 +49,7 @@ namespace Narramancer {
 			position.height = EditorGUIUtility.singleLineHeight;
 
 			var propertyAttributes = NodeEditorUtilities.GetCachedPropertyAttribs(property.serializedObject.targetObject.GetType(), property.name);
-			var hideLabel = propertyAttributes.Any(attribute => attribute is GraphHideLabelAttribute);
+			var hideLabel = propertyAttributes.Any(attribute => attribute is HideLabelInNodeAttribute);
 			var labelWidth = EditorGUIUtility.labelWidth;
 			if (hideLabel) {
 				label = GUIContent.none;

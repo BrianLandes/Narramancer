@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("Adjective/Modify Stat")]

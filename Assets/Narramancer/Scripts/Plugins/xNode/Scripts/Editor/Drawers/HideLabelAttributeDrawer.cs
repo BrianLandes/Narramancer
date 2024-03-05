@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Narramancer {
+namespace XNode {
 	[CustomPropertyDrawer(typeof(HideLabelAttribute))]
 	public class HideLabelAttributeDrawer : PropertyDrawer {
 

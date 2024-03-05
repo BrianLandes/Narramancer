@@ -8,7 +8,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[VerbRequired]
-		[GraphHideLabel]
+		[HideLabelInNode]
 		[RequireInput]
 		[RequireOutput]
 		private ValueVerb predicate = default;

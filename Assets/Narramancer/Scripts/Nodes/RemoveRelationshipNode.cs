@@ -1,4 +1,5 @@
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("Adjective/Remove Relationship")]

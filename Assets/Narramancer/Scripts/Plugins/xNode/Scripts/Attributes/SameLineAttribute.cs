@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
 
-namespace Narramancer {
+namespace XNode {
 	public class SameLineAttribute : PropertyAttribute { }
 }

@@ -16,7 +16,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[VerbRequired]
-		[GraphHideLabel]
+		[HideLabelInNode]
 		[RequireInput(typeof(NounInstance), "instance")]
 		[RequireOutput(typeof(bool), "passesFilter")]
 		private ValueVerb predicate = default;

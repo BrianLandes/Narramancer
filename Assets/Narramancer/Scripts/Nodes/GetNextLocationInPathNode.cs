@@ -12,7 +12,7 @@ namespace Narramancer {
 		private NounInstance fromLocation = default;
 
 		[SerializeField]
-		[VerbRequired, GraphHideLabel]
+		[VerbRequired, HideLabelInNode]
 		[RequireInput(typeof(NounInstance), "element")]
 		[RequireOutput(typeof(List<NounInstance>), "element")]
 		private ValueVerb getAccessableLocations = default;
