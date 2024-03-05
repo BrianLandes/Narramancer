@@ -37,7 +37,7 @@ namespace XNodeEditor {
         private float dragThreshold = 1f;
 
         [NonSerialized] public UnityEngine.Object selectedNodeRunnerUnityObject;
-        [NonSerialized] public NodeRunner selectedNodeRunner;
+        [NonSerialized] public IDictionary<string, object> selectedContext;
 
         public void Controls() {
             wantsMouseMove = true;

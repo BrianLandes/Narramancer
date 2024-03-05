@@ -206,9 +206,8 @@ namespace XNodeEditor {
             string tooltip = "";
             tooltip = portType.PrettyName();
             if (port.IsOutput && Application.isPlaying) {
-                var blackboard = window.selectedNodeRunner?.Blackboard;
-                if (blackboard != null) {
-                    object obj = port.node.GetValue(blackboard, port);
+                if (window.selectedContext != null) {
+                    object obj = port.node.GetValue(window.selectedContext, port);
                     if (obj != null && IsListType(obj.GetType())) {
                         var objectList = ToListOfObjects(obj);
                         var list = objectList.Select(x => x.ToString());

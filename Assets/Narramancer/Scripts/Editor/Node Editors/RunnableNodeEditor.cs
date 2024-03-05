@@ -46,7 +46,7 @@ namespace Narramancer {
 
 		private NodeRunner GetNodeRunner() {
 			if (Application.isPlaying) {
-				return NodeEditorWindow.current.selectedNodeRunner;
+				return VerbGraphEditor.selectedNodeRunner;
 			}
 			return null;
 		}

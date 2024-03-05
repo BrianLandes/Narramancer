@@ -17,6 +17,7 @@ namespace Narramancer {
 
 		private static List<VerbGraph> lastOpenedStack => NarramancerSingleton.Instance.RecentlyOpenedGraphs;
 		private static bool didBack = false;
+		public static NodeRunner selectedNodeRunner;
 
 		public override void OnOpen() {
 
@@ -166,7 +167,7 @@ namespace Narramancer {
 							EditorGUIUtility.PingObject(unityObject);
 							Selection.activeObject = unityObject;
 							window.selectedNodeRunnerUnityObject = unityObject;
-							window.selectedNodeRunner = null;
+							selectedNodeRunner = null;
 						});
 					}
 
@@ -182,7 +183,7 @@ namespace Narramancer {
 			}
 
 			if (!Application.isPlaying) {
-				window.selectedNodeRunner = null;
+				selectedNodeRunner = null;
 			} else {
 
 				IEnumerable<NodeRunner> GetPossibleNodeRunners() {
@@ -202,11 +203,11 @@ namespace Narramancer {
 				}
 
 
-				if (window.selectedNodeRunner == null) {
-					window.selectedNodeRunner = GetPossibleNodeRunners().FirstOrDefault();
+				if (selectedNodeRunner == null) {
+					selectedNodeRunner = GetPossibleNodeRunners().FirstOrDefault();
 				}
 
-				selectionText = window.selectedNodeRunner != null ? window.selectedNodeRunner.name : "(None)";
+				selectionText = selectedNodeRunner != null ? selectedNodeRunner.name : "(None)";
 
 				if (EditorGUILayout.DropdownButton(new GUIContent(selectionText, selectionText), FocusType.Passive)) {
 					GenericMenu context = new GenericMenu();
@@ -215,8 +216,8 @@ namespace Narramancer {
 					if (possibleNodeRunners.Any()) {
 						foreach (var nodeRunner in possibleNodeRunners) {
 
-							context.AddItem(new GUIContent(nodeRunner.name, nodeRunner.name), window.selectedNodeRunner == nodeRunner, () => {
-								window.selectedNodeRunner = nodeRunner;
+							context.AddItem(new GUIContent(nodeRunner.name, nodeRunner.name), selectedNodeRunner == nodeRunner, () => {
+								selectedNodeRunner = nodeRunner;
 							});
 						}
 
