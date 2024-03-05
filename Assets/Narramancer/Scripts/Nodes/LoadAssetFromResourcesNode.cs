@@ -36,7 +36,7 @@ namespace Narramancer
 			base.UpdatePorts();
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (port.fieldName.Equals(ASSET)) {
 				if (type.Type == null) {
 					Debug.LogError("Type was null", this);

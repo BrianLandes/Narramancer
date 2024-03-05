@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using XNode;
@@ -25,7 +26,7 @@ namespace Narramancer {
 		private float percentage = 0f;
 
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(nameof(hasStat))) {
 					var inputInstance = GetInstance(context);

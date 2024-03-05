@@ -52,21 +52,21 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		private void AssignGraphVariableInputs(object context) {
+		private void AssignGraphVariableInputs(IDictionary<string, object> context) {
 			foreach (var inputPort in DynamicInputs) {
 				var verbPort = predicate.GetInput(inputPort.ValueType, inputPort.fieldName);
 				verbPort?.AssignValueFromNodePort(context, inputPort);
 			}
 		}
 
-		private bool DoesElementPassPredicate(object context, object element) {
+		private bool DoesElementPassPredicate(IDictionary<string, object> context, object element) {
 
 			AssignGraphVariableInputs(context);
 
 			return predicate.RunForValue<bool>(context, listType.Type, element);
 		}
 
-		private List<object> GetFilteredElements(object context) {
+		private List<object> GetFilteredElements(IDictionary<string, object> context) {
 			var inputListPort = GetInputPort(INPUT_LIST);
 			var inputArray = inputListPort.GetInputValueObjectList(context);
 
@@ -80,7 +80,7 @@ namespace Narramancer {
 			return resultList;
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 
 			if (Application.isPlaying) {
 				if (predicate == null) {

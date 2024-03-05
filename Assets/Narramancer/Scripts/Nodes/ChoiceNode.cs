@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -54,7 +55,7 @@ namespace Narramancer {
 			return null;
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 
 			if (port.fieldName == nameof(thisChoice)) {
 				// the 'value' is the node itself
@@ -74,11 +75,11 @@ namespace Narramancer {
 		}
 
 
-		public bool IsConditionMet(object context) {
+		public bool IsConditionMet(IDictionary<string, object> context) {
 			return GetInputValue(context, nameof(enabled), enabled);
 		}
 
-		public string GetDisplayText(object context, bool applyColor = true) {
+		public string GetDisplayText(IDictionary<string, object> context, bool applyColor = true) {
 			var displayText = GetInputValue(context, nameof(this.displayText), this.displayText);
 			if (applyColor && customColor.activated) {
 				displayText = $"<color=#{ColorUtility.ToHtmlStringRGB(customColor.value)}>{displayText}</color>";

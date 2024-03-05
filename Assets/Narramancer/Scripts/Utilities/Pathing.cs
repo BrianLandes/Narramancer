@@ -5,7 +5,7 @@ namespace Narramancer {
 	public static class Pathing {
 
 
-		public static bool FindPath(object context, NounInstance fromLocation, NounInstance toLocation, VerbGraph getAccessableLocations, out NounInstance nextLocation) {
+		public static bool FindPath(IDictionary<string, object> context, NounInstance fromLocation, NounInstance toLocation, VerbGraph getAccessableLocations, out NounInstance nextLocation) {
 
 			nextLocation = fromLocation;
 

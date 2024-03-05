@@ -30,7 +30,7 @@ namespace Narramancer {
 		private NounInstance selectedLocation = default;
 
 
-		private bool FindPath(object context, out NounInstance nextLocation) {
+		private bool FindPath(IDictionary<string, object> context, out NounInstance nextLocation) {
 			var fromLocation = GetInputValue(context, nameof(this.fromLocation), this.fromLocation);
 			Assert.IsNotNull(fromLocation);
 
@@ -40,7 +40,7 @@ namespace Narramancer {
 			return Pathing.FindPath(context, fromLocation, toLocation, getAccessableLocations, out nextLocation);
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(nameof(pathExists))) {
 					return FindPath(context, out _);

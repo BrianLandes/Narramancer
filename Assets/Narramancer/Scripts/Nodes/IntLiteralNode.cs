@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -11,7 +12,7 @@ namespace Narramancer {
         [SerializeField, HideLabel]
         protected int value = 1;
 
-        public override object GetValue(object context, NodePort port) {
+        public override object GetValue(IDictionary<string, object> context, NodePort port) {
             return value;
         }
     }

@@ -20,7 +20,7 @@ namespace Narramancer {
 		[RequireOutput(typeof(int), "rank")]
 		private ValueVerb rankGraph = default;
 
-		public int GetRank(object context, NounInstance instance) {
+		public int GetRank(IDictionary<string, object> context, NounInstance instance) {
 			if (staticRank.activated) {
 				return staticRank.value;
 			}
@@ -41,7 +41,7 @@ namespace Narramancer {
 		[RequireOutput(typeof(float), "weight")]
 		private ValueVerb weightGraph = default;
 
-		public float GetWeight(object context, NounInstance instance) {
+		public float GetWeight(IDictionary<string, object> context, NounInstance instance) {
 			if (staticWeight.activated) {
 				return staticWeight.value;
 			}
@@ -67,7 +67,7 @@ namespace Narramancer {
 
 		#region Choose
 
-		public static RankedWeightedAction Choose(object context, NounInstance instance, IList<RankedWeightedAction> actions, ref string log) {
+		public static RankedWeightedAction Choose(IDictionary<string, object> context, NounInstance instance, IList<RankedWeightedAction> actions, ref string log) {
 			if (!actions.Any()) {
 				return null;
 			}

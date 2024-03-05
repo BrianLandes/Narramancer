@@ -27,7 +27,7 @@ namespace Narramancer {
 			runner.Blackboard.Set(key, result);
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (port.fieldName.Equals(nameof(gameObject))) {
 				var blackboard = context as Blackboard;
 				var key = Blackboard.UniqueKey(this, nameof(gameObject));

@@ -15,7 +15,7 @@ namespace Narramancer {
 		[Output(ShowBackingValue.Never, ConnectionType.Override)]
 		private Sprite sprite = default;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				switch (port.fieldName) {
 					case nameof(sprite):

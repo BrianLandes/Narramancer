@@ -50,7 +50,7 @@ namespace Narramancer {
 			}
 		}
 
-		private PrioritizedBranchNode ChooseFirstTrueBranch(object blackboard) {
+		private PrioritizedBranchNode ChooseFirstTrueBranch(IDictionary<string, object> blackboard) {
 
 			foreach (var branch in Branches) {
 				if (branch.IsConditionMet(blackboard)) {

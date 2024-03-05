@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -22,7 +23,7 @@ namespace Narramancer {
 		[SerializeField]
 		protected VectorFieldTable vectorFieldTable;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (port.fieldName.Equals(nameof(result))) {
 
 				float xValue = GetInputValue(context, nameof(x), x);

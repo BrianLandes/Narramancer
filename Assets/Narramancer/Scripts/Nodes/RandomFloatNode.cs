@@ -23,7 +23,7 @@ namespace Narramancer {
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		float result;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			var min = GetInputValue(context, nameof(this.min), this.min);
 
 			var max = GetInputValue(context, nameof(this.max), this.max);

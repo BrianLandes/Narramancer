@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Narramancer {
 	[NodeWidth(150)]
@@ -18,7 +19,7 @@ namespace Narramancer {
 		[NodeTrianglePortHandle]
 		public RunnableNode runNodeIfFalse = default;
 
-		public bool IsConditionMet(object context) {
+		public bool IsConditionMet(IDictionary<string, object> context) {
 			return GetInputValue(context, nameof(condition), condition);
 		}
 

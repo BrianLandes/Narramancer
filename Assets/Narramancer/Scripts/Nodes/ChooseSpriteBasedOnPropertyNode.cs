@@ -30,7 +30,7 @@ namespace Narramancer {
 		private Sprite sprite;
 		public static string SpriteFieldName => nameof(sprite);
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(sprite))) {
 
 				var instance = GetInstance(context);

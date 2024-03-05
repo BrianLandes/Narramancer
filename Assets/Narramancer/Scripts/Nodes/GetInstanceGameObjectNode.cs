@@ -10,7 +10,7 @@ namespace Narramancer {
 		[SerializeField]
 		GameObject targetGameObject = default;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 
 			if (port.fieldName.Equals(nameof(targetGameObject))) {
 				var instance = GetInstance(context);

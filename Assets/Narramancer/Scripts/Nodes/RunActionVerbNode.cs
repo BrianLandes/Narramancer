@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -70,7 +71,7 @@ namespace Narramancer {
 		}
 
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			var actionVerb = GetInputValue(context, nameof(this.actionVerb), this.actionVerb);
 			if (Application.isPlaying && actionVerb != null) {
 				foreach (var outputPort in actionVerb.Outputs) {

@@ -42,7 +42,7 @@ namespace Narramancer {
 
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(FIRST_ELEMENT)) {
 				var inputPort = GetInputPort(LIST);
 

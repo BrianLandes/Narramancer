@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -21,11 +22,11 @@ namespace Narramancer {
 			method.LookupTypes = new[] { typeof(T) };
 		}
 
-		protected override object GetTargetObject(object context) {
+		protected override object GetTargetObject(IDictionary<string, object> context) {
 			return GetInputValue<T>(context, nameof(inputValue));
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(nameof(passThroughValue))) {
 					return GetTargetObject(context);

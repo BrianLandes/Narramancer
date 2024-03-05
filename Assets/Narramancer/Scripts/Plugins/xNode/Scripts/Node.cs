@@ -260,7 +260,7 @@ namespace XNode {
         /// <summary> Return input value for a specified port. Returns fallback value if no ports are connected </summary>
         /// <param name="fieldName">Field name of requested input port</param>
         /// <param name="fallback">If no ports are connected, this value will be returned</param>
-        public T GetInputValue<T>(object context, string fieldName, T fallback = default(T)) {
+        public T GetInputValue<T>(IDictionary<string, object> context, string fieldName, T fallback = default(T)) {
             NodePort port = GetPort(fieldName);
             if (port != null && port.IsConnected) return port.GetInputValue<T>(context);
             else return fallback;
@@ -269,7 +269,7 @@ namespace XNode {
         /// <summary> Return all input values for a specified port. Returns fallback value if no ports are connected </summary>
         /// <param name="fieldName">Field name of requested input port</param>
         /// <param name="fallback">If no ports are connected, this value will be returned</param>
-        public T[] GetInputValues<T>(object context, string fieldName, params T[] fallback) {
+        public T[] GetInputValues<T>(IDictionary<string, object> context, string fieldName, params T[] fallback) {
             NodePort port = GetPort(fieldName);
             if (port != null && port.IsConnected) return port.GetInputValues<T>(context);
             else return fallback;
@@ -278,7 +278,7 @@ namespace XNode {
         /// <summary> Returns a value based on requested port output. Should be overridden in all derived nodes with outputs. </summary>
         /// <param name="context">Any object that the node may need as 'context' to get the value</param>
         /// <param name="port">The requested port.</param>
-        public abstract object GetValue(object context, NodePort port);
+        public abstract object GetValue(IDictionary<string, object> context, NodePort port);
 
 #endregion
 

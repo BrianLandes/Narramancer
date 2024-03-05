@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using XNode;
 
 namespace Narramancer {
@@ -8,7 +9,7 @@ namespace Narramancer {
 		[HideLabel]
 		public string value;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (port.fieldName.Equals(nameof(value))) {
 				return value;
 			}

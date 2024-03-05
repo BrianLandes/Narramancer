@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using XNode;
 namespace Narramancer {
 	[NodeWidth(120)]
@@ -10,7 +11,7 @@ namespace Narramancer {
 		[NodeTrianglePortHandle]
 		public RunnableNode runNode;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			
 			// the only thing that this node can be hooked to is 'runNode'
 			// the 'value' is the node itself

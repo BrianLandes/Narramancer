@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using XNode;
 
 namespace Narramancer {
@@ -42,7 +42,7 @@ namespace Narramancer {
 		}
 
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				if (type.Type == null) {
 					Debug.LogError("Type was null", this);

@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -16,7 +17,7 @@ namespace Narramancer {
 		private string result = "";
 		public static string ResultFieldName => nameof(result);
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(result))) {
 				var inputText = GetInputValue(context, nameof(text), text);
 

@@ -22,7 +22,7 @@ namespace Narramancer {
 			// This area left blank intentionally
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 
 			if (port.fieldName == nameof(thisNode)) {
 				// the 'value' is the node itself

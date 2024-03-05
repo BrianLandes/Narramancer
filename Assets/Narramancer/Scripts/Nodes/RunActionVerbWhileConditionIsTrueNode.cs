@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -134,7 +135,7 @@ namespace Narramancer {
 			return actionVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 
 			if (Application.isPlaying && actionVerb != null) {
 				foreach (var outputPort in actionVerb.Outputs) {

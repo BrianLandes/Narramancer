@@ -23,7 +23,7 @@ namespace Narramancer {
 		[NonSerialized]
 		private object cachedResult;
 
-		protected abstract object GetTargetObject(object context);
+		protected abstract object GetTargetObject(IDictionary<string, object> context);
 
 
 		protected override void Init() {
@@ -94,7 +94,7 @@ namespace Narramancer {
 		}
 
 
-		private object[] GetInputParameters(object context) {
+		private object[] GetInputParameters(IDictionary<string, object> context) {
 			if (!method.IsValid()) {
 				return null;
 			}
@@ -139,7 +139,7 @@ namespace Narramancer {
 			}
 		}
 
-		private void RunMethodAndStoreResults(object context) {
+		private void RunMethodAndStoreResults(IDictionary<string, object> context) {
 			if (!method.IsValid()) {
 				return;
 			}
@@ -155,7 +155,7 @@ namespace Narramancer {
 			CacheResults(result, parameters);
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (!Application.isPlaying) {
 				return null;
 			}

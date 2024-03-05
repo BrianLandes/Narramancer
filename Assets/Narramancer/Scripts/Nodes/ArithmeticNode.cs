@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -26,7 +27,7 @@ namespace Narramancer {
 		[SerializeField]
 		protected float result;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (port.fieldName.Equals(nameof(result))) {
 				float leftValue = GetInputValue(context, nameof(a), a);
 				float rightValue = GetInputValue(context, nameof(b), b);

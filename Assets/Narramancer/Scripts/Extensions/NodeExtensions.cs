@@ -76,7 +76,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static List<object> GetInputValueObjectList(this NodePort nodePort, object context) {
+		public static List<object> GetInputValueObjectList(this NodePort nodePort, IDictionary<string, object> context) {
 			var value = nodePort.GetInputValue(context);
 			return AssemblyUtilities.ToListOfObjects(value);
 		}
@@ -87,7 +87,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static List<T> GetInputValueList<T>(this Node node, object context, string portName) {
+		public static List<T> GetInputValueList<T>(this Node node, IDictionary<string, object> context, string portName) {
 			var result = node.GetInputValue<List<T>>(context, portName);
 			if (result == null) {
 				var inputNode = node.GetInputPort(portName);
@@ -99,7 +99,7 @@ namespace Narramancer {
 			return result;
 		}
 
-		public static object GetInputValue(this Node node, object context, string fieldName) {
+		public static object GetInputValue(this Node node, IDictionary<string, object> context, string fieldName) {
 			var nodePort = node.GetInputPort(fieldName);
 			return nodePort.GetInputValue(context);
 		}

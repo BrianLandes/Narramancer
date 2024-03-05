@@ -40,7 +40,7 @@ namespace Narramancer {
 		}
 
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (type.Type == null) {
 				return null;
 			}

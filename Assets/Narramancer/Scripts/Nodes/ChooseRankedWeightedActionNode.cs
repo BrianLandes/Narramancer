@@ -49,7 +49,7 @@ namespace Narramancer {
 
 		}
 
-		public override object GetValue(object context, XNode.NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, XNode.NodePort port) {
 			if (port.fieldName.Equals(nameof(passThroughInstance))) {
 				if (Application.isPlaying) {
 					return GetInstance(context);

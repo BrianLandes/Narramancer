@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -26,7 +27,7 @@ namespace Narramancer {
 		protected NounInstance passThroughInstance;
 
 
-		public NounInstance GetInstance(object context) {
+		public NounInstance GetInstance(IDictionary<string, object> context) {
 			switch (nounType) {
 				case InstanceAssignmentType.Instance:
 					return GetInputValue<NounInstance>(context, nameof(this.instance));
@@ -38,7 +39,7 @@ namespace Narramancer {
 			}
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 				switch (port.fieldName) {
 					case nameof(passThroughInstance):

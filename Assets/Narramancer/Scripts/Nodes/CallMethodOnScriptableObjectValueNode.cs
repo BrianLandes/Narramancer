@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Narramancer {
@@ -21,7 +22,7 @@ namespace Narramancer {
 			};
 		}
 
-		protected override object GetTargetObject(object context) {
+		protected override object GetTargetObject(IDictionary<string, object> context) {
 			return GetInputValue(context, nameof(targetObject), targetObject);
 		}
 

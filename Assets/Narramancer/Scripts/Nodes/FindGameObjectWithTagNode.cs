@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -15,7 +16,7 @@ namespace Narramancer {
 		[SerializeField]
 		private GameObject gameObject = default;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(gameObject))) {
 				var inputTag = GetInputValue(context, nameof(tag), tag);
 				var foundGameObject = GameObject.FindGameObjectWithTag(inputTag);

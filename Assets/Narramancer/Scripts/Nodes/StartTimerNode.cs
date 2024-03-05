@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -28,8 +29,8 @@ namespace Narramancer {
 
 		}
 
-		public override object GetValue(object context, NodePort port) {
-			if (Application.isPlaying ) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+			if (Application.isPlaying) {
 				var timerKey = Blackboard.UniqueKey(this, "Timer");
 				var blackboard = context as Blackboard;
 				var startTime = blackboard.GetFloat(timerKey);

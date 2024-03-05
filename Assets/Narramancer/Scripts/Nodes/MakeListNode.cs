@@ -35,7 +35,7 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (listType.Type != null && port.fieldName.Equals(RESULT)) {
 
 				var type = listType.Type;

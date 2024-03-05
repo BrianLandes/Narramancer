@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -26,7 +27,7 @@ namespace Narramancer {
 		[SerializeField]
 		private Vector3 worldPosition = default;
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying) {
 
 				var inputGameObject = GetInputValue(context, nameof(targetGameObject), targetGameObject);

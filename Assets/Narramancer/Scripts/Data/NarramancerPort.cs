@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -41,7 +42,7 @@ namespace Narramancer {
 			return $"{name} ({type.TypeName()})";
 		}
 
-		public void AssignValueFromNodePort(object context, NodePort nodePort) {
+		public void AssignValueFromNodePort(IDictionary<string, object> context, NodePort nodePort) {
 			var blackboard = context as Blackboard;
 
 			var inputValue = nodePort.GetInputValue(context);

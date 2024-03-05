@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
@@ -33,7 +34,7 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		public override object GetValue(object context, NodePort port) {
+		public override object GetValue(IDictionary<string, object> context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(count))) {
 				var inputPort = GetInputPort(LIST);
 				var inputValue = inputPort.GetInputValue(context);
