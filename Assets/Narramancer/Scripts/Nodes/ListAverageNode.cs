@@ -24,7 +24,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Strict)]
-		private float sum = 0f;
+		private float average = 0f;
 
 		protected override void Init() {
 			listType.OnChanged -= UpdatePorts;
@@ -77,7 +77,7 @@ namespace Narramancer {
 					return null;
 				}
 				switch (port.fieldName) {
-					case nameof(sum):
+					case nameof(average):
 						var inputListPort = GetInputPort(INPUT_LIST);
 						var inputList = inputListPort.GetInputValueObjectList(context);
 
