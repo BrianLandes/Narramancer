@@ -305,7 +305,7 @@ namespace Narramancer {
 
 		}
 
-		public override void AddContextMenuItemsForNewNodes(GenericMenu menu) {
+		public override void AddContextMenuItemsForNewNodes(GenericMenu menu, Type compatibleType = null, NodePort.IO direction = NodePort.IO.Input) {
 
 			Vector2 pos = NodeEditorWindow.current.WindowToGridPosition(Event.current.mousePosition);
 			var mousePosition = Event.current.mousePosition;

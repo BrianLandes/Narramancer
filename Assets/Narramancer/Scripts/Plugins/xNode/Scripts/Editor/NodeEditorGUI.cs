@@ -4,6 +4,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using XNodeEditor.Internal;
+#if UNITY_2019_1_OR_NEWER && USE_ADVANCED_GENERIC_MENU
+using GenericMenu = XNodeEditor.AdvancedGenericMenu;
+#endif
 
 namespace XNodeEditor {
     /// <summary> Contains GUI methods </summary>
@@ -120,7 +123,24 @@ namespace XNodeEditor {
         /// <summary> Show right-click context menu for hovered port </summary>
         void ShowPortContextMenu(XNode.NodePort hoveredPort) {
             GenericMenu contextMenu = new GenericMenu();
+            foreach (var port in hoveredPort.GetConnections()) {
+                var name = port.node.name;
+                var index = hoveredPort.GetConnectionIndex(port);
+                contextMenu.AddItem(new GUIContent(string.Format("Disconnect({0})", name)), false, () => hoveredPort.Disconnect(index));
+            }
             contextMenu.AddItem(new GUIContent("Clear Connections"), false, () => hoveredPort.ClearConnections());
+            //Get compatible nodes with this port
+            if (NodeEditorPreferences.GetSettings().createFilter) {
+                contextMenu.AddSeparator("");
+
+                if (hoveredPort.direction == XNode.NodePort.IO.Input) {
+                    graphEditor.AddContextMenuItemsForNewNodes(contextMenu, hoveredPort.ValueType, XNode.NodePort.IO.Output);
+                }
+                else {
+                    graphEditor.AddContextMenuItemsForNewNodes(contextMenu, hoveredPort.ValueType, XNode.NodePort.IO.Input);
+                }
+
+            }
             contextMenu.DropDown(new Rect(Event.current.mousePosition, Vector2.zero));
             if (NodeEditorPreferences.GetSettings().autoSave) AssetDatabase.SaveAssets();
         }
@@ -337,6 +357,8 @@ namespace XNodeEditor {
                     if (!_portConnectionPoints.TryGetValue(output, out fromRect)) continue;
 
                     Color portColor = graphEditor.GetPortColor(output);
+                    GUIStyle portStyle = graphEditor.GetPortStyle(output);
+
                     for (int k = 0; k < output.ConnectionCount; k++) {
                         XNode.NodePort input = output.GetConnection(k);
 
@@ -370,11 +392,11 @@ namespace XNodeEditor {
                             // Draw selected reroute points with an outline
                             if (selectedReroutes.Contains(rerouteRef)) {
                                 GUI.color = NodeEditorPreferences.GetSettings().highlightColor;
-                                GUI.DrawTexture(rect, NodeEditorResources.dotOuter);
+                                GUI.DrawTexture(rect, portStyle.normal.background);
                             }
 
                             GUI.color = portColor;
-                            GUI.DrawTexture(rect, NodeEditorResources.dot);
+                            GUI.DrawTexture(rect, portStyle.active.background);
                             if (rect.Overlaps(selectionBox)) selection.Add(rerouteRef);
                             if (rect.Contains(mousePos)) hoveredReroute = rerouteRef;
 
@@ -386,7 +408,7 @@ namespace XNodeEditor {
             if (Event.current.type != EventType.Layout && currentActivity == NodeActivity.DragGrid) selectedReroutes = selection;
         }
 
-        public void DrawNodes() {
+        private void DrawNodes() {
             Event e = Event.current;
             if (e.type == EventType.Layout || selectionCache == null) {
                 selectionCache = new List<UnityEngine.Object>(Selection.objects);

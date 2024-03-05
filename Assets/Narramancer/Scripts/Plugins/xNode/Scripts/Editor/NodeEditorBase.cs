@@ -58,7 +58,17 @@ namespace XNodeEditor.Internal {
 			return editor;
 		}
 
-		private static Type GetEditorType(Type type) {
+        public static void DestroyEditor(K target) {
+            if (target == null)
+                return;
+
+            T editor;
+            if (editors.TryGetValue(target, out editor)) {
+                editors.Remove(target);
+            }
+        }
+
+        private static Type GetEditorType(Type type) {
 			if (type == null) return null;
 			if (editorTypes == null) CacheCustomEditors();
 			Type result;
