@@ -1,27 +1,26 @@
-#if ODIN_INSPECTOR
-using Sirenix.Utilities.Editor;
-#endif
+
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 	[CustomNodeEditor(typeof(CommentNode))]
-	public class CommentNodeEditor : AbstractResizableNodeEditor {
+	public class CommentNodeEditor : ResizableNodeEditor {
 
 		private static GUIStyle editorTextStyle;
 		private static GUIStyle editorLabelStyle;
 
 		private Vector2 scrollPos;
 
-		protected override string GetWidthPropertyName() => CommentNode.WidthFieldName;
-		protected override string GetHeightPropertyName() => CommentNode.HeightFieldName;
-
 		public override void OnBodyGUI() {
 
 			serializedObject.Update();
 
 			var heightProperty = GetHeightProperty();
+			if (heightProperty.intValue < 0) {
+				heightProperty.intValue = 80;
+			}
 
 			var commentProperty = serializedObject.FindProperty(nameof(CommentNode.comment));
 			scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(heightProperty.intValue));
@@ -51,7 +50,7 @@ namespace Narramancer {
 			}
 			EditorGUILayout.EndScrollView();
 
-			DrawResizableButton();
+			DrawResizableButton(minHeight:20);
 
 			serializedObject.ApplyModifiedProperties();
 		}
