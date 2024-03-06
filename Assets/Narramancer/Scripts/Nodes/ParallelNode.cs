@@ -11,7 +11,6 @@ namespace Narramancer {
 
 		[Output(connectionType = ConnectionType.Multiple, typeConstraint = TypeConstraint.Inherited)]
 		[SameLine]
-		[NodeTrianglePortHandle]
 		public RunnableNode nodes;
 
 		/// <summary>

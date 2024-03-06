@@ -13,7 +13,6 @@ namespace Narramancer {
 		[Output(connectionType = ConnectionType.Multiple, typeConstraint = TypeConstraint.Inherited)]
 		[SameLine]
 		[SerializeField]
-		[NodeTrianglePortHandle]
 		private RunnableNode possibleNodes = default;
 
 		public override void Run(NodeRunner runner) {

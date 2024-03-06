@@ -43,7 +43,6 @@ namespace XNode {
         public bool IsStatic { get { return !_dynamic; } }
         public bool DrawOnSameLine { get { return _sameLine; } }
         public bool HideLabel { get { return _hideLabel; } }
-        public bool UseTriangleHandle { get { return _useTriangleHandle; } set { _useTriangleHandle = value; } }
         public Type ValueType {
             get {
                 if (valueType == null && !string.IsNullOrEmpty(_typeQualifiedName)) valueType = Type.GetType(_typeQualifiedName, false);
@@ -68,7 +67,6 @@ namespace XNode {
         [SerializeField] private bool _dynamic;
         [SerializeField] private bool _sameLine;
         [SerializeField] private bool _hideLabel;
-        [SerializeField] private bool _useTriangleHandle = false;
 
         #region XNODE_DYNAMIC_PORT_PROPERTY_FIELD
         [SerializeField] private UnityEngine.Object dynamicValueUnityObject = null;
@@ -113,7 +111,7 @@ namespace XNode {
         }
 
         /// <summary> Construct a dynamic port. Dynamic ports are not forgotten on reimport, and is ideal for runtime-created ports. </summary>
-        public NodePort(string fieldName, Type type, IO direction, Node.ConnectionType connectionType, Node.TypeConstraint typeConstraint, Node node, bool sameLine = false, bool hideLabel = false, bool useTrianglePortHandle = false) {
+        public NodePort(string fieldName, Type type, IO direction, Node.ConnectionType connectionType, Node.TypeConstraint typeConstraint, Node node, bool sameLine = false, bool hideLabel = false) {
             _fieldName = fieldName;
             this.ValueType = type;
             _direction = direction;
@@ -123,7 +121,6 @@ namespace XNode {
             _typeConstraint = typeConstraint;
             _sameLine = sameLine;
             _hideLabel = hideLabel;
-            _useTriangleHandle = useTrianglePortHandle;
         }
 
         /// <summary> Checks all connections for invalid references, and removes them. </summary>

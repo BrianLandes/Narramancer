@@ -11,7 +11,6 @@ namespace Narramancer {
 			backingValue = ShowBackingValue.Never,
 			typeConstraint = TypeConstraint.Inherited)]
 		[HideInInspector]
-		[NodeTrianglePortHandle]
 		private RunnableNode thisNode = default;
 		public static string ThisNodeField => nameof(thisNode);
 

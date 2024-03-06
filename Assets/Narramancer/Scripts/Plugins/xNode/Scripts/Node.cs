@@ -153,14 +153,14 @@ namespace XNode {
         /// <summary> Convenience function. </summary>
         /// <seealso cref="AddInstancePort"/>
         /// <seealso cref="AddInstanceInput"/>
-        public NodePort AddDynamicOutput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null, bool sameLine = false, bool hideLabel = false, bool useTrianglePortHandle = false) {
-            return AddDynamicPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName, sameLine, hideLabel, useTrianglePortHandle);
+        public NodePort AddDynamicOutput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null, bool sameLine = false, bool hideLabel = false) {
+            return AddDynamicPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName, sameLine, hideLabel);
         }
 
         /// <summary> Add a dynamic, serialized port to this node. </summary>
         /// <seealso cref="AddDynamicInput"/>
         /// <seealso cref="AddDynamicOutput"/>
-        private NodePort AddDynamicPort(Type type, NodePort.IO direction, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null, bool sameLine = false, bool hideLabel = false, bool useTrianglePortHandle = false) {
+        private NodePort AddDynamicPort(Type type, NodePort.IO direction, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null, bool sameLine = false, bool hideLabel = false) {
             if (fieldName == null) {
                 fieldName = "dynamicInput_0";
                 int i = 0;
@@ -169,7 +169,7 @@ namespace XNode {
                 Debug.LogWarning("Port '" + fieldName + "' already exists in " + name, this);
                 return ports[fieldName];
             }
-            NodePort port = new NodePort(fieldName, type, direction, connectionType, typeConstraint, this, sameLine, hideLabel, useTrianglePortHandle);
+            NodePort port = new NodePort(fieldName, type, direction, connectionType, typeConstraint, this, sameLine, hideLabel);
             ports.Add(fieldName, port);
             return port;
         }

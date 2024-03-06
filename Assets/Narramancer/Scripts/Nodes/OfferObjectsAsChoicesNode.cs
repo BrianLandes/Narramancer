@@ -14,12 +14,10 @@ namespace Narramancer {
 		private SerializableType type = new SerializableType();
 
 		[Output(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
-		[NodeTrianglePortHandle]
 		[SerializeField]
 		private RunnableNode runWhenObjectSelected = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
-		[NodeTrianglePortHandle]
 		[SerializeField]
 		private RunnableNode runWhenBackSelected = default;
 

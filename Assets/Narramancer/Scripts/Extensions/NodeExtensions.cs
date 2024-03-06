@@ -46,7 +46,7 @@ namespace Narramancer {
 			return port;
 		}
 
-		public static NodePort GetOrAddDynamicOutput(this Node node, Type type, string name, bool sameLine = false, bool hideLabel = false, bool useTrianglePortHandle = false) {
+		public static NodePort GetOrAddDynamicOutput(this Node node, Type type, string name, bool sameLine = false, bool hideLabel = false) {
 			var existingPort = node.GetDynamicOutput(type, name);
 			if (existingPort != null) {
 				return existingPort;
@@ -57,7 +57,7 @@ namespace Narramancer {
 			if (existingPort != null) {
 				node.RemoveDynamicPort(existingPort);
 			}
-			var port = node.AddDynamicOutput(type, ConnectionType.Multiple, TypeConstraint.Inherited, name, sameLine, hideLabel, useTrianglePortHandle);
+			var port = node.AddDynamicOutput(type, ConnectionType.Multiple, TypeConstraint.Inherited, name, sameLine, hideLabel);
 			return port;
 		}
 

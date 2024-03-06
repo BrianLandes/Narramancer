@@ -13,11 +13,9 @@ namespace Narramancer {
 		private bool condition = true;
 
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
-		[NodeTrianglePortHandle]
 		public RunnableNode runNodeIfTrue = default;
 
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
-		[NodeTrianglePortHandle]
 		public RunnableNode runNodeIfFalse = default;
 
 		public bool IsConditionMet(IDictionary<string, object> context) {

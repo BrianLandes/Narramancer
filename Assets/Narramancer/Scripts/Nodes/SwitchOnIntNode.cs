@@ -15,7 +15,6 @@ namespace Narramancer {
 		[SerializeField]
 		[Output(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[Tooltip("The node run when a value outside of the range is reached.")]
-		[NodeTrianglePortHandle]
 		private RunnableNode defaultNode = default;
 		public static string DefaultNodeFieldName => nameof(defaultNode);
 
@@ -75,7 +74,7 @@ namespace Narramancer {
 
 			foreach (var value in GetAllPossibleIntValues()) {
 
-				var nodePort = this.GetOrAddDynamicOutput(typeof(RunnableNode), value.ToString(), useTrianglePortHandle: true);
+				var nodePort = this.GetOrAddDynamicOutput(typeof(RunnableNode), value.ToString());
 				maintainPorts.Add(nodePort);
 			}
 

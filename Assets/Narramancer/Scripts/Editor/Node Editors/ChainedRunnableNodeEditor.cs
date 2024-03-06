@@ -14,7 +14,6 @@ namespace Narramancer {
 			EditorGUILayout.Space(-EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing);
 
 			var runPort = target.GetOutputPort(ChainedRunnableNode.ThenRunNodeField);
-			runPort.UseTriangleHandle = true;
 			NodeEditorGUILayout.PortField(runPort, serializedObject);
 		}
 	}

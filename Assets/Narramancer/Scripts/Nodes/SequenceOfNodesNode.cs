@@ -10,7 +10,6 @@ namespace Narramancer {
 
 		[Output(connectionType = ConnectionType.Multiple, typeConstraint = TypeConstraint.Inherited)]
 		[SameLine]
-		[NodeTrianglePortHandle]
 		public RunnableNode nodes;
 
 		public override void Run(NodeRunner runner) {

@@ -23,17 +23,14 @@ namespace Narramancer {
 
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
-		[NodeTrianglePortHandle]
 		RunnableNode runNodeOnAllFalse = default;
 
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
-		[NodeTrianglePortHandle]
 		RunnableNode runNodeOnBranchCompleted = default;
 
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
-		[NodeTrianglePortHandle]
 		RunnableNode runNodeOnCancel = default;
 
 

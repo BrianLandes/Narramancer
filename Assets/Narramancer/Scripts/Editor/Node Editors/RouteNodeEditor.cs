@@ -12,13 +12,11 @@ namespace Narramancer {
 
 
 			var thisNodePort = routeNode.GetThisNodePort();
-			thisNodePort.UseTriangleHandle = true;
 			NodeEditorGUILayout.PortField(new GUIContent("---->"), thisNodePort, serializedObject);
 
 			EditorGUILayout.Space(-EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing);
 
 			var nextNodePort = routeNode.GetOutputPort(nameof(RouteNode.thenRunNode));
-			nextNodePort.UseTriangleHandle = true;
 			NodeEditorGUILayout.PortField(GUIContent.none, nextNodePort, serializedObject);
 		}
 

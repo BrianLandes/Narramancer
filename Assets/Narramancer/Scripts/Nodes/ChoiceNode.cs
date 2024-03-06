@@ -18,7 +18,6 @@ namespace Narramancer {
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SameLine]
 		[SerializeField]
-		[NodeTrianglePortHandle]
 		private RunnableNode thenRunNode = default;
 
 		[Input(connectionType = ConnectionType.Override,

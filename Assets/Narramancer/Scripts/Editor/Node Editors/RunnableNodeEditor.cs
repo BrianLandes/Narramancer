@@ -64,7 +64,6 @@ namespace Narramancer {
 
 		public virtual void OnTopGUI() {
 			var runPort = target.GetInputPort(RunnableNode.ThisNodeField);
-			runPort.UseTriangleHandle = true;
 			NodeEditorGUILayout.PortField(runPort, serializedObject);
 		}
 

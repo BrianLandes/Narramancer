@@ -18,6 +18,10 @@ namespace Narramancer {
 		private static List<VerbGraph> lastOpenedStack => NarramancerSingleton.Instance.RecentlyOpenedGraphs;
 		private static bool didBack = false;
 		public static NodeRunner selectedNodeRunner;
+		public static Texture2D triangle { get { return _triangle != null ? _triangle : _triangle = Resources.Load<Texture2D>("xnode_triangle"); } }
+		private static Texture2D _triangle;
+
+		public GUIStyle runnablePortStyle;
 
 		public override void OnOpen() {
 
@@ -44,6 +48,7 @@ namespace Narramancer {
 			}
 
 			window.titleContent = new GUIContent(target.name);
+
 		}
 
 
@@ -95,7 +100,32 @@ namespace Narramancer {
 			};
 		}
 
+		public override GUIStyle GetPortStyle(NodePort port) {
+			if (port.ValueType.IsAssignableFrom(typeof(RunnableNode))) {
+				if (runnablePortStyle == null) {
+
+					runnablePortStyle = new GUIStyle(NodeEditorResources.styles.inputPort);
+					runnablePortStyle.alignment = TextAnchor.UpperLeft;
+					runnablePortStyle.padding.left = 0;
+					runnablePortStyle.active.background = triangle;
+					runnablePortStyle.normal.background = triangle;
+				}
+				return runnablePortStyle;
+			}
+
+			return base.GetPortStyle(port);
+		}
+
 		public override void OnGUI() {
+
+			if (runnablePortStyle == null) {
+
+				runnablePortStyle = new GUIStyle(NodeEditorResources.styles.inputPort);
+				runnablePortStyle.alignment = TextAnchor.UpperLeft;
+				runnablePortStyle.padding.left = 0;
+				runnablePortStyle.active.background = triangle;
+				runnablePortStyle.normal.background = triangle;
+			}
 
 			GUILayout.BeginArea(new Rect(0, 0, Screen.width, 30));
 

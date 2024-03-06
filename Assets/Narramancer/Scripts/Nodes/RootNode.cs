@@ -8,7 +8,6 @@ namespace Narramancer {
 	public class RootNode : Node {
 
 		[Output(connectionType = ConnectionType.Override)]
-		[NodeTrianglePortHandle]
 		public RunnableNode runNode;
 
 		public override object GetValue(IDictionary<string, object> context, NodePort port) {

@@ -17,7 +17,6 @@ namespace Narramancer {
 			serializedObject.Update();
 
 			var thisNodePort = node.GetThisNodePort();
-			thisNodePort.UseTriangleHandle = true;
 			NodeEditorGUILayout.PortField(thisNodePort, serializedObject);
 
 			var intValueProperty = serializedObject.FindProperty(SwitchOnIntNode.IntFieldName);
