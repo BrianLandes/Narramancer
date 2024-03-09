@@ -214,6 +214,7 @@ namespace Narramancer {
 
 			if (!Application.isPlaying) {
 				selectedNodeRunner = null;
+				window.selectedContext = null;
 			} else {
 
 				IEnumerable<NodeRunner> GetPossibleNodeRunners() {
@@ -235,6 +236,7 @@ namespace Narramancer {
 
 				if (selectedNodeRunner == null) {
 					selectedNodeRunner = GetPossibleNodeRunners().FirstOrDefault();
+					window.selectedContext = selectedNodeRunner?.Blackboard;
 				}
 
 				selectionText = selectedNodeRunner != null ? selectedNodeRunner.name : "(None)";
@@ -248,6 +250,7 @@ namespace Narramancer {
 
 							context.AddItem(new GUIContent(nodeRunner.name, nodeRunner.name), selectedNodeRunner == nodeRunner, () => {
 								selectedNodeRunner = nodeRunner;
+								window.selectedContext = selectedNodeRunner?.Blackboard;
 							});
 						}
 
