@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using XNode;
 
@@ -21,7 +22,7 @@ namespace Narramancer {
 			var nodePorts = new List<NodePort>();
 
 			if (predicate != null) {
-				var firstInput = predicate.Inputs.First();
+				var firstInput = predicate.Inputs.FirstOrDefault();
 
 				if (firstInput != null) {
 					var inputListType = typeof(List<>).MakeGenericType(firstInput.Type);
@@ -29,7 +30,7 @@ namespace Narramancer {
 					nodePorts.Add(inputListPort);
 				}
 
-				var firstOutput = predicate.Outputs.First();
+				var firstOutput = predicate.Outputs.FirstOrDefault();
 				if (firstOutput != null) {
 					var outputListType = typeof(List<>).MakeGenericType(firstOutput.Type);
 					var outputListPort = this.GetOrAddDynamicOutput(outputListType, OUTPUT_LIST);
@@ -79,7 +80,7 @@ namespace Narramancer {
 
 				foreach (var element in inputArrayA) {
 
-					var resultElement = predicate.RunForValue<object, object>(context, element);
+					var resultElement = predicate.RunForValue(context, element);
 
 					resultList.Add(resultElement);
 				}

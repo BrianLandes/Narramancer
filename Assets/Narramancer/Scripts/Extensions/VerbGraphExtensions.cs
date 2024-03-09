@@ -105,7 +105,6 @@ namespace Narramancer {
 			}
 		}
 
-
 		public static ReturnType RunForValue<ReturnType>(this VerbGraph nodeGraph, IDictionary<string, object> context, Type inputType, object inputValue) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
@@ -128,6 +127,31 @@ namespace Narramancer {
 			else {
 				Debug.LogError("Graph does not have an Output Node.", nodeGraph);
 				return default(ReturnType);
+			}
+		}
+
+		public static object RunForValue(this VerbGraph nodeGraph, IDictionary<string, object> context, object inputValue) {
+			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
+
+				var inputPort = nodeGraph.Inputs.FirstOrDefault();
+				if (inputPort == null) {
+					Debug.LogError("Graph does not have any inputs", nodeGraph);
+					return null;
+				}
+				var blackboard = context as Blackboard;
+				blackboard.Set(inputPort.VariableKey, inputValue);
+
+				var resultOutput = nodeGraph.Outputs.FirstOrDefault();
+				if (resultOutput == null) {
+					Debug.LogError("Graph does not have any outputs", nodeGraph);
+					return null;
+				}
+				return outputNode.GetValue(context, resultOutput);
+
+			}
+			else {
+				Debug.LogError("Graph does not have an Output Node.", nodeGraph);
+				return null;
 			}
 		}
 
