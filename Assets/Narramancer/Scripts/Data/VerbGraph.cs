@@ -214,6 +214,10 @@ namespace Narramancer {
 			return outputs.FirstOrDefault(output => output.Type == typeof(T));
 		}
 
+		public NarramancerPort GetOutput(Type type) {
+			return outputs.FirstOrDefault(output => output.Type == type);
+		}
+
 		public NarramancerPort GetOutput<T>(string name) {
 			return outputs.FirstOrDefault(output => output.Type == typeof(T) && output.Name.Equals(name));
 		}
