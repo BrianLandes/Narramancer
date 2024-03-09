@@ -78,15 +78,15 @@ namespace Narramancer {
 					if (PseudoEditorUtilities.IsObjectAnAsset(property.serializedObject.targetObject)) {
 						newVerbGraph = PseudoEditorUtilities.CreateAndAddChild(fieldType, property.serializedObject.targetObject, property.propertyPath.Nicify()) as VerbGraph;
 					}
-					else
-					if (property.serializedObject.targetObject is MonoBehaviour monoBehaviour) {
-						Undo.RecordObject(monoBehaviour.gameObject, "Create Verb");
-						newVerbGraph = ScriptableObject.CreateInstance(fieldType) as VerbGraph;
-						newVerbGraph.name = monoBehaviour.gameObject.name + " Verb";
-						if (newVerbGraph is ActionVerb) {
-							newVerbGraph.AddNode<RootNode>();
-						}
-					}
+					//else
+					//if (property.serializedObject.targetObject is MonoBehaviour monoBehaviour) {
+					//	Undo.RecordObject(monoBehaviour.gameObject, "Create Verb");
+					//	newVerbGraph = ScriptableObject.CreateInstance(fieldType) as VerbGraph;
+					//	newVerbGraph.name = monoBehaviour.gameObject.name + " Verb";
+					//	if (newVerbGraph is ActionVerb) {
+					//		newVerbGraph.AddNode<RootNode>();
+					//	}
+					//}
 					else {
 
 						var path = EditorUtility.SaveFilePanelInProject("Choose a save location", "Verb Graph", "asset", "");
