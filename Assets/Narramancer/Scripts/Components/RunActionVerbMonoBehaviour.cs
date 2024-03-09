@@ -56,7 +56,7 @@ namespace Narramancer {
 		public void RunVerb() {
 
 			if (runner == null) {
-				runner = NarramancerSingleton.Instance.CreateNodeRunner(gameObject.name);
+				runner = NarramancerSingleton.Instance.CreateNodeRunner(gameObject.name + this.GetHashCode());
 			}
 
 			if (verb == null) {
