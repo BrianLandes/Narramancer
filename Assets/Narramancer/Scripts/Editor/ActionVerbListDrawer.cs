@@ -126,12 +126,12 @@ namespace Narramancer {
 			if (Event.current.type == EventType.DragPerform) {
 				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
 				var lastRect = GUILayoutUtility.GetLastRect();
-				if (lastRect.Contains(Event.current.mousePosition)) {
+				if (lastRect.Contains(Event.current.mousePosition) && DragAndDrop.objectReferences.Any(@object => @object is ActionVerb)) {
 					DragAndDrop.AcceptDrag();
 
-					var selectedObjects = DragAndDrop.objectReferences;
+					var selectedObjects = DragAndDrop.objectReferences.Where(@object => @object is ActionVerb);
 
-					foreach(var selectedObject in selectedObjects) {
+					foreach (var selectedObject in selectedObjects) {
 						listProperty.AddObject(selectedObject);
 					}
 				}
