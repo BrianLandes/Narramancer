@@ -5,10 +5,11 @@ using XNode;
 
 namespace Narramancer {
 	[NodeWidth(400)]
-	public class FormatStringNode : Node {
+	public class FormatStringNode : ResizableNode {
 
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Strict)]
 		[SerializeField]
+		[TextArea]
 		private string text = "";
 		public static string TextFieldName => nameof(text);
 
@@ -17,7 +18,7 @@ namespace Narramancer {
 		private string result = "";
 		public static string ResultFieldName => nameof(result);
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(result))) {
 				var inputText = GetInputValue(context, nameof(text), text);
 

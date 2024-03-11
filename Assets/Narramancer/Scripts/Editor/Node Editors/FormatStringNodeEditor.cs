@@ -1,12 +1,13 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 using XNodeEditor;
 
 namespace Narramancer {
 
 	[CustomNodeEditor(typeof(FormatStringNode))]
-	public class FormatStringNodeEditor : NodeEditor {
+	public class FormatStringNodeEditor : ResizableNodeEditor {
 
 		GUIContent menuContent;
 		GUIContent addInputContent;
