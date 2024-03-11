@@ -34,6 +34,13 @@ namespace Narramancer {
 					return true;
 				}
 			}
+			var createNodeMenuAttribute = element.GetCustomAttributes(typeof(Node.CreateNodeMenuAttribute), false).FirstOrDefault(attribute => attribute is Node.CreateNodeMenuAttribute) as Node.CreateNodeMenuAttribute;
+			if ( createNodeMenuAttribute != null) {
+				var menuName = createNodeMenuAttribute.menuName.Replace('/', ' ').ToLower();
+				if (searchTerms.All(term => menuName.Contains(term))) {
+					return true;
+				}
+			}
 			return false;
 		}
 
