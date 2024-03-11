@@ -75,6 +75,33 @@ namespace Narramancer {
 					}
 				}
 			}
+			else {
+				// apply CERTAIN types of values (that are specifically NOT serialized/desiralized)
+				var blackboard = NarramancerSingleton.Instance.StoryInstance.Blackboard;
+				foreach (var variable in variables.list) {
+					if (variable != null) {
+						object value = null;
+						switch (variable.Assignment.type) {
+							case "int":
+							case "bool":
+							case "float":
+							case "string":
+							case "color":
+							case "vector2":
+							case "vector3":
+								// this area left blank intentionally
+								break;
+							default:
+								value = variable.Assignment.objectValue;
+								break;
+						}
+						if (value != null) {
+							blackboard.Set(variable.VariableKey, value);
+						}
+
+					}
+				}
+			}
 
 		}
 
