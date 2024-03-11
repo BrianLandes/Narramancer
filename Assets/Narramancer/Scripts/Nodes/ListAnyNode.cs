@@ -5,7 +5,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/Any Element in List Passes Predicate")]
 	public class ListAnyNode : Node {
 
 		[SerializeField]

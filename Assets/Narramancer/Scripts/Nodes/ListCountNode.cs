@@ -5,7 +5,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/List Count")]
 	public class ListCountNode : Node {
 
 		[SerializeField]

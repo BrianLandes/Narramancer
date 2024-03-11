@@ -4,7 +4,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/Select Elements from List")]
 	public class ListSelectNode : Node {
 
 		[SerializeField]

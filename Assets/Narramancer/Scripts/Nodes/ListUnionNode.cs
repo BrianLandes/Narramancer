@@ -1,11 +1,11 @@
 ﻿
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using XNode;
 
 namespace Narramancer {
 
+	[CreateNodeMenu("List/Union of Lists")]
 	public class ListUnionNode : Node {
 
 		[SerializeField]

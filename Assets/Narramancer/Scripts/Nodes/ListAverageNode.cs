@@ -7,6 +7,7 @@ using XNode;
 namespace Narramancer {
 
 	[NodeWidth(250)]
+	[CreateNodeMenu("List/Average of Elements in List")]
 	public class ListAverageNode : Node {
 
 		[SerializeField]

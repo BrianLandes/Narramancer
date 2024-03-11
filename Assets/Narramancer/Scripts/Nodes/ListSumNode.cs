@@ -6,6 +6,7 @@ using XNode;
 namespace Narramancer {
 
 	[NodeWidth(250)]
+	[CreateNodeMenu("List/Sum of Elements in List")]
 	public class ListSumNode : Node {
 
 		[SerializeField]

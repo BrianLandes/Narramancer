@@ -6,6 +6,7 @@ using XNode;
 namespace Narramancer {
 
 	[NodeWidth(250)]
+	[CreateNodeMenu("List/Filter List Using Predicate")]
 	public class ListFilterNode : Node {
 
 		[SerializeField]

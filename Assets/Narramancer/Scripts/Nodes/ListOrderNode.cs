@@ -7,6 +7,7 @@ using XNode;
 namespace Narramancer {
 
 	[NodeWidth(250)]
+	[CreateNodeMenu("List/Sort or Order Elements in List")]
 	public class ListOrderNode : Node {
 
 		[SerializeField]

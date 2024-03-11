@@ -4,7 +4,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/Subtract Elements from List")]
 	public class ListSubtractNode : Node {
 
 		[SerializeField]

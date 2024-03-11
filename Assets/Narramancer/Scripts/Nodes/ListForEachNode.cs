@@ -6,7 +6,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/For Each Element in List")]
 	public class ListForEachNode : ChainedRunnableNode {
 
 		[SerializeField]

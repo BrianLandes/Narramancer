@@ -6,7 +6,7 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/Choose One Random Element from List")]
 	public class ListChooseOneNode : ChainedRunnableNode {
 
 		[SerializeField]

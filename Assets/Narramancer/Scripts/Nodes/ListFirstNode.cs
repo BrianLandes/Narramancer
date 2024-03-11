@@ -1,12 +1,9 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-
+	[CreateNodeMenu("List/First Element from List")]
 	public class ListFirstNode : Node {
 
 		[SerializeField]
