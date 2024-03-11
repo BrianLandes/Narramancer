@@ -7,10 +7,11 @@ using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("List/For Each Element in List")]
-	public class ListForEachNode : ChainedRunnableNode {
+	public class ListForEachNode : ChainedRunnableNode, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		private const string INPUT_ELEMENTS = "Elements";
 		private const string INPUT_LIST = "List";

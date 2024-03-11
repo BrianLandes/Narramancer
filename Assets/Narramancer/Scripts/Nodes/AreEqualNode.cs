@@ -6,10 +6,11 @@ namespace Narramancer {
 
 	[NodeWidth(400)]
 	[CreateNodeMenu("Logic/Are Equal")]
-	public class AreEqualNode : Node {
+	public class AreEqualNode : ResizableNode {
 
 		[SerializeField]
 		private SerializableType type = new SerializableType();
+		public SerializableType ObjectType => type;
 
 		private static string LEFT_OBJECT = "Left Object";
 		private static string RIGHT_OBJECT = "Right Object";

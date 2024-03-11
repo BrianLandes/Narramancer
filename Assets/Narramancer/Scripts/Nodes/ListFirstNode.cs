@@ -4,10 +4,11 @@ using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("List/First Element from List")]
-	public class ListFirstNode : Node {
+	public class ListFirstNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		private const string LIST = "List";
 
@@ -30,7 +31,7 @@ namespace Narramancer {
 			var inputPort = this.GetOrAddDynamicInput(listType.TypeAsList, LIST);
 			keepPorts.Add(inputPort);
 
-			var outputPort = this.GetOrAddDynamicOutput(listType.Type, FIRST_ELEMENT);
+			var outputPort = this.GetOrAddDynamicOutput(listType.Type, FIRST_ELEMENT, sameLine: true);
 			keepPorts.Add(outputPort);
 
 			this.ClearDynamicPortsExcept(keepPorts);

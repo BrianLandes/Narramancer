@@ -32,8 +32,8 @@ namespace XNodeEditor {
             var text = target.name;
             if (target.name.Length * charWidth > maxWidth) {
                 text = target.name.Substring(0, maxWidth / charWidth) + "...";
-			}
-            GUILayout.Label( new GUIContent( text, target.name), NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+            }
+            GUILayout.Label(new GUIContent(text, target.name), NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
         }
 
         /// <summary> Draws standard field editors for all public fields </summary>
@@ -83,14 +83,16 @@ namespace XNodeEditor {
             bool enterChildren = true;
             while (iterator.NextVisible(enterChildren)) {
                 enterChildren = false;
-                if (excludes.Contains(iterator.name)) continue;
+                if (excludes.Contains(iterator.name))
+                    continue;
                 NodeEditorGUILayout.PropertyField(iterator, true);
             }
 #endif
 
             // Iterate through dynamic ports and draw them in the order in which they are serialized
             foreach (XNode.NodePort dynamicPort in target.DynamicPorts) {
-                if (NodeEditorGUILayout.IsDynamicPortListPort(dynamicPort)) continue;
+                if (NodeEditorGUILayout.IsDynamicPortListPort(dynamicPort))
+                    continue;
                 NodeEditorGUILayout.PortField(dynamicPort, serializedObject);
             }
 
@@ -109,8 +111,10 @@ namespace XNodeEditor {
         public virtual int GetWidth() {
             Type type = target.GetType();
             int width;
-            if (type.TryGetAttributeWidth(out width)) return width;
-            else return 208;
+            if (type.TryGetAttributeWidth(out width))
+                return width;
+            else
+                return 208;
         }
 
         /// <summary> Returns color for target node </summary>
@@ -118,9 +122,11 @@ namespace XNodeEditor {
             // Try get color from [NodeTint] attribute
             Type type = target.GetType();
             Color color;
-            if (type.TryGetAttributeTint(out color)) return color;
+            if (type.TryGetAttributeTint(out color))
+                return color;
             // Return default color (grey)
-            else return NodeEditorPreferences.GetSettings().tintColor;
+            else
+                return NodeEditorPreferences.GetSettings().tintColor;
         }
 
         public virtual GUIStyle GetBodyStyle() {
@@ -152,8 +158,10 @@ namespace XNodeEditor {
             menu.AddItem(new GUIContent("Copy"), false, NodeEditorWindow.current.CopySelectedNodes);
             menu.AddItem(new GUIContent("Duplicate"), false, NodeEditorWindow.current.DuplicateSelectedNodes);
 
-            if (canRemove) menu.AddItem(new GUIContent("Remove"), false, NodeEditorWindow.current.RemoveSelectedNodes);
-            else menu.AddItem(new GUIContent("Remove"), false, null);
+            if (canRemove)
+                menu.AddItem(new GUIContent("Remove"), false, NodeEditorWindow.current.RemoveSelectedNodes);
+            else
+                menu.AddItem(new GUIContent("Remove"), false, null);
 
             // Custom sctions if only one node is selected
             if (Selection.objects.Length == 1 && Selection.activeObject is XNode.Node) {
@@ -162,9 +170,18 @@ namespace XNodeEditor {
             }
         }
 
+        public virtual bool HasCustomDroppedPortLogic() {
+            return false;
+        }
+
+        public virtual void PerformCustomDroppedPortLogic(XNode.Node hoveredNode, XNode.NodePort draggedOutput) {
+            // Override this method
+        }
+
         /// <summary> Rename the node asset. This will trigger a reimport of the node. </summary>
         public void Rename(string newName) {
-            if (newName == null || newName.Trim() == "") newName = NodeEditorUtilities.NodeDefaultName(target.GetType());
+            if (newName == null || newName.Trim() == "")
+                newName = NodeEditorUtilities.NodeDefaultName(target.GetType());
             target.name = newName;
             OnRename();
             AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(target));

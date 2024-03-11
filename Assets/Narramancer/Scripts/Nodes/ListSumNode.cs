@@ -7,11 +7,11 @@ namespace Narramancer {
 
 	[NodeWidth(250)]
 	[CreateNodeMenu("List/Sum of Elements in List")]
-	public class ListSumNode : Node {
+	public class ListSumNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
-
+		public SerializableType ListType => listType;
 
 		[SerializeField]
 		[VerbRequired, HideLabelInNode]
@@ -33,14 +33,13 @@ namespace Narramancer {
 
 		public override void UpdatePorts() {
 
-			if (predicate == null || listType.Type == null) {
+			if (listType.Type == null) {
 				ClearDynamicPorts();
 				return;
 			}
 
-			List<NodePort> existingPorts = new List<NodePort>();
+			var existingPorts = new List<NodePort>();
 
-			var baseInputPort = predicate.GetInput(listType.Type);
 
 			var inputListPort = this.GetOrAddDynamicInput(listType.TypeAsList, INPUT_LIST);
 			existingPorts.Add(inputListPort);
@@ -48,16 +47,20 @@ namespace Narramancer {
 			var inputPort = this.GetOrAddDynamicInput(listType.Type, INPUT_ELEMENTS, ConnectionType.Multiple);
 			existingPorts.Add(inputPort);
 
-			foreach (var inputGraphPort in predicate.Inputs) {
-				if (inputGraphPort.Type == null) {
-					continue;
+			if (predicate != null) {
+				var baseInputPort = predicate.GetInput(listType.Type);
+
+				foreach (var inputGraphPort in predicate.Inputs) {
+					if (inputGraphPort.Type == null) {
+						continue;
+					}
+					// don't add an input port for the Character input -> we'll assign that one manually
+					if (inputGraphPort == baseInputPort) {
+						continue;
+					}
+					var nodePort = this.GetOrAddDynamicInput(inputGraphPort.Type, inputGraphPort.Name);
+					existingPorts.Add(nodePort);
 				}
-				// don't add an input port for the Character input -> we'll assign that one manually
-				if (inputGraphPort == baseInputPort) {
-					continue;
-				}
-				var nodePort = this.GetOrAddDynamicInput(inputGraphPort.Type, inputGraphPort.Name);
-				existingPorts.Add(nodePort);
 			}
 
 			this.ClearDynamicPortsExcept(existingPorts);

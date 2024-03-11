@@ -16,6 +16,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		private bool list = false;
+		public bool List { get => list; set { list = value; ApplyChanges(); } }
 
 		/// <summary>
 		/// Allows Nodes and other GUIs to respond to the type being changed.

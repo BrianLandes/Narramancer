@@ -6,10 +6,11 @@ namespace Narramancer {
 
 	[NodeWidth(400)]
 	[CreateNodeMenu("Logic/Is Not Null")]
-	public class IsNotNullNode : Node {
+	public class IsNotNullNode : ResizableNode {
 
 		[SerializeField]
 		private SerializableType type = new SerializableType();
+		public SerializableType ObjectType => type;
 
 		private static string TARGET_OBJECT = "Object";
 

@@ -1,21 +1,17 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("List/Choose One Random Element from List")]
-	public class ListChooseOneNode : ChainedRunnableNode {
+	public class ListChooseOneNode : ChainedRunnableNode, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		private const string LIST = "List";
 		private const string CHOSEN_ELEMENT = "Chosen Element";
-
-		private MethodInfo toArrayMethod;
 
 		protected override void Init() {
 			listType.OnChanged -= UpdatePorts;
@@ -34,7 +30,7 @@ namespace Narramancer {
 				var inputPort = this.GetOrAddDynamicInput(listType.TypeAsList, LIST);
 				keepPorts.Add(inputPort);
 
-				var outputPort = this.GetOrAddDynamicOutput(listType.Type, CHOSEN_ELEMENT);
+				var outputPort = this.GetOrAddDynamicOutput(listType.Type, CHOSEN_ELEMENT, sameLine:true);
 				keepPorts.Add(outputPort);
 
 				this.ClearDynamicPortsExcept(keepPorts);

@@ -5,10 +5,11 @@ using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("List/Subtract Elements from List")]
-	public class ListSubtractNode : Node {
+	public class ListSubtractNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		private static string LIST_A = "List A";
 		private static string LIST_B = "List B";

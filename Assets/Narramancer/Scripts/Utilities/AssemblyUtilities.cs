@@ -193,6 +193,18 @@ namespace Narramancer {
 			return true;
 		}
 
+		public static Type GetListInnerType(Type listType) {
+			if (!IsListType(listType)) {
+				return null;
+			}
+			if (listType.GenericTypeArguments.Length > 0) {
+				return listType.GenericTypeArguments[0];
+			}
+			else{
+				return listType.GetElementType();
+			}
+		}
+
 		public static bool HasFieldWithType(this Type classType, Type fieldType) {
 			var fields = classType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 			if (fields.Any(field => field.FieldType == fieldType)) {

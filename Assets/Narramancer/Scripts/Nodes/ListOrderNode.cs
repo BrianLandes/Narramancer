@@ -8,10 +8,11 @@ namespace Narramancer {
 
 	[NodeWidth(250)]
 	[CreateNodeMenu("List/Sort or Order Elements in List")]
-	public class ListOrderNode : Node {
+	public class ListOrderNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 
 		[SerializeField]
@@ -33,15 +34,12 @@ namespace Narramancer {
 
 		public override void UpdatePorts() {
 
-			if (predicate == null || listType.Type == null) {
+			if (listType.Type == null) {
 				ClearDynamicPorts();
 				return;
 			}
 
-			List<NodePort> existingPorts = new List<NodePort>();
-
-			var baseInputPort = predicate.GetInput(listType.Type);
-			var baseOutputPort = predicate.GetOutput<float>();
+			var existingPorts = new List<NodePort>();
 
 			var inputListPort = this.GetOrAddDynamicInput(listType.TypeAsList, INPUT_LIST);
 			existingPorts.Add(inputListPort);
@@ -49,8 +47,14 @@ namespace Narramancer {
 			var outputListPort = this.GetOrAddDynamicOutput(listType.TypeAsList, OUTPUT_LIST, sameLine: true);
 			existingPorts.Add(outputListPort);
 
-			var miscPorts = this.GetOrAddPortsForGraph(predicate, new[] { baseInputPort, baseOutputPort });
-			existingPorts.AddRange(miscPorts);
+			if (predicate != null) {
+				var baseInputPort = predicate.GetInput(listType.Type);
+				var baseOutputPort = predicate.GetOutput<float>();
+
+				var miscPorts = this.GetOrAddPortsForGraph(predicate, new[] { baseInputPort, baseOutputPort });
+				existingPorts.AddRange(miscPorts);
+
+			}
 
 			this.ClearDynamicPortsExcept(existingPorts);
 

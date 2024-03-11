@@ -1,15 +1,14 @@
-﻿
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using XNode;
 
 namespace Narramancer {
 
-	public class ToStringNode : Node {
+	public class ToStringNode : ResizableNode {
 
 
 		[SerializeField]
 		private SerializableType objectType = new SerializableType();
+		public SerializableType ObjectType => objectType;
 
 		private const string ELEMENT = "Element";
 

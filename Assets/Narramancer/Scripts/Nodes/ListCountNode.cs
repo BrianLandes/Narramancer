@@ -1,15 +1,15 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
 namespace Narramancer {
 	[CreateNodeMenu("List/List Count")]
-	public class ListCountNode : Node {
+	public class ListCountNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Strict)]
 		[SerializeField]

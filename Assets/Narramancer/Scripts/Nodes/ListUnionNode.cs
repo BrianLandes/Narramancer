@@ -6,10 +6,11 @@ using XNode;
 namespace Narramancer {
 
 	[CreateNodeMenu("List/Union of Lists")]
-	public class ListUnionNode : Node {
+	public class ListUnionNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		[SerializeField]
 		private bool useReplacement = true;

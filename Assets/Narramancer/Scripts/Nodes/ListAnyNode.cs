@@ -1,15 +1,15 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-	[CreateNodeMenu("List/Any Element in List Passes Predicate")]
-	public class ListAnyNode : Node {
+	[CreateNodeMenu("List/Any Elements in List")]
+	public class ListAnyNode : Node, IListTypeNode {
 
 		[SerializeField]
 		private SerializableType listType = new SerializableType();
+		public SerializableType ListType => listType;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Strict)]
 		[SerializeField]
@@ -31,7 +31,7 @@ namespace Narramancer {
 
 			var nodePort = this.GetOrAddDynamicInput(listType.TypeAsList, LIST);
 
-			this.ClearDynamicPortsExcept( new[] { nodePort } );
+			this.ClearDynamicPortsExcept(new[] { nodePort });
 
 		}
 
