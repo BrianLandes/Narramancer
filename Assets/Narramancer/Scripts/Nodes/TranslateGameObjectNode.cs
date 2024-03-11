@@ -7,13 +7,15 @@ namespace Narramancer {
 	[NodeSearchTerms("Move GameObject", "Reposition GameObject")]
 	public class TranslateGameObjectNode : ChainedRunnableNode {
 
-		[Input(connectionType = ConnectionType.Multiple, typeConstraint = TypeConstraint.Inherited)]
+		[Input(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
 		private GameObject gameObject = default;
+		public static string GameObjectFieldName => nameof(gameObject);
 
 		[Input(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
 		private Vector3 targetPosition = default;
+		public static string TargetPositionFieldName => nameof(targetPosition);
 
 		public enum MoveType {
 			Duration,
@@ -23,19 +25,24 @@ namespace Narramancer {
 		[SerializeField]
 		[NodeEnum]
 		private MoveType moveType = MoveType.Duration;
+		public static string MoveTypeFieldName => nameof(moveType);
 
 		[Input(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
 		[Min(0)]
 		private float duration = 1f;
+		public static string DurationFieldName => nameof(duration);
 
 		[Input(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
 		[Min(0.00001f)]
 		private float moveSpeed = 60f;
+		public static string MoveSpeedFieldName => nameof(moveSpeed);
 
 		[SerializeField]
+		[Tooltip("Wait until the GameObject reaches its target before running the next node")]
 		private bool wait = true;
+		public static string WaitFieldName => nameof(wait);
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
