@@ -41,6 +41,14 @@ namespace Narramancer {
 					return true;
 				}
 			}
+			var nodeSearchTermsAttribute = element.GetCustomAttributes(typeof(NodeSearchTermsAttribute), false).FirstOrDefault(attribute => attribute is NodeSearchTermsAttribute) as NodeSearchTermsAttribute;
+			if (nodeSearchTermsAttribute != null) {
+				foreach( var value in nodeSearchTermsAttribute.searchTerms) {
+					if (searchTerms.All(term => value.ToLower().Contains(term))) {
+						return true;
+					}
+				}
+			}
 			return false;
 		}
 

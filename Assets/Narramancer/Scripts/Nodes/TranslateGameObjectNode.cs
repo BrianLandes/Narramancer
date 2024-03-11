@@ -4,6 +4,7 @@ using XNode;
 namespace Narramancer {
 
 	[CreateNodeMenu("GameObject/Translate GameObject")]
+	[NodeSearchTerms("Move GameObject", "Reposition GameObject")]
 	public class TranslateGameObjectNode : ChainedRunnableNode {
 
 		[Input(connectionType = ConnectionType.Multiple, typeConstraint = TypeConstraint.Inherited)]
