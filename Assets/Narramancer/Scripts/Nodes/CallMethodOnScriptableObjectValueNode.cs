@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 
@@ -22,7 +23,7 @@ namespace Narramancer {
 			};
 		}
 
-		protected override object GetTargetObject(IDictionary<string, object> context) {
+		protected override object GetTargetObject(INodeContext context) {
 			return GetInputValue(context, nameof(targetObject), targetObject);
 		}
 

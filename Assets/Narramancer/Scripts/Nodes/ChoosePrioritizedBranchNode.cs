@@ -47,7 +47,7 @@ namespace Narramancer {
 			}
 		}
 
-		private PrioritizedBranchNode ChooseFirstTrueBranch(IDictionary<string, object> blackboard) {
+		private PrioritizedBranchNode ChooseFirstTrueBranch(INodeContext blackboard) {
 
 			foreach (var branch in Branches) {
 				if (branch.IsConditionMet(blackboard)) {

@@ -28,7 +28,7 @@ namespace Narramancer {
         [SerializeField]
         protected int result;
 
-        public override object GetValue(IDictionary<string, object> context, NodePort port) {
+        public override object GetValue(INodeContext context, NodePort port) {
             if (port.fieldName.Equals(nameof(result))) {
                 int leftValue = GetInputValue(context, nameof(a), a);
                 int rightValue = GetInputValue(context, nameof(b), b);

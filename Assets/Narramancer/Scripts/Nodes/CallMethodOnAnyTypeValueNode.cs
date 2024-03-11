@@ -20,7 +20,7 @@ namespace Narramancer {
 			method.LookupTypes = new[] { type.Type };
 		}
 
-		protected override object GetTargetObject(IDictionary<string, object> context) {
+		protected override object GetTargetObject(INodeContext context) {
 			if (type.Type != null) {
 				var existingInputPort = this.GetDynamicInput(type.Type, TARGET);
 				if (existingInputPort != null) {
@@ -68,7 +68,7 @@ namespace Narramancer {
 			name = name.Nicify();
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(PASS_THROUGH)) {
 					return GetTargetObject(context);

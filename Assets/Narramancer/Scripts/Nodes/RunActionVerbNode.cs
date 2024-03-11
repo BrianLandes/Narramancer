@@ -71,7 +71,7 @@ namespace Narramancer {
 		}
 
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			var actionVerb = GetInputValue(context, nameof(this.actionVerb), this.actionVerb);
 			if (Application.isPlaying && actionVerb != null) {
 				foreach (var outputPort in actionVerb.Outputs) {

@@ -10,7 +10,7 @@ namespace Narramancer {
 		[Output(connectionType = ConnectionType.Override)]
 		public RunnableNode runNode;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			
 			// the only thing that this node can be hooked to is 'runNode'
 			// the 'value' is the node itself

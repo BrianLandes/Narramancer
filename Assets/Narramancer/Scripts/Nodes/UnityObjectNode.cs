@@ -34,7 +34,7 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (port.fieldName.Equals(TARGET_OBJECT)) {
 				return targetObject;
 			}

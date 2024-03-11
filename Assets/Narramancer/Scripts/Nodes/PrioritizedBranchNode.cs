@@ -28,7 +28,7 @@ namespace Narramancer {
 		[SerializeField]
 		bool condition = true;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (port.fieldName == nameof(thisChoice)) {
 				// the 'value' is the node itself
@@ -47,7 +47,7 @@ namespace Narramancer {
 			return null;
 		}
 
-		public bool IsConditionMet(IDictionary<string, object> context) {
+		public bool IsConditionMet(INodeContext context) {
 			return GetInputValue(context, nameof(condition), condition);
 		}
 

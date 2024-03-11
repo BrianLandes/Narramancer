@@ -130,7 +130,7 @@ namespace Narramancer {
 			choicePrinter.ShowChoices();
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(SELECTED_ELEMENT)) {
 				var blackboard = context as Blackboard;
 				var element = blackboard.Get(ElementKey, type.Type);

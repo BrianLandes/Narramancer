@@ -13,7 +13,7 @@ namespace Narramancer {
 		[TextArea(4, 30)]
 		public string comment = "";
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			return null;
 		}
 

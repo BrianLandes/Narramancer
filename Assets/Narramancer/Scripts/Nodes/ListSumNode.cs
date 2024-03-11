@@ -64,19 +64,19 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		private void AssignGraphVariableInputs(IDictionary<string, object> context) {
+		private void AssignGraphVariableInputs(INodeContext context) {
 			foreach (var inputPort in DynamicInputs) {
 				var verbPort = predicate.GetInput(inputPort.ValueType, inputPort.fieldName);
 				verbPort?.AssignValueFromNodePort(context, inputPort);
 			}
 		}
 
-		private float GetValueFromElement(IDictionary<string, object> context, object element) {
+		private float GetValueFromElement(INodeContext context, object element) {
 			AssignGraphVariableInputs(context);
 			return predicate.RunForValue<float>(context, listType.Type, element);
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (Application.isPlaying) {
 				if (predicate == null) {

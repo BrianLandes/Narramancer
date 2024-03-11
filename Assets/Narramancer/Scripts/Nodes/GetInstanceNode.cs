@@ -17,7 +17,7 @@ namespace Narramancer {
 		[HideLabel]
 		private NounInstance instance = default;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(instance))) {
 				var noun = GetInputValue(context, nameof(this.noun), this.noun);
 				return NarramancerSingleton.Instance.GetInstance(noun);

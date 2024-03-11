@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 
@@ -20,7 +21,7 @@ namespace Narramancer {
 		[RequireOutput(typeof(int), "rank")]
 		private ValueVerb rankGraph = default;
 
-		public int GetRank(IDictionary<string, object> context, NounInstance instance) {
+		public int GetRank(INodeContext context, NounInstance instance) {
 			if (staticRank.activated) {
 				return staticRank.value;
 			}
@@ -41,7 +42,7 @@ namespace Narramancer {
 		[RequireOutput(typeof(float), "weight")]
 		private ValueVerb weightGraph = default;
 
-		public float GetWeight(IDictionary<string, object> context, NounInstance instance) {
+		public float GetWeight(INodeContext context, NounInstance instance) {
 			if (staticWeight.activated) {
 				return staticWeight.value;
 			}
@@ -67,7 +68,7 @@ namespace Narramancer {
 
 		#region Choose
 
-		public static RankedWeightedAction Choose(IDictionary<string, object> context, NounInstance instance, IList<RankedWeightedAction> actions, ref string log) {
+		public static RankedWeightedAction Choose(INodeContext context, NounInstance instance, IList<RankedWeightedAction> actions, ref string log) {
 			if (!actions.Any()) {
 				return null;
 			}

@@ -20,11 +20,11 @@ namespace Narramancer {
 			method.LookupTypes = new[] { typeof(T) };
 		}
 
-		protected override object GetTargetObject(IDictionary<string, object> context) {
+		protected override object GetTargetObject(INodeContext context) {
 			return GetInputValue<T>(context, nameof(inputValue));
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(nameof(passThroughValue))) {
 					return GetTargetObject(context);

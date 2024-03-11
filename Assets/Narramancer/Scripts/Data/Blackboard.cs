@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 	[Serializable]
-	public class Blackboard : IDictionary<string, object> {
+	public class Blackboard : INodeContext {
 
 
 		[SerializeField]
@@ -558,147 +559,5 @@ namespace Narramancer {
 
 		#endregion
 
-		#region IDictionary
-
-
-		public ICollection<string> Keys {
-			get {
-				List<string> result = new List<string>();
-				if (ints != null) {
-					result.AddRange(ints.Keys);
-				}
-				if (bools != null) {
-					result.AddRange(bools.Keys);
-				}
-				if (floats != null) {
-					result.AddRange(floats.Keys);
-				}
-				if (strings != null) {
-					result.AddRange(strings.Keys);
-				}
-				if (gameObjects != null) {
-					result.AddRange(gameObjects.Keys);
-				}
-				if (components != null) {
-					result.AddRange(components.Keys);
-				}
-				if (unityObjects != null) {
-					result.AddRange(unityObjects.Keys);
-				}
-				if (objects != null) {
-					result.AddRange(objects.Keys);
-				}
-				return result;
-			}
-		}
-
-		public ICollection<object> Values {
-			get {
-				List<object> result = new List<object>();
-				if (ints != null) {
-					result.AddRange(ints.Values.Cast<object>());
-				}
-				if (bools != null) {
-					result.AddRange(bools.Values.Cast<object>());
-				}
-				if (floats != null) {
-					result.AddRange(floats.Values.Cast<object>());
-				}
-				if (strings != null) {
-					result.AddRange(strings.Values.Cast<object>());
-				}
-				if (gameObjects != null) {
-					result.AddRange(gameObjects.Values.Cast<object>());
-				}
-				if (components != null) {
-					result.AddRange(components.Values.Cast<object>());
-				}
-				if (unityObjects != null) {
-					result.AddRange(unityObjects.Values.Cast<object>());
-				}
-				if (objects != null) {
-					result.AddRange(objects.Values.Cast<object>());
-				}
-				return result;
-			}
-		}
-
-		public int Count {
-			get {
-				int result = 0;
-				if (ints != null) {
-					result += ints.Count;
-				}
-				if (bools != null) {
-					result += bools.Count;
-				}
-				if (floats != null) {
-					result += floats.Count;
-				}
-				if (strings != null) {
-					result += strings.Count;
-				}
-				if (gameObjects != null) {
-					result += gameObjects.Count;
-				}
-				if (components != null) {
-					result += components.Count;
-				}
-				if (unityObjects != null) {
-					result += unityObjects.Count;
-				}
-				if (objects != null) {
-					result += objects.Count;
-				}
-				return result;
-			}
-		}
-
-		public bool IsReadOnly => false;
-
-		public object this[string key] { get => Get<object>(key); set => Set(key, value); }
-
-		public void Add(string key, object value) {
-			Set(key, value);
-		}
-
-		public bool ContainsKey(string key) {
-			return GetAll().Any(pair => key.Equals(pair.Item1) );
-		}
-
-		public bool Remove(string key) {
-			return Remove<object>(key);
-		}
-
-		public bool TryGetValue(string key, out object value) {
-			value = Get<object>(key);
-			return value != null;
-		}
-
-		public void Add(KeyValuePair<string, object> item) {
-			Set(item.Key, item.Value);
-		}
-
-		public bool Contains(KeyValuePair<string, object> item) {
-			return GetAll().Any(pair => item.Key.Equals(pair.Item1) && item.Value == pair.Item2);
-		}
-
-		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex) {
-			throw new NotImplementedException();
-		}
-
-		public bool Remove(KeyValuePair<string, object> item) {
-			return Remove(item.Key, item.Value.GetType() );
-		}
-
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
-			throw new NotImplementedException();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() {
-			throw new NotImplementedException();
-		}
-
-		#endregion
 	}
 }

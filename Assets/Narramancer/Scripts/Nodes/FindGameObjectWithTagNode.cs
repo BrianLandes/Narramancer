@@ -16,7 +16,7 @@ namespace Narramancer {
 		[SerializeField]
 		private GameObject gameObject = default;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(gameObject))) {
 				var inputTag = GetInputValue(context, nameof(tag), tag);
 				var foundGameObject = GameObject.FindGameObjectWithTag(inputTag);

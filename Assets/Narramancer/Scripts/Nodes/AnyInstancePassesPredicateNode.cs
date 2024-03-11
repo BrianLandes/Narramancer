@@ -55,7 +55,7 @@ namespace Narramancer {
 			this.ClearDynamicPortsExcept(existingPorts);
 		}
 
-		private bool DoesInstancePassPredicate(IDictionary<string, object> context, NounInstance instance) {
+		private bool DoesInstancePassPredicate(INodeContext context, NounInstance instance) {
 			if (predicate == null) {
 				Debug.LogError($"{nameof(AnyInstancePassesPredicateNode).Nicify()} must have a predicate assigned.", this);
 				return false;
@@ -76,12 +76,12 @@ namespace Narramancer {
 			}
 		}
 
-		private NounInstance GetFirstInstanceThatPassesPredicate(IDictionary<string, object> context) {
+		private NounInstance GetFirstInstanceThatPassesPredicate(INodeContext context) {
 			var instances = this.GetInputValueList<NounInstance>(context, nameof(this.instances));
 			return instances.FirstOrDefault(instance => DoesInstancePassPredicate(context, instance));
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (Application.isPlaying) {
 				switch (port.fieldName) {

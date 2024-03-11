@@ -37,7 +37,7 @@ namespace Narramancer {
 			return valueVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (Application.isPlaying) {
 				if (valueVerb == null) {

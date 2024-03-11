@@ -22,7 +22,7 @@ namespace Narramancer {
 		private PropertyInstance propertyInstance = default;
 
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying) {
 				switch (port.fieldName) {
 					case nameof(hasProperty): {

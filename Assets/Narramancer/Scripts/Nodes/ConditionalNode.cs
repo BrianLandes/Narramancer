@@ -18,7 +18,7 @@ namespace Narramancer {
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		public RunnableNode runNodeIfFalse = default;
 
-		public bool IsConditionMet(IDictionary<string, object> context) {
+		public bool IsConditionMet(INodeContext context) {
 			return GetInputValue(context, nameof(condition), condition);
 		}
 

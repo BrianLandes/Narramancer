@@ -63,7 +63,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static ReturnType RunForValue<ReturnType>(this VerbGraph nodeGraph, IDictionary<string, object> context) {
+		public static ReturnType RunForValue<ReturnType>(this VerbGraph nodeGraph, INodeContext context) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var resultOutput = nodeGraph.GetOutput<ReturnType>();
@@ -80,7 +80,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static ReturnType RunForValue<ReturnType, T1>(this VerbGraph nodeGraph, IDictionary<string, object> context, T1 inputValue) {
+		public static ReturnType RunForValue<ReturnType, T1>(this VerbGraph nodeGraph, INodeContext context, T1 inputValue) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var inputPort = nodeGraph.GetInput<T1>();
@@ -105,7 +105,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static ReturnType RunForValue<ReturnType>(this VerbGraph nodeGraph, IDictionary<string, object> context, Type inputType, object inputValue) {
+		public static ReturnType RunForValue<ReturnType>(this VerbGraph nodeGraph, INodeContext context, Type inputType, object inputValue) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var inputPort = nodeGraph.GetInput(inputType);
@@ -130,7 +130,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static object RunForValue(this VerbGraph nodeGraph, IDictionary<string, object> context, object inputValue) {
+		public static object RunForValue(this VerbGraph nodeGraph, INodeContext context, object inputValue) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var inputPort = nodeGraph.Inputs.FirstOrDefault();
@@ -155,7 +155,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static ReturnType RunForValue<ReturnType, T1, T2>(this VerbGraph nodeGraph, IDictionary<string, object> context, T1 value1, T2 value2) {
+		public static ReturnType RunForValue<ReturnType, T1, T2>(this VerbGraph nodeGraph, INodeContext context, T1 value1, T2 value2) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var blackboard = context as Blackboard;
@@ -187,7 +187,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static List<ReturnType> RunForValueList<ReturnType, T1>(this VerbGraph nodeGraph, IDictionary<string, object> context, T1 value1) {
+		public static List<ReturnType> RunForValueList<ReturnType, T1>(this VerbGraph nodeGraph, INodeContext context, T1 value1) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var blackboard = context as Blackboard;
@@ -215,7 +215,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static List<ReturnType> RunForValueList<ReturnType, T1, T2>(this VerbGraph nodeGraph, IDictionary<string, object> context, T1 value1, T2 value2) {
+		public static List<ReturnType> RunForValueList<ReturnType, T1, T2>(this VerbGraph nodeGraph, INodeContext context, T1 value1, T2 value2) {
 			if (nodeGraph.TryGetOutputNode(out var outputNode)) {
 
 				var blackboard = context as Blackboard;

@@ -35,7 +35,7 @@ namespace Narramancer {
 		[SerializeField]
 		private bool result = false;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(this.result))) {
 
 				var gameObjectA = GetInputValue(context, nameof(this.gameObjectA), this.gameObjectA);

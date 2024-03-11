@@ -23,7 +23,7 @@ namespace Narramancer {
 		[SerializeField]
 		Vector3 worldPosition;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			var gameObject = GetInputValue(context, nameof(this.gameObject), this.gameObject);
 			if (gameObject != null) {
 				switch (port.fieldName) {

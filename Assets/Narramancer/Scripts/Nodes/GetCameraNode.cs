@@ -18,7 +18,7 @@ namespace Narramancer {
 		[SerializeField]
 		GameObject gameObject;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			switch (port.fieldName) {
 				case nameof(camera):
 					return Camera.main;

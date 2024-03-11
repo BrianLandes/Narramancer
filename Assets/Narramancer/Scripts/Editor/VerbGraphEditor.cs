@@ -298,6 +298,11 @@ namespace Narramancer {
 							newNode.valueVerb = valueVerb;
 							break;
 						}
+					case StatScriptableObject statScriptableObject: {
+							var newNode = CreateNode(typeof(GetStatNode), position) as GetStatNode;
+							newNode.stat = statScriptableObject;
+							break;
+						}
 					case NounScriptableObject nounScriptableObject: {
 							var newNode = CreateNode(typeof(GetInstanceNode), position) as GetInstanceNode;
 							newNode.Noun = nounScriptableObject;

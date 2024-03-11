@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 using XNodeEditor.Internal;
 #if UNITY_2019_1_OR_NEWER && USE_ADVANCED_GENERIC_MENU
 using GenericMenu = XNodeEditor.AdvancedGenericMenu;
@@ -46,7 +47,7 @@ namespace XNodeEditor {
         private float dragThreshold = 1f;
 
         [NonSerialized] public UnityEngine.Object selectedNodeRunnerUnityObject;
-        [NonSerialized] public IDictionary<string, object> selectedContext;
+        [NonSerialized] public INodeContext selectedContext;
 
         public void Controls() {
             wantsMouseMove = true;

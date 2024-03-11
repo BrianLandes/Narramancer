@@ -15,7 +15,7 @@ namespace Narramancer {
         [SerializeField]
         protected float product;
 
-        public override object GetValue(IDictionary<string, object> context, NodePort port) {
+        public override object GetValue(INodeContext context, NodePort port) {
             if (port.fieldName.Equals(nameof(product))) {
                 var inputValues = GetInputValues<float>(context, nameof(values));
 

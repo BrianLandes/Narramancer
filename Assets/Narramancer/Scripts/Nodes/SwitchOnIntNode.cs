@@ -39,12 +39,12 @@ namespace Narramancer {
 		/// <summary>
 		/// Returns the node itself that is connected to the 'thenRunNode' port (if there is one, null otherwise).
 		/// </summary>
-		public RunnableNode GetNextNode(IDictionary<string, object> context) {
+		public RunnableNode GetNextNode(INodeContext context) {
 			var inputSocket = GetInputValue(context, nameof(intValue), intValue);
 			return GetNodeForInt(context, inputSocket);
 		}
 
-		private RunnableNode GetNodeForInt(IDictionary<string, object> context, int value) {
+		private RunnableNode GetNodeForInt(INodeContext context, int value) {
 			NodePort port = DynamicOutputs.FirstOrDefault(outputPort => outputPort.fieldName.Equals(value.ToString()));
 			if (port != null) {
 				return GetValue(context, port) as RunnableNode;
@@ -52,12 +52,12 @@ namespace Narramancer {
 			return GetDefaultNextNode(context);
 		}
 
-		private RunnableNode GetDefaultNextNode(IDictionary<string, object> context) {
+		private RunnableNode GetDefaultNextNode(INodeContext context) {
 			var port = GetOutputPort(nameof(defaultNode));
 			return GetValue(context, port) as RunnableNode;
 		}
 
-		public bool TryGetNextNode(IDictionary<string, object> context, out RunnableNode runnableNode) {
+		public bool TryGetNextNode(INodeContext context, out RunnableNode runnableNode) {
 			runnableNode = GetNextNode(context);
 			return runnableNode != null;
 		}

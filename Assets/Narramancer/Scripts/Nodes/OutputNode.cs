@@ -34,7 +34,7 @@ namespace Narramancer {
 
 
 
-		public object GetValue(IDictionary<string, object> context, NarramancerPort graphPort) {
+		public object GetValue(INodeContext context, NarramancerPort graphPort) {
 
 			var outputNodePort = GetInputPort(graphPort.Name);
 			if (outputNodePort == null) {
@@ -46,7 +46,7 @@ namespace Narramancer {
 			return value;
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			throw new System.NotImplementedException();
 		}
 	}

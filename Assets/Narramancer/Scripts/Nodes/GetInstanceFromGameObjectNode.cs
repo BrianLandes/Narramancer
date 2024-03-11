@@ -13,7 +13,7 @@ namespace Narramancer {
 		[SerializeField]
 		NounInstance instance = default;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (port.fieldName.Equals(nameof(instance))) {
 				var targetGameObject = GetInputValue(context, nameof(this.targetGameObject), this.targetGameObject);

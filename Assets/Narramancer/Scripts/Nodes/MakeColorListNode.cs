@@ -16,7 +16,7 @@ namespace Narramancer {
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		private List<Color> outputColors = new List<Color>();
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (port.fieldName.Equals(nameof(outputColors))) {
 
 				return colors;

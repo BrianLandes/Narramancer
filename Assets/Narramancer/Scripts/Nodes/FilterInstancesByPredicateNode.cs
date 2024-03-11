@@ -54,25 +54,25 @@ namespace Narramancer {
 			base.UpdatePorts();
 		}
 
-		private void AssignGraphVariableInputs(IDictionary<string, object> context) {
+		private void AssignGraphVariableInputs(INodeContext context) {
 			foreach (var inputPort in DynamicInputs) {
 				var verbPort = predicate.GetInput(inputPort.ValueType, inputPort.fieldName);
 				verbPort.AssignValueFromNodePort(context, inputPort);
 			}
 		}
 
-		private bool DoesInstancePassPredicate(IDictionary<string, object> context, NounInstance instance) {
+		private bool DoesInstancePassPredicate(INodeContext context, NounInstance instance) {
 			AssignGraphVariableInputs(context);
 
 			return predicate.RunForValue<bool, NounInstance>(context, instance);
 		}
 
-		private List<NounInstance> GetFilteredInstances(IDictionary<string, object> context) {
+		private List<NounInstance> GetFilteredInstances(INodeContext context) {
 			var instances = GetInputValue<List<NounInstance>>(context, nameof(this.inputInstances));
 			return instances.Where(instance => DoesInstancePassPredicate(context, instance)).ToList();
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (Application.isPlaying) {
 				if (predicate == null) {

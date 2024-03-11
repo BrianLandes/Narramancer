@@ -54,7 +54,7 @@ namespace Narramancer {
 
 		}
 
-		private List<object> BuildList(IDictionary<string, object> blackboard) {
+		private List<object> BuildList(INodeContext blackboard) {
 
 			var inputList = new List<object>();
 
@@ -108,7 +108,7 @@ namespace Narramancer {
 
 		}
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying) {
 				if (port.fieldName.Equals(CURRENT_ELEMENT)) {
 					var blackboard = context as Blackboard;

@@ -17,7 +17,7 @@ namespace Narramancer {
 		[SerializeField]
 		protected bool result;
 
-		public override object GetValue(IDictionary<string, object> context, NodePort port) {
+		public override object GetValue(INodeContext context, NodePort port) {
 			if (port.fieldName.Equals(nameof(result))) {
 				return value;
 			}
