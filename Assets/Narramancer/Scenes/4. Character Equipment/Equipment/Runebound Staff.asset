@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f1b1154b7b40949ba6fa7f16aa9106, type: 3}
+  m_Name: Runebound Staff
+  m_EditorClassIdentifier: 
+  uid:
+    Value: cc4f0934-ea61-48d8-9174-42be9591d87a
+  displayName:
+    activated: 0
+    value: 
+  properties:
+  - property: {fileID: 11400000, guid: 204bb28ed0236514b962518b13cd5ecb, type: 2}
+  stats:
+  - stat: {fileID: 11400000, guid: 42bcb54d1b4828a49a877ba2f4b0fbd3, type: 2}
+    value: 1
+  - stat: {fileID: 11400000, guid: 7aab4be5c9ed5e440af57a515bda37fd, type: 2}
+    value: 3
+  - stat: {fileID: 11400000, guid: 8ea04d277eb67164cbb5f1e5c2085e1e, type: 2}
+    value: 4
+  relationships: []
+  startingBlackboard:
+    ints:
+      keys: []
+      values: 
+    bools:
+      keys: []
+      values: 
+    floats:
+      keys: []
+      values: []
+    strings:
+      keys: []
+      values: []
+    unityObjects:
+      keys: []
+      values: []
+    objects:
+      keys: []
+  blackboardAssignments:
+  - type:
+      typeName: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      list: 0
+    name: sprite
+    id: 66bbd76a-bece-4226-a5d8-ae0a2279ca94
+    assignment:
+      name: 
+      id: 
+      type: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      boolValue: 0
+      intValue: 0
+      floatValue: 0
+      stringValue: 
+      color: {r: 0, g: 0, b: 0, a: 0}
+      vector2: {x: 0, y: 0}
+      vector3: {x: 0, y: 0, z: 0}
+      objectValue: {fileID: 21300000, guid: 3ff06891a7b89764789e33901622fd1e, type: 3}

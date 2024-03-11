@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f1b1154b7b40949ba6fa7f16aa9106, type: 3}
+  m_Name: Norman
+  m_EditorClassIdentifier: 
+  uid:
+    Value: c03ecfab-278b-41eb-b1ca-3152ecba86dd
+  displayName:
+    activated: 0
+    value: 
+  properties: []
+  stats: []
+  relationships:
+  - relationship: {fileID: 11400000, guid: dcce69b0565a27d4d95077918b38d132, type: 2}
+    other: {fileID: 11400000, guid: 35348dd79d4b75846815f41710f34898, type: 2}
+    sourceOrDestination: 0
+  - relationship: {fileID: 11400000, guid: dcce69b0565a27d4d95077918b38d132, type: 2}
+    other: {fileID: 11400000, guid: 0bc7d9b615f317040b7c3bd553da8e58, type: 2}
+    sourceOrDestination: 0
+  - relationship: {fileID: 11400000, guid: dcce69b0565a27d4d95077918b38d132, type: 2}
+    other: {fileID: 11400000, guid: 8e92f39db3a048d438acc66302e32b11, type: 2}
+    sourceOrDestination: 0
+  startingBlackboard:
+    ints:
+      keys: []
+      values: 
+    bools:
+      keys: []
+      values: 
+    floats:
+      keys: []
+      values: []
+    strings:
+      keys: []
+      values: []
+    unityObjects:
+      keys: []
+      values: []
+    objects:
+      keys: []
+  blackboardAssignments: []

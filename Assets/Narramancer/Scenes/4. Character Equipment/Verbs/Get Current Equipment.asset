@@ -1,0 +1,642 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8644623748618429895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6af3d0b93bd2774ea44787c348b13b0, type: 3}
+  m_Name: Get Relationships
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -968, y: -88}
+  ports:
+    keys:
+    - relationship
+    - anyRelationships
+    - relaionshipInstances
+    - otherInstances
+    - instance
+    - scriptableObject
+    - passThroughInstance
+    values:
+    - _fieldName: relationship
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: Narramancer.RelationshipScriptableObject, Narramancer,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: anyRelationships
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: relaionshipInstances
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.RelationshipInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: otherInstances
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Input List
+        node: {fileID: 840733575224209843}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: -5242439932888753811}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: scriptableObject
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: passThroughInstance
+      _node: {fileID: -8644623748618429895}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  nounType: 0
+  instance:
+    displayName: 
+    uid:
+      Value: 11f6d9eb-2338-4f47-b230-248557f811cc
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  scriptableObject: {fileID: 0}
+  passThroughInstance:
+    displayName: 
+    uid:
+      Value: b33d239c-6ca5-4308-98ff-99b9235716cf
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+  relationship: {fileID: 11400000, guid: dcce69b0565a27d4d95077918b38d132, type: 2}
+  relationshipRequirement: 0
+  anyRelationships: 0
+  relaionshipInstances: []
+  otherInstances: []
+--- !u!114 &-6723765241759152286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 262e49ee96ad0d74499e4578eb3476e8, type: 3}
+  m_Name: List First
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -248, y: -88}
+  ports:
+    keys:
+    - List
+    - First Element
+    values:
+    - _fieldName: List
+      _node: {fileID: -6723765241759152286}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Output List
+        node: {fileID: 840733575224209843}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: First Element
+      _node: {fileID: -6723765241759152286}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: 5432880345049878554}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  listType:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+--- !u!114 &-5346479117639515568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c92a5131dd20fa14393a30b8d4b0e917, type: 3}
+  m_Name: List Any
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -264, y: 40}
+  ports:
+    keys:
+    - result
+    - list
+    values:
+    - _fieldName: result
+      _node: {fileID: -5346479117639515568}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasEquipped
+        node: {fileID: 5432880345049878554}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 2
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: list
+      _node: {fileID: -5346479117639515568}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: Output List
+        node: {fileID: 840733575224209843}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  listType:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+  result: 0
+--- !u!114 &-5242439932888753811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20455aa0c4ee6434793b9a607f7baa21, type: 3}
+  m_Name: Get Instance
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1255.923, y: -80.16528}
+  ports:
+    keys:
+    - noun
+    - instance
+    values:
+    - _fieldName: noun
+      _node: {fileID: -5242439932888753811}
+      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: instance
+      _node: {fileID: -5242439932888753811}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: instance
+        node: {fileID: -8644623748618429895}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  noun: {fileID: 11400000, guid: 56386858e39b0604aa07e32f9121c87a, type: 2}
+  instance:
+    displayName: 
+    uid:
+      Value: 1b84fecf-bacd-4a7d-9583-6727d8cc28f9
+    noun: {fileID: 0}
+    properties: []
+    stats: []
+    relationships: []
+    blackboard:
+      ints:
+        keys: []
+        values: 
+      bools:
+        keys: []
+        values: 
+      floats:
+        keys: []
+        values: []
+      strings:
+        keys: []
+        values: []
+      unityObjects:
+        keys: []
+        values: []
+      objects:
+        keys: []
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82c851d4cd061884395bc23f2f8fd209, type: 3}
+  m_Name: Get Current Equipment
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 5432880345049878554}
+  - {fileID: -5242439932888753811}
+  - {fileID: -8644623748618429895}
+  - {fileID: 840733575224209843}
+  - {fileID: -6723765241759152286}
+  - {fileID: -5346479117639515568}
+  - {fileID: 2900016455010108041}
+  panOffset: {x: 360.46255, y: -94.97476}
+  inputs:
+  - type:
+      typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      list: 0
+    name: equipmentProperty
+    id: ebb02b15-4d9d-4d1f-b47b-19c4e3b6c3b6
+    passThrough: 0
+  outputs:
+  - type:
+      typeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      list: 0
+    name: hasEquipped
+    id: f4f61cf2-5fac-421b-93c9-51ca9fa0ee74
+  - type:
+      typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      list: 0
+    name: instance
+    id: 31184401-1033-4419-b1d4-185d1dc168c8
+  references:
+    objects: []
+--- !u!114 &840733575224209843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ccb1797bdcf44340ba4d48aabc741de, type: 3}
+  m_Name: List Filter
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -696, y: -56}
+  ports:
+    keys:
+    - Input List
+    - Output List
+    - property
+    values:
+    - _fieldName: Input List
+      _node: {fileID: 840733575224209843}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: otherInstances
+        node: {fileID: -8644623748618429895}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: Output List
+      _node: {fileID: 840733575224209843}
+      _typeQualifiedName: System.Collections.Generic.List`1[[Narramancer.NounInstance,
+        Narramancer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]], mscorlib,
+        Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: list
+        node: {fileID: -5346479117639515568}
+        reroutePoints: []
+      - fieldName: List
+        node: {fileID: -6723765241759152286}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: property
+      _node: {fileID: 840733575224209843}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: value
+        node: {fileID: 2900016455010108041}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  listType:
+    typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    list: 0
+  predicate: {fileID: -1498174923961450485, guid: 85316c99107f79d43a3ac66c4f31b82a, type: 2}
+--- !u!114 &2900016455010108041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 197d35c5814eeff429acbd127f4b19c3, type: 3}
+  m_Name: Get Variable
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -968, y: 120}
+  ports:
+    keys:
+    - value
+    values:
+    - _fieldName: value
+      _node: {fileID: 2900016455010108041}
+      _typeQualifiedName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: property
+        node: {fileID: 840733575224209843}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  variable:
+    scope: 2
+    scene: Character Equipment Scene
+    variableId: ebb02b15-4d9d-4d1f-b47b-19c4e3b6c3b6
+    variableName: equipmentProperty
+    variableKey: equipmentProperty (PropertyScriptableObject) ebb02b15-4d9d-4d1f-b47b-19c4e3b6c3b6
+    inputOrOutput: 0
+--- !u!114 &5432880345049878554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f60087ec018ae94ca5873810bcea552, type: 3}
+  m_Name: Output
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 136, y: -40}
+  ports:
+    keys:
+    - instance
+    - hasEquipped
+    values:
+    - _fieldName: instance
+      _node: {fileID: 5432880345049878554}
+      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: First Element
+        node: {fileID: -6723765241759152286}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: hasEquipped
+      _node: {fileID: 5432880345049878554}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: result
+        node: {fileID: -5346479117639515568}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 1
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
