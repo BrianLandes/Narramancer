@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -45,6 +46,33 @@ namespace Narramancer {
 
 			propertiesList.DoLayoutList();
 
+			#region Accept DragAndDrop
+			if (Event.current.type == EventType.DragUpdated) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+			}
+			if (Event.current.type == EventType.DragPerform) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+				var lastRect = GUILayoutUtility.GetLastRect();
+				if (lastRect.Contains(Event.current.mousePosition)) {
+
+					if (DragAndDrop.objectReferences.Any(@object => @object is PropertyScriptableObject)) {
+						DragAndDrop.AcceptDrag();
+
+						var selectedObjects = DragAndDrop.objectReferences.Where(@object => @object is PropertyScriptableObject);
+
+						var properties = serializedObject.FindProperty("properties");
+						foreach (var selectedObject in selectedObjects) {
+							var newPropertyAssignment = properties.CreateNewElement();
+							var propertyAssignmentProperty = newPropertyAssignment.FindPropertyRelative(nameof(PropertyAssignment.property));
+							propertyAssignmentProperty.objectReferenceValue = selectedObject;
+						}
+					}
+				}
+
+			}
+			#endregion
+
+
 			if (statsList == null) {
 				var stats = serializedObject.FindProperty("stats");
 				statsList = statsList != null ? statsList : new ReorderableList(serializedObject, stats, true, true, true, true);
@@ -60,6 +88,30 @@ namespace Narramancer {
 			}
 
 			statsList.DoLayoutList();
+
+			#region Accept DragAndDrop
+			if (Event.current.type == EventType.DragPerform) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+				var lastRect = GUILayoutUtility.GetLastRect();
+				if (lastRect.Contains(Event.current.mousePosition)) {
+
+					if (DragAndDrop.objectReferences.Any(@object => @object is StatScriptableObject)) {
+						DragAndDrop.AcceptDrag();
+
+						var selectedObjects = DragAndDrop.objectReferences.Where(@object => @object is StatScriptableObject);
+
+						var stats = serializedObject.FindProperty("stats");
+						foreach (var selectedObject in selectedObjects) {
+							var newStatAssignment = stats.CreateNewElement();
+							var statAssignmentProperty = newStatAssignment.FindPropertyRelative(nameof(StatAssignment.stat));
+							statAssignmentProperty.objectReferenceValue = selectedObject;
+						}
+					}
+				}
+
+			}
+			#endregion
+
 
 			if (relationshipsList == null) {
 				var relationships = serializedObject.FindProperty("relationships");
@@ -97,6 +149,30 @@ namespace Narramancer {
 				}
 
 			}
+
+			#region Accept DragAndDrop
+			if (Event.current.type == EventType.DragPerform) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+				var lastRect = GUILayoutUtility.GetLastRect();
+				if (lastRect.Contains(Event.current.mousePosition)) {
+
+					if (DragAndDrop.objectReferences.Any(@object => @object is RelationshipScriptableObject)) {
+						DragAndDrop.AcceptDrag();
+
+						var selectedObjects = DragAndDrop.objectReferences.Where(@object => @object is RelationshipScriptableObject);
+
+						var relationships = serializedObject.FindProperty("relationships");
+						foreach (var selectedObject in selectedObjects) {
+							var newRelationshipAssignment = relationships.CreateNewElement();
+							var relationshipAssignmentProperty = newRelationshipAssignment.FindPropertyRelative(nameof(RelationshipAssignment.relationship));
+							relationshipAssignmentProperty.objectReferenceValue = selectedObject;
+						}
+					}
+				}
+
+			}
+			#endregion
+
 
 			var startingBlackboard = serializedObject.FindProperty("startingBlackboard");
 			EditorGUILayout.PropertyField(startingBlackboard);
@@ -146,6 +222,7 @@ namespace Narramancer {
 			}
 
 			variableList.DoLayoutList();
+
 
 
 			serializedObject.ApplyModifiedProperties();
