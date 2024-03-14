@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Venomous Dagger
   m_EditorClassIdentifier: 
   uid:
-    Value: 265050ec-4193-42a4-b3f3-f941b75c03ea
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: 204bb28ed0236514b962518b13cd5ecb, type: 2}
+  - property: {fileID: 11400000, guid: 8e567b46bb1445c429ee6f04f42dd930, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 42bcb54d1b4828a49a877ba2f4b0fbd3, type: 2}
+  - stat: {fileID: 11400000, guid: 6272823a2d10cd342ac8b6bf64388d12, type: 2}
     value: 6
-  - stat: {fileID: 11400000, guid: 8ea04d277eb67164cbb5f1e5c2085e1e, type: 2}
+  - stat: {fileID: 11400000, guid: 0fbb5652fad3cd94f80f2826a26e3a21, type: 2}
     value: 3
   relationships: []
   startingBlackboard:
@@ -49,7 +49,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 40924922-f7d6-4920-a49f-b479fd9bb56b
+    id: 71ec01c1-141b-4d0c-89ab-1ca74a17863b
     assignment:
       name: 
       id: 
@@ -62,4 +62,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: e53b7c3c6e197eb4b94b6c42d79f7a39, type: 3}
+      objectValue: {fileID: 21300000, guid: 5bc26b54c2481fa4cb1ae348604c100c, type: 3}

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Celestial Helm
   m_EditorClassIdentifier: 
   uid:
-    Value: 6245a89b-3533-497a-848e-598bbed2a40d
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: 1f68813676ddf424595a970aa991ef86, type: 2}
+  - property: {fileID: 11400000, guid: df62a77842946a349ad3f4a25cf70219, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 1cdadcb23a17c9c4bbccc5e9a0e88241, type: 2}
+  - stat: {fileID: 11400000, guid: da282cba2621ceb4da5e7bf70984f25e, type: 2}
     value: 6
-  - stat: {fileID: 11400000, guid: 7aab4be5c9ed5e440af57a515bda37fd, type: 2}
+  - stat: {fileID: 11400000, guid: 4eb0685bfb367d44ab486a0fd2f78db8, type: 2}
     value: 4
   relationships: []
   startingBlackboard:
@@ -49,7 +49,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 4901176a-36e3-4c73-8ffc-51f73ca3b42e
+    id: 31033aaa-e195-4d44-b6d7-e4442ff39957
     assignment:
       name: 
       id: 
@@ -62,4 +62,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: 40f2859b50f0d4446b7f8160f6de3ee2, type: 3}
+      objectValue: {fileID: 21300000, guid: 2968c0e5e0ca60a4c965f16966ca76c0, type: 3}

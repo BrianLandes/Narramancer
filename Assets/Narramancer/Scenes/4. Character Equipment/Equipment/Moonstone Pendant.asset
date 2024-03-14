@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Moonstone Pendant
   m_EditorClassIdentifier: 
   uid:
-    Value: b75ee20a-dfd1-4fb9-80ce-49e9ddea3de2
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: ed3602b1e3918964a88b173fe9c038ba, type: 2}
+  - property: {fileID: 11400000, guid: d9eb486988f18204d87e2135072dc555, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 7aab4be5c9ed5e440af57a515bda37fd, type: 2}
+  - stat: {fileID: 11400000, guid: 4eb0685bfb367d44ab486a0fd2f78db8, type: 2}
     value: 6
-  - stat: {fileID: 11400000, guid: df4f091c9a2d7324e8a6bbad684ed0e1, type: 2}
+  - stat: {fileID: 11400000, guid: cf5dc49d8e830034f829e4c0107831e1, type: 2}
     value: 3
   relationships: []
   startingBlackboard:
@@ -49,7 +49,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 81bf13a2-b954-4e09-8575-f5140d5f1408
+    id: ad46f7f8-bc4e-4b8a-965c-347b13da52b3
     assignment:
       name: 
       id: 
@@ -62,4 +62,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: 7d76c749812e47348a1970b66289920c, type: 3}
+      objectValue: {fileID: 21300000, guid: 4c659cde9d9cb4844967648d30b28cde, type: 3}

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Frostfire Ring
   m_EditorClassIdentifier: 
   uid:
-    Value: 29b535f7-1ca4-4fc5-a9ca-8678191d5b20
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: ed3602b1e3918964a88b173fe9c038ba, type: 2}
+  - property: {fileID: 11400000, guid: d9eb486988f18204d87e2135072dc555, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 7aab4be5c9ed5e440af57a515bda37fd, type: 2}
+  - stat: {fileID: 11400000, guid: 4eb0685bfb367d44ab486a0fd2f78db8, type: 2}
     value: 4
-  - stat: {fileID: 11400000, guid: df4f091c9a2d7324e8a6bbad684ed0e1, type: 2}
+  - stat: {fileID: 11400000, guid: cf5dc49d8e830034f829e4c0107831e1, type: 2}
     value: 6
   relationships: []
   startingBlackboard:
@@ -49,7 +49,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 6fb1c6ab-37e8-44c7-a5d9-4254ee71fe57
+    id: 37122162-cbbb-4456-9816-6057f6f2a190
     assignment:
       name: 
       id: 
@@ -62,4 +62,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: bc68dd8bb1f673e4d9ba2b209aa568ca, type: 3}
+      objectValue: {fileID: 21300000, guid: e5fca5be7655261418be441fbe7ce801, type: 3}

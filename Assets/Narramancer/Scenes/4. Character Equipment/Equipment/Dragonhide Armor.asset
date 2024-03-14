@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Dragonhide Armor
   m_EditorClassIdentifier: 
   uid:
-    Value: c99b84f5-ddaa-44d7-930e-5d2be16ae17e
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: 1f68813676ddf424595a970aa991ef86, type: 2}
+  - property: {fileID: 11400000, guid: df62a77842946a349ad3f4a25cf70219, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 1cdadcb23a17c9c4bbccc5e9a0e88241, type: 2}
+  - stat: {fileID: 11400000, guid: da282cba2621ceb4da5e7bf70984f25e, type: 2}
     value: 10
   relationships: []
   startingBlackboard:
@@ -47,7 +47,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 99dfbd9b-c706-4bf1-b5dc-592b82faa652
+    id: 3b129e2f-8250-458d-b2d9-8a4633d2fa49
     assignment:
       name: 
       id: 
@@ -60,4 +60,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: ef87f314cad516c43800a5b5fe0507bb, type: 3}
+      objectValue: {fileID: 21300000, guid: 9e8d71e65eca5b741a9166369bf658cd, type: 3}

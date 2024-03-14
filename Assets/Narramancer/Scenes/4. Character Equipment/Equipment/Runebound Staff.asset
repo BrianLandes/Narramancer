@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: Runebound Staff
   m_EditorClassIdentifier: 
   uid:
-    Value: cc4f0934-ea61-48d8-9174-42be9591d87a
+    Value: c1dffde2-a8c6-44f2-849a-fbe3d65778be
   displayName:
     activated: 0
     value: 
   properties:
-  - property: {fileID: 11400000, guid: 204bb28ed0236514b962518b13cd5ecb, type: 2}
+  - property: {fileID: 11400000, guid: 8e567b46bb1445c429ee6f04f42dd930, type: 2}
   stats:
-  - stat: {fileID: 11400000, guid: 42bcb54d1b4828a49a877ba2f4b0fbd3, type: 2}
+  - stat: {fileID: 11400000, guid: 6272823a2d10cd342ac8b6bf64388d12, type: 2}
     value: 1
-  - stat: {fileID: 11400000, guid: 7aab4be5c9ed5e440af57a515bda37fd, type: 2}
+  - stat: {fileID: 11400000, guid: 4eb0685bfb367d44ab486a0fd2f78db8, type: 2}
     value: 3
-  - stat: {fileID: 11400000, guid: 8ea04d277eb67164cbb5f1e5c2085e1e, type: 2}
+  - stat: {fileID: 11400000, guid: 0fbb5652fad3cd94f80f2826a26e3a21, type: 2}
     value: 4
   relationships: []
   startingBlackboard:
@@ -51,7 +51,7 @@ MonoBehaviour:
         PublicKeyToken=null
       list: 0
     name: sprite
-    id: 66bbd76a-bece-4226-a5d8-ae0a2279ca94
+    id: 8e3850be-2c89-4db4-87a4-4d10416bc5ec
     assignment:
       name: 
       id: 
@@ -64,4 +64,4 @@ MonoBehaviour:
       color: {r: 0, g: 0, b: 0, a: 0}
       vector2: {x: 0, y: 0}
       vector3: {x: 0, y: 0, z: 0}
-      objectValue: {fileID: 21300000, guid: 3ff06891a7b89764789e33901622fd1e, type: 3}
+      objectValue: {fileID: 21300000, guid: 830bac0013a183a409ac9d24078b0672, type: 3}
