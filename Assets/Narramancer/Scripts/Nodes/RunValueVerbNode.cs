@@ -1,9 +1,7 @@
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using XNode;
 
 namespace Narramancer {
@@ -15,7 +13,6 @@ namespace Narramancer {
 		[SerializeField]
 		[VerbRequired]
 		[HideLabelInNode]
-		[FormerlySerializedAs("behaviorGraph")]
 		public ValueVerb valueVerb;
 
 		public override void UpdatePorts() {
@@ -50,7 +47,7 @@ namespace Narramancer {
 
 						foreach (var inputPort in DynamicInputs) {
 							var verbPort = GetCorrespondingVerbPort(inputPort.ValueType, inputPort.fieldName);
-							verbPort.AssignValueFromNodePort(context, inputPort );
+							verbPort.AssignValueFromNodePort(context, inputPort);
 						}
 
 						foreach (var outputPort in valueVerb.Outputs) {
