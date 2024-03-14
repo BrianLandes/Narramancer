@@ -190,7 +190,9 @@ namespace Narramancer {
 					if (!AssetDatabase.IsMainAsset(property.objectReferenceValue)) {
 						EditorDrawerUtilities.RenameField(property.objectReferenceValue, ref renaming);
 
-						EditorDrawerUtilities.DuplciateNodeGraphField(property.objectReferenceValue);
+						EditorDrawerUtilities.DuplicateNodeGraphField(property.objectReferenceValue);
+
+
 					}
 #if ODIN_INSPECTOR
 					objectTree ??= PropertyTree.Create(property.objectReferenceValue);

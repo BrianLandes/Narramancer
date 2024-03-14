@@ -55,7 +55,7 @@ namespace Narramancer {
 			}
 		}
 
-		public static void DuplciateNodeGraphField(UnityEngine.Object targetObject) {
+		public static void DuplicateNodeGraphField(UnityEngine.Object targetObject) {
 			if (GUILayout.Button("Duplicate")) {
 				var nodeGraph = targetObject as XNode.NodeGraph;
 				var mainAssetPath = AssetDatabase.GetAssetPath(nodeGraph);

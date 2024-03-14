@@ -53,7 +53,7 @@ namespace Narramancer {
 			if (!AssetDatabase.IsMainAsset(serializedObject.targetObject)) {
 				EditorDrawerUtilities.RenameField(serializedObject.targetObject, ref renaming);
 
-				EditorDrawerUtilities.DuplciateNodeGraphField(serializedObject.targetObject);
+				EditorDrawerUtilities.DuplicateNodeGraphField(serializedObject.targetObject);
 			}
 
 			DrawDefaultInspector();
