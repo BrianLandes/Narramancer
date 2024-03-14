@@ -7,7 +7,7 @@ namespace Narramancer {
 	public class SetTextNode : ChainedRunnableNode {
 
 		[SerializeField]
-		[Input(ShowBackingValue.Never, ConnectionType.Override)]
+		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.InheritedAny)]
 		private Text text = default;
 
 		[SerializeField]
