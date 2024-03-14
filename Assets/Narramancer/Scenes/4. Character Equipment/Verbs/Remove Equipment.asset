@@ -404,8 +404,7 @@ MonoBehaviour:
   - {fileID: -1057321544887451047}
   - {fileID: -3411949153491184962}
   - {fileID: -5529937498891568826}
-  - {fileID: 3435515680332595592}
-  panOffset: {x: -746.0606, y: -144.24852}
+  panOffset: {x: -412.27896, y: -171.73293}
   inputs:
   - type:
       typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
@@ -492,41 +491,6 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   valueVerb: {fileID: 11400000, guid: 3b18778b525f61f48952725787edf3c4, type: 2}
---- !u!114 &3435515680332595592
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1fffb334f4d4c43b7e6e88f4ce0ea7, type: 3}
-  m_Name: Root
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
-  ports:
-    keys:
-    - runNode
-    values:
-    - _fieldName: runNode
-      _node: {fileID: 3435515680332595592}
-      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-  runNode: {fileID: 0}
 --- !u!114 &7847328212437271570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,7 +548,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 296, y: -8}
+  position: {x: 296, y: -24}
   ports:
     keys:
     - runNode

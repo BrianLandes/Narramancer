@@ -1197,7 +1197,7 @@ MonoBehaviour:
   m_Name: Output
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
+  position: {x: 24, y: -40}
   ports:
     keys:
     - description
@@ -1362,7 +1362,6 @@ MonoBehaviour:
   - {fileID: 4509220244773452253}
   - {fileID: 7277423796581659871}
   - {fileID: -8495498011399630885}
-  - {fileID: 3054767211739229828}
   - {fileID: 1117946677920412140}
   - {fileID: -7320701775599642776}
   - {fileID: 7519991194562454903}
@@ -1371,7 +1370,7 @@ MonoBehaviour:
   - {fileID: -5166296229172114446}
   - {fileID: 3577441804280275304}
   - {fileID: 2656099147425770499}
-  panOffset: {x: 936.6367, y: -10.98834}
+  panOffset: {x: 647.07324, y: -101.60211}
   inputs:
   - type:
       typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
@@ -1584,40 +1583,6 @@ MonoBehaviour:
     list: 0
   predicate: {fileID: 6469788167567236626}
   sum: 0
---- !u!114 &3054767211739229828
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f60087ec018ae94ca5873810bcea552, type: 3}
-  m_Name: Output
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
-  ports:
-    keys:
-    - description
-    values:
-    - _fieldName: description
-      _node: {fileID: 3054767211739229828}
-      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-      connections: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 1
-      _dynamic: 1
-      _sameLine: 0
-      _hideLabel: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
 --- !u!114 &3577441804280275304
 MonoBehaviour:
   m_ObjectHideFlags: 0

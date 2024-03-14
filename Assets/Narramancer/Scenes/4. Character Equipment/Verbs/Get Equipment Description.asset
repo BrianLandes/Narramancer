@@ -925,7 +925,7 @@ MonoBehaviour:
   m_Name: Output
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 568, y: 56}
+  position: {x: 584, y: 8}
   ports:
     keys:
     - description
@@ -1053,7 +1053,7 @@ MonoBehaviour:
   - {fileID: -6358523465886098290}
   - {fileID: -4529200327001525678}
   - {fileID: -1605513794295705494}
-  panOffset: {x: 366.515, y: -15.233952}
+  panOffset: {x: -89.35373, y: -32.585354}
   inputs:
   - type:
       typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,

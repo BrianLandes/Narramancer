@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 'Run ActionVerb: Remove Equipment'
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 728, y: 8}
+  position: {x: 470, y: -8}
   ports:
     keys:
     - actionVerb
@@ -96,41 +96,6 @@ MonoBehaviour:
       dynamicValueFloat: 0
   thenRunNode: {fileID: 0}
   actionVerb: {fileID: 11400000, guid: 4ea426cc1f861e94f93146615c3d805e, type: 2}
---- !u!114 &-8348226664214584035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1fffb334f4d4c43b7e6e88f4ce0ea7, type: 3}
-  m_Name: Root
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
-  ports:
-    keys:
-    - runNode
-    values:
-    - _fieldName: runNode
-      _node: {fileID: -8348226664214584035}
-      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-  runNode: {fileID: 0}
 --- !u!114 &-6452628387533228403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,7 +109,7 @@ MonoBehaviour:
   m_Name: 'Run ActionVerb: Update Equipment UI'
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1645.1779, y: 68.66852}
+  position: {x: 1088, y: -8}
   ports:
     keys:
     - actionVerb
@@ -217,7 +182,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
+  position: {x: 40, y: -8}
   ports:
     keys:
     - runNode
@@ -255,7 +220,7 @@ MonoBehaviour:
   m_Name: Filter Instances By Predicate
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 8, y: 232}
+  position: {x: -248, y: 200}
   ports:
     keys:
     - inputInstances
@@ -337,7 +302,7 @@ MonoBehaviour:
   m_Name: Add Relationship
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1256, y: 88}
+  position: {x: 850, y: -8}
   ports:
     keys:
     - relationship
@@ -573,8 +538,7 @@ MonoBehaviour:
   - {fileID: -8929541663818695317}
   - {fileID: -4569456906963578815}
   - {fileID: -6452628387533228403}
-  - {fileID: -8348226664214584035}
-  panOffset: {x: 0, y: 0}
+  panOffset: {x: -958.09106, y: -77.44072}
   inputs:
   - type:
       typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
@@ -599,7 +563,7 @@ MonoBehaviour:
   m_Name: Get Variable
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -280, y: 344}
+  position: {x: -536, y: 312}
   ports:
     keys:
     - value
@@ -646,7 +610,7 @@ MonoBehaviour:
   m_Name: Offer Objects As Choices
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 312, y: -24}
+  position: {x: 190, y: -8}
   ports:
     keys:
     - runWhenObjectSelected
@@ -787,7 +751,7 @@ MonoBehaviour:
   m_Name: Get Instances
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -280, y: 168}
+  position: {x: -520, y: 152}
   ports:
     keys:
     - instances

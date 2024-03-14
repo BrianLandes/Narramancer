@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
+  position: {x: 40, y: -40}
   ports:
     keys:
     - runNode
@@ -583,7 +583,7 @@ MonoBehaviour:
   - {fileID: 4676683578539320298}
   - {fileID: 2990326011256094367}
   - {fileID: -9151430109981777640}
-  panOffset: {x: -14.394218, y: -284.78598}
+  panOffset: {x: -492.28946, y: -215.60815}
   inputs:
   - type:
       typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
@@ -768,7 +768,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: -6831857555647373418}
-  position: {x: -248, y: -56}
+  position: {x: -264, y: -72}
   ports:
     keys:
     - runNode
@@ -1009,41 +1009,6 @@ MonoBehaviour:
       dynamicValueFloat: 0
   thenRunNode: {fileID: 0}
   actionVerb: {fileID: -6831857555647373418}
---- !u!114 &-2790139671358462737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d1fffb334f4d4c43b7e6e88f4ce0ea7, type: 3}
-  m_Name: Root
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 0, y: 0}
-  ports:
-    keys:
-    - runNode
-    values:
-    - _fieldName: runNode
-      _node: {fileID: -2790139671358462737}
-      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 1
-      _typeConstraint: 0
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-  runNode: {fileID: 0}
 --- !u!114 &-2457258777413229430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1692,7 +1657,6 @@ MonoBehaviour:
   - {fileID: -5898276000761390559}
   - {fileID: -1885003881216465054}
   - {fileID: -8948971549137934688}
-  - {fileID: -2790139671358462737}
   - {fileID: -2198459261728568204}
   - {fileID: -1689124231927173901}
   - {fileID: 8760912865570840379}
@@ -1705,7 +1669,7 @@ MonoBehaviour:
   - {fileID: -693363015771467201}
   - {fileID: 2468108964932425690}
   - {fileID: 9184788198490279322}
-  panOffset: {x: -595.5601, y: -273.5297}
+  panOffset: {x: -1437.9789, y: -192.40398}
   inputs: []
   outputs: []
   references:

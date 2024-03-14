@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Name: List First
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -120, y: 184}
+  position: {x: -120, y: -24}
   ports:
     keys:
     - List
@@ -116,7 +116,7 @@ MonoBehaviour:
   m_Name: Filter Instances By Predicate
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -424, y: 40}
+  position: {x: -424, y: 72}
   ports:
     keys:
     - inputInstances
@@ -536,7 +536,7 @@ MonoBehaviour:
   m_Name: Output
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 184, y: 56}
+  position: {x: 184, y: 104}
   ports:
     keys:
     - equipment
@@ -636,7 +636,7 @@ MonoBehaviour:
   m_Name: List Any
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -120, y: 8}
+  position: {x: -120, y: 120}
   ports:
     keys:
     - result
