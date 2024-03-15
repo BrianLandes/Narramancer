@@ -289,6 +289,13 @@ namespace Narramancer {
 			}
 		}
 
+		public void RemoveRelationship(RelationshipScriptableObject relationship, RelationshipRequirement requirement = RelationshipRequirement.Source) {
+			var instance = GetRelationship(relationship, requirement);
+			if (instance != null) {
+				this.RemoveRelationship(instance, true);
+			}
+		}
+
 		public void RemoveRelationship(RelationshipScriptableObject relationship, NounInstance other, RelationshipRequirement requirement = RelationshipRequirement.Source) {
 			if (TryGetRelationship(relationship, other, out var instance, requirement)) {
 				this.RemoveRelationship(instance, false);

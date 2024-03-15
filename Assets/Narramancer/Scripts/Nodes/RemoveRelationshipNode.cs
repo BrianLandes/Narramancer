@@ -28,13 +28,13 @@ namespace Narramancer {
 			if (relationship == null)
 				return; // TODO: warning?
 
-			var other = GetInputValue(runner.Blackboard, nameof(this.other), this.other);
+			var other = GetInputValue<NounInstance>(runner.Blackboard, nameof(this.other));
 
 			if (other != null) {
 				instance.RemoveRelationship(relationship, other, requirement);
 			}
 			else {
-				// TODO: remove all relationships of the given type
+				instance.RemoveRelationship(relationship, requirement);
 			}
 
 
