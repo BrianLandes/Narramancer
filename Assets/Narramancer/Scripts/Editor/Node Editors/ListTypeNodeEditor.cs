@@ -13,6 +13,7 @@ namespace Narramancer {
 	[CustomNodeEditor(typeof(ListSubtractNode))]
 	[CustomNodeEditor(typeof(ListSumNode))]
 	[CustomNodeEditor(typeof(ListUnionNode))]
+	[CustomNodeEditor(typeof(ListContainsNode))]
 	public class ListTypeNodeEditor : NodeEditor {
 
 		public override bool HasCustomDroppedPortLogic() {
