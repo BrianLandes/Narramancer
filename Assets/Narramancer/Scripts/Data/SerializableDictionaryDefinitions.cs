@@ -44,4 +44,8 @@ namespace Narramancer {
 	[Serializable]
 	public class StringIntDictionary : SerializableDictionary<string, int> { }
 
+	[Serializable]
+	public class PrimitivePrimitiveDictionary : SerializableDictionary<SerializablePrimitive, SerializablePrimitive> { }
+
+
 }

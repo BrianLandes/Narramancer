@@ -39,6 +39,10 @@ namespace Narramancer {
 			}
 		}
 
+		public void SetType(Type type) {
+			this.type = TypeToString(type);
+		}
+
 		public static string TypeToString(Type type) {
 			if (typeof(int) == type) {
 				return "int";
