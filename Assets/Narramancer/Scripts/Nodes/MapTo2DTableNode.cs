@@ -6,7 +6,7 @@ namespace Narramancer {
 
 	[NodeWidth(600)]
 	[CreateNodeMenu("Math/Map Float To 2D Table")]
-	public class MapTo2DTableNode : Node {
+	public class MapTo2DTableNode : ResizableNode {
 
 		[Input(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
