@@ -61,7 +61,7 @@ namespace Narramancer {
 
 			var textPrinter = GetInputValue(runner.Blackboard, nameof(this.textPrinter), this.textPrinter);
 			if (textPrinter == null) {
-				textPrinter = this.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(textPrinter => textPrinter.isMainTextPrinter);
+				textPrinter = GameObjectExtensions.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(textPrinter => textPrinter.isMainTextPrinter);
 			}
 			textPrinter.SetText(inputText, () => {
 				if (waitForContinue) {

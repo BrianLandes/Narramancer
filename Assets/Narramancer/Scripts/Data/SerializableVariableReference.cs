@@ -91,7 +91,7 @@ namespace Narramancer {
 			switch (scope) {
 				default:
 				case ScopeType.Scene:
-					var narramancerScene = GameObject.FindAnyObjectByType<NarramancerScene>();
+					var narramancerScene = GameObjectExtensions.FindAnyObjectByType<NarramancerScene>();
 					if (narramancerScene == null) {
 						return Array.Empty<NarramancerPort>().ToList();
 					}
@@ -129,7 +129,7 @@ namespace Narramancer {
 
 		public void UpdateScene() {
 			if (scope == ScopeType.Scene) {
-				var narramancerScene = GameObject.FindAnyObjectByType<NarramancerScene>();
+				var narramancerScene = GameObjectExtensions.FindAnyObjectByType<NarramancerScene>();
 				if (narramancerScene != null) {
 					scene = narramancerScene.gameObject.scene.name;
 				}
