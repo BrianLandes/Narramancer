@@ -14,7 +14,7 @@ namespace Narramancer {
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
-		SerializableSpawner spawner;
+		SerializableSpawner spawner = default;
 
 		[SerializeField]
 		private List<PropertyAssignment> properties = new List<PropertyAssignment>();

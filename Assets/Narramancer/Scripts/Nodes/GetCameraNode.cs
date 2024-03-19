@@ -8,15 +8,15 @@ namespace Narramancer {
 	public class GetCameraNode : Node {
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		Camera camera;
+		Camera camera = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		Transform transform;
+		Transform transform = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		GameObject gameObject;
+		GameObject gameObject = default;
 
 		public override object GetValue(INodeContext context, NodePort port) {
 			switch (port.fieldName) {

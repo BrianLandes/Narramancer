@@ -8,11 +8,11 @@ namespace Narramancer {
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
-		SerializableSpawner spawner;
+		SerializableSpawner spawner = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		GameObject gameObject;
+		GameObject gameObject = default;
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);

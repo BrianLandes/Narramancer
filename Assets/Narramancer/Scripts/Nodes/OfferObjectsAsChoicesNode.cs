@@ -24,12 +24,12 @@ namespace Narramancer {
 		[SerializeField]
 		[RequireInputFromSerializableType(nameof(type), "element")]
 		[RequireOutput(typeof(string), "display name")]
-		private ValueVerb displayNamePredicate;
+		private ValueVerb displayNamePredicate = default;
 
 		[SerializeField]
 		[RequireInputFromSerializableType(nameof(type), "element")]
 		[RequireOutput(typeof(bool), "enabled")]
-		private ValueVerb enabledPredicate;
+		private ValueVerb enabledPredicate = default;
 
 		// TODO: Predicate for Custom Color
 		// TODO: Predicate for Show if Disabled

@@ -8,20 +8,20 @@ namespace Narramancer {
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
-		GameObject gameObject;
+		GameObject gameObject = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
 		[SameLine]
-		Transform transform;
+		Transform transform = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		RectTransform rectTransform;
+		RectTransform rectTransform = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		Vector3 worldPosition;
+		Vector3 worldPosition = default;
 
 		public override object GetValue(INodeContext context, NodePort port) {
 			var gameObject = GetInputValue(context, nameof(this.gameObject), this.gameObject);

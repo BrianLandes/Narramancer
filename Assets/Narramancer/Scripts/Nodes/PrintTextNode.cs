@@ -8,7 +8,7 @@ namespace Narramancer {
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
-		private TextPrinter textPrinter;
+		private TextPrinter textPrinter = default;
 		public static string TextPrinterFieldName => nameof(textPrinter);
 
 		[SerializeField, HideInInspector]
@@ -33,7 +33,7 @@ namespace Narramancer {
 
 		[TextArea(6, 12)]
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
-		public string text;
+		public string text = default;
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
@@ -61,7 +61,7 @@ namespace Narramancer {
 
 			var textPrinter = GetInputValue(runner.Blackboard, nameof(this.textPrinter), this.textPrinter);
 			if (textPrinter == null) {
-				textPrinter = GameObjectExtensions.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(textPrinter => textPrinter.isMainTextPrinter);
+				textPrinter = GameObjectExtensions.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(x => x.isMainTextPrinter);
 			}
 			textPrinter.SetText(inputText, () => {
 				if (waitForContinue) {

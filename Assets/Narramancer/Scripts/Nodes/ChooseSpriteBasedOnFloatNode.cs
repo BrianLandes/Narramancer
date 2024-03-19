@@ -28,12 +28,12 @@ namespace Narramancer {
 
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
-		private Sprite defaultSprite;
+		private Sprite defaultSprite = default;
 		public static string DefaultSpriteFieldName => nameof(defaultSprite);
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
-		private Sprite sprite;
+		private Sprite sprite = default;
 		public static string SpriteFieldName => nameof(sprite);
 
 		public override object GetValue(INodeContext context, NodePort port) {
