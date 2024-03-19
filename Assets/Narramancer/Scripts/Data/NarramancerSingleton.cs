@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace Narramancer {
 
-	public class NarramancerSingleton : Singleton<NarramancerSingleton> {
+	public partial class NarramancerSingleton : Singleton<NarramancerSingleton> {
 
 		[SerializeField]
 		public bool runOnGameStart = true;
@@ -45,6 +45,8 @@ namespace Narramancer {
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
 
 		public event Action<NounInstance> OnCreateInstance;
+
+		public string gameObjectPath;
 
 		public override void OnPreprocessBuild() {
 			Clear();

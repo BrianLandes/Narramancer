@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using XNode;
@@ -174,7 +176,7 @@ namespace Narramancer {
 				// TODO: include NarramancerSingleton
 			}
 
-			if (window.selectedNodeRunnerUnityObject == null ) {
+			if (window.selectedNodeRunnerUnityObject == null) {
 				window.selectedNodeRunnerUnityObject = GetPossibleNodeRunnerObjects().FirstOrDefault();
 			}
 
@@ -215,7 +217,8 @@ namespace Narramancer {
 			if (!Application.isPlaying) {
 				selectedNodeRunner = null;
 				window.selectedContext = null;
-			} else {
+			}
+			else {
 
 				IEnumerable<NodeRunner> GetPossibleNodeRunners() {
 					if (window.selectedNodeRunnerUnityObject != null) {
@@ -331,11 +334,16 @@ namespace Narramancer {
 							GUI.matrix = originalMatrix;
 							break;
 						}
+					case TextAsset textAsset: {
+
+							break;
+						}
 					case UnityEngine.Object unityObject: {
 							var newNode = CreateNode(typeof(UnityObjectNode), position) as UnityObjectNode;
 							newNode.SetObject(unityObject);
 							break;
 						}
+
 				}
 
 				position.x += 200f;
@@ -391,6 +399,59 @@ namespace Narramancer {
 				.ToArray();
 
 			if (selectedNodes.Any()) {
+
+				menu.AddItem(new GUIContent("Export Json"), false, () => {
+					var stringBuilder = new StringBuilder();
+					stringBuilder.AppendLine("{");
+
+					foreach (var node in selectedNodes) {
+						var type = node.GetType();
+
+						stringBuilder.AppendLine("\t[");
+
+						stringBuilder.AppendLine($"\t\tclass:\"{type.Name}\",");
+
+
+						var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+						bool IsFieldSerializable(FieldInfo field) {
+							if (field.IsStatic) {
+								return false;
+							}
+							if (field.IsPublic) {
+								return true;
+							}
+							var attributes = field.GetCustomAttributes();
+							if (attributes.Any(attribute => attribute is Node.OutputAttribute)) {
+								return false;
+							}
+							if ( attributes.Any(attribute => attribute is SerializeField)) {
+								return true;
+							}
+							return false;
+						}
+
+						var skipFields = new[] { "graph", "position", "ports" };
+
+						foreach (var field in fields) {
+							if (skipFields.Contains(field.Name)) {
+								continue;
+							}
+							if (IsFieldSerializable(field)) {
+								var value = field.GetValue(node);
+								// TODO: handle Unity.Objects
+								// TODO: handles strings
+								var jsonValue = JsonUtility.ToJson(value);
+								stringBuilder.AppendLine($"\t\t{field.Name}:{jsonValue},");
+							}
+						}
+
+						stringBuilder.AppendLine("\t],");
+					}
+
+					stringBuilder.AppendLine("}");
+					Debug.Log(stringBuilder.ToString());
+				});
 
 				var selectedNodesNoRoot = selectedNodes
 					.Where(@object => !(@object is RootNode))

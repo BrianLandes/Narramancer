@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Narramancer {
 	[CustomEditor(typeof(NarramancerSingleton))]
@@ -44,6 +45,16 @@ namespace Narramancer {
 			Selection.activeObject = narramancer;
 			EditorGUIUtility.PingObject(narramancer);
 #endif
+
+			EditorApplication.playModeStateChanged += LogPlayModeState;
+		}
+
+		private void OnDestroy() {
+			EditorApplication.playModeStateChanged -= LogPlayModeState;
+		}
+
+		private static void LogPlayModeState(PlayModeStateChange state) {
+			Debug.Log(state);
 		}
 
 		public override void OnInspectorGUI() {
@@ -59,7 +70,65 @@ namespace Narramancer {
 
 			GUILayout.Space(8);
 
-#region Editor or Runtime Selector
+
+
+
+
+
+
+
+
+
+			var gameObjectPath = serializedObject.FindProperty("gameObjectPath");
+			EditorGUILayout.PropertyField(gameObjectPath, true);
+
+			#region Accept DragAndDrop
+			if (Event.current.type == EventType.DragUpdated) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+			}
+			if (Event.current.type == EventType.DragPerform) {
+				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
+				var lastRect = GUILayoutUtility.GetLastRect();
+				if (lastRect.Contains(Event.current.mousePosition)) {
+					DragAndDrop.AcceptDrag();
+					var selected = DragAndDrop.objectReferences;
+
+					var selectedGameObject = DragAndDrop.objectReferences.FirstOrDefault(x => x is GameObject) as GameObject;
+
+					if (selectedGameObject != null) {
+						if (selectedGameObject.scene.IsValid()) {
+
+							gameObjectPath.stringValue = GameObjectAbsolutePath.Get(selectedGameObject);
+							serializedObject.ApplyModifiedProperties();
+						}
+						
+					}
+					
+				}
+
+			}
+
+			if (GUILayout.Button("Find GameObject")) {
+				if ( GameObjectAbsolutePath.TryGetGameObject(gameObjectPath.stringValue, out var chosen)) {
+					Debug.Log(chosen);
+					EditorGUIUtility.PingObject(chosen);
+				}
+				
+			}
+			#endregion
+
+
+
+
+
+
+
+
+
+
+
+
+			#region Editor or Runtime Selector
 
 			GUILayout.BeginHorizontal();
 
