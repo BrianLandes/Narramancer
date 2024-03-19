@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -84,7 +85,7 @@ namespace Narramancer {
 			do {
 
 				position += Time.deltaTime * revealSpeed;
-				textIndex = Mathf.Min(text.Length-1, Mathf.FloorToInt(position));
+				textIndex = Mathf.Min(text.Length - 1, Mathf.FloorToInt(position));
 				#region Skip over whitespace
 				if (text[textIndex] == ' ') {
 					textIndex++;
@@ -100,7 +101,7 @@ namespace Narramancer {
 				}
 				#endregion
 
-				if ( textIndex >= text.Length ) {
+				if (textIndex >= text.Length) {
 					break;
 				}
 				var visibleText = text.Substring(0, textIndex);
@@ -116,7 +117,7 @@ namespace Narramancer {
 					var firstCloseTagIndex = closeTagsInInvisible.OrderBy(match => match.Index).FirstOrDefault()?.Index;
 					var nestedOpenTagsInInvisible = openTagsInInvisible.Count(match => match.Index < firstCloseTagIndex);
 
-					for (var jj = 0; jj < difference && nestedOpenTagsInInvisible + jj < closeTagsInInvisible.Count(); jj++) {
+					for (var jj = 0; jj < difference && nestedOpenTagsInInvisible + jj < closeTagsInInvisible.Count; jj++) {
 						var match = closeTagsInInvisible[nestedOpenTagsInInvisible + jj];
 						var tag = invisibleText.Substring(match.Index, match.Length);
 						visibleText += tag;
@@ -139,7 +140,7 @@ namespace Narramancer {
 
 				yield return new WaitForEndOfFrame();
 
-			} while (textIndex < text.Length-1);
+			} while (textIndex < text.Length - 1);
 
 			textField.text = seenText + text;
 			continueIndicator?.SetActive(true);
@@ -205,4 +206,41 @@ namespace Narramancer {
 
 		}
 	}
+
+#if UNITY_2019_4_2
+	public static class RegexExtensions {
+
+		public static Match FirstOrDefault(this MatchCollection source, Func<Match, bool> predicate) {
+			for( var ii = 0; ii < source.Count; ii ++ ) {
+				var match = source[ii];
+				var result = predicate(match);
+				if (result) {
+					return match;
+				}
+			}
+			return null;
+		}
+
+		public static IEnumerable<Match> OrderBy(this MatchCollection source, Func<Match, int> keySelector) {
+			var list = new List<Match>();
+			var enumerator = source.GetEnumerator();
+			while (enumerator.MoveNext()) {
+				list.Add(enumerator.Current as Match);
+			}
+			return list.OrderBy(keySelector);
+		}
+
+		public static int Count(this MatchCollection source, Func<Match, bool> predicate) {
+			var count = 0;
+			for (var ii = 0; ii < source.Count; ii++) {
+				var match = source[ii];
+				var result = predicate(match);
+				if (result) {
+					count += 1;
+				}
+			}
+			return count;
+		}
+	}
+#endif
 }
