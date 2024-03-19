@@ -10,18 +10,6 @@ namespace Narramancer {
 
 	public interface IChoicePrinter {
 
-		public static IChoicePrinter GetChoicePrinter() {
-			var choicePrinter = GameObject.FindObjectsOfType<ChoicePrinter>(true).FirstOrDefault();
-			if (choicePrinter != null) {
-				return choicePrinter;
-			}
-			var textAndChoicePrinter = GameObject.FindObjectsOfType<TextAndChoicePrinter>(true).FirstOrDefault();
-			if (textAndChoicePrinter != null) {
-				return textAndChoicePrinter;
-			}
-			return null;
-		}
-
 		void ClearChoices();
 
 		void AddChoice(string displayText, Action callbackAction);
@@ -161,5 +149,18 @@ namespace Narramancer {
 
 			hideParentCoroutine = StartCoroutine(parentCanvasGroup.FadeOut(fadeParentSpeed));
 		}
+
+		public static IChoicePrinter GetChoicePrinter() {
+			var choicePrinter = GameObjectExtensions.FindObjectsOfType<ChoicePrinter>(true).FirstOrDefault();
+			if (choicePrinter != null) {
+				return choicePrinter;
+			}
+			var textAndChoicePrinter = GameObjectExtensions.FindObjectsOfType<TextAndChoicePrinter>(true).FirstOrDefault();
+			if (textAndChoicePrinter != null) {
+				return textAndChoicePrinter;
+			}
+			return null;
+		}
+
 	}
 }

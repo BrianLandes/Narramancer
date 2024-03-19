@@ -76,7 +76,7 @@ namespace Narramancer {
 		public override void Run(NodeRunner runner) {
 			runner.Suspend();
 
-			var choicePrinter = IChoicePrinter.GetChoicePrinter();
+			var choicePrinter = ChoicePrinter.GetChoicePrinter();
 			choicePrinter.ClearChoices();
 
 			var elementsList = new List<object>();
