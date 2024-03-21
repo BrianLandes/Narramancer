@@ -13,6 +13,7 @@ namespace Narramancer {
 
 		[SerializeField]
 		private GameObject prefab = default;
+		public static string PrefabFieldName => nameof(prefab);
 
 		[Serializable]
 		public enum SpawnLocationType {
@@ -29,27 +30,34 @@ namespace Narramancer {
 		}
 		[SerializeField]
 		private SpawnLocationType spawnLocationType = default;
+		public static string SpawnLocationTypeFieldName => nameof(spawnLocationType);
 
 		[SerializeField]
 		private Transform spawnLocation = default;
+		public static string SpawnLocationFieldName => nameof(spawnLocation);
 
 		[SerializeField]
 		private float circleRadius = default;
+		public static string CircleRadiusFieldName => nameof(circleRadius);
 
 		[SerializeField]
 		private float rectWidth = default;
+		public static string RectWidthFieldName => nameof(rectWidth);
 
 		[SerializeField]
 		private float rectHeight = default;
+		public static string RectHeightFieldName => nameof(rectHeight);
 
 		[SerializeField]
 		private bool randomizeRotation = false;
-
-		private List<GameObject> spawns = new List<GameObject>();
+		public static string RandomizeRotationFieldName => nameof(randomizeRotation);
 
 		[SerializeField]
 		private bool spawnForEachNoun = false;
+		public static string SpawnForEachNounFieldName => nameof(spawnForEachNoun);
 
+
+		private List<GameObject> spawns = new List<GameObject>();
 
 #if UNITY_EDITOR
 		[MenuItem("GameObject/Narramancer/Serializable Spawner", false, 10)]
