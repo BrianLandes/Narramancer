@@ -13,7 +13,7 @@ namespace Narramancer {
 				return Object.FindObjectsOfType<T>();
 			}
 
-#if UNITY_2020_3_OR_NEWER
+#if UNITY_2021_3_OR_NEWER
 			return Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
 			Scene scene = SceneManager.GetActiveScene();
@@ -24,7 +24,7 @@ namespace Narramancer {
 
 		public static T FindAnyObjectByType<T>(bool includeInactive = false) where T : Component {
 
-#if UNITY_2020_3_OR_NEWER
+#if UNITY_2021_3_OR_NEWER
 			if (includeInactive) {
 				return Object.FindAnyObjectByType<T>(FindObjectsInactive.Include);
 			}

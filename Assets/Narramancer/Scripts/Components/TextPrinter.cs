@@ -207,7 +207,7 @@ namespace Narramancer {
 		}
 	}
 
-#if UNITY_2019_4_2
+#if !UNITY_2021_2_OR_NEWER
 	public static class RegexExtensions {
 
 		public static Match FirstOrDefault(this MatchCollection source, Func<Match, bool> predicate) {
