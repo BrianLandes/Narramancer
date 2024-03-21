@@ -427,7 +427,7 @@ namespace Narramancer {
 				SetUnityObject(key, unityObject);
 			}
 			else
-			if (typeof(int).IsAssignableFrom(type)) {
+			if (typeof(int).IsAssignableFrom(type) || typeof(Enum).IsAssignableFrom(type)) {
 				var intValue = Convert.ToInt32(value);
 				SetInt(key, intValue);
 			}
@@ -480,7 +480,7 @@ namespace Narramancer {
 				return unityObject;
 			}
 			else
-			if (typeof(int).IsAssignableFrom(type)) {
+			if (typeof(int).IsAssignableFrom(type) || typeof(Enum).IsAssignableFrom(type)) {
 				return GetInt(key);
 			}
 			else
