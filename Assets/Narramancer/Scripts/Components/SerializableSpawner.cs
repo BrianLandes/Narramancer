@@ -189,6 +189,10 @@ namespace Narramancer {
 			spawns.Clear();
 		}
 
+		public List<GameObject> GetAllGameObjects() {
+			return spawns.ToList();
+		}
+
 		public override void Serialize(StoryInstance story) {
 			base.Serialize(story);
 
