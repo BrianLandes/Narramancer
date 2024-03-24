@@ -43,5 +43,19 @@ namespace Narramancer {
 		private List<NarramancerPortWithAssignment> blackboardAssignments = new List<NarramancerPortWithAssignment>();
 		public List<NarramancerPortWithAssignment> BlackboardAssignments => blackboardAssignments;
 
+#if UNITY_EDITOR
+		private void OnValidate() {
+			var allUids = new HashSet<string>();
+
+			var allNounScriptableObjects = PseudoEditorUtilities.GetAllInstances<NounScriptableObject>();
+
+			foreach (var noun in allNounScriptableObjects) {
+				if (allUids.Contains(noun.uid.ToString())) {
+					noun.uid.GenerateNew();
+				}
+				allUids.Add(noun.uid.ToString());
+			}
+		}
+#endif
 	}
 }

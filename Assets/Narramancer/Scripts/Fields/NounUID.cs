@@ -9,11 +9,15 @@ namespace Narramancer {
         private string Value = "";
 
         public NounUID() {
-            Value = Guid.NewGuid().ToString();
+            GenerateNew();
         }
 
         public NounUID(string value) {
             Value = value;
+        }
+
+        public void GenerateNew() {
+            Value = Guid.NewGuid().ToString();
         }
 
         public static implicit operator string(NounUID id) {
