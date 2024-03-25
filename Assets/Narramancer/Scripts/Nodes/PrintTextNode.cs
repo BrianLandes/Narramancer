@@ -41,7 +41,7 @@ namespace Narramancer {
 			if (waitForContinue) {
 				runner.Suspend();
 			}
-			
+
 
 
 			var inputText = GetInputValue(runner.Blackboard, nameof(text), text);
@@ -53,11 +53,15 @@ namespace Narramancer {
 					replacementText = inputObject.ToString();
 				}
 				var expression = "{" + input.fieldName + "}";
-				while(inputText.IndexOf(expression)>=0) {
+				while (inputText.IndexOf(expression) >= 0) {
 					inputText = inputText.Replace(expression, replacementText);
 				}
-				
+
 			}
+
+			#region Add text to Log
+			NarramancerSingleton.Instance.StoryInstance.AddTextLog(inputText);
+			#endregion
 
 			var textPrinter = GetInputValue(runner.Blackboard, nameof(this.textPrinter), this.textPrinter);
 			if (textPrinter == null) {
@@ -67,7 +71,7 @@ namespace Narramancer {
 				if (waitForContinue) {
 					runner.Resume();
 				}
-				
+
 			},
 			clearPreviousText);
 		}

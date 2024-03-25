@@ -41,6 +41,11 @@ namespace Narramancer {
 		public FlagIntDictionary Flags => flags;
 
 		[SerializeField]
+		private List<string> textLogs = new List<string>();
+		public List<string> TextLogs => textLogs;
+		private float lastTextLogTime = -1f;
+
+		[SerializeField]
 		public int sceneIndex = -1;
 
 		public StoryInstance() { }
@@ -69,6 +74,7 @@ namespace Narramancer {
 			nodeRunners.Clear();
 			promises.Clear();
 			flags.Clear();
+			textLogs.Clear();
 		}
 
 		public bool TryGetInstance(NounScriptableObject noun, out NounInstance instance) {
@@ -87,5 +93,22 @@ namespace Narramancer {
 			return instance;
 		}
 
+		public void AddTextLog(string text) {
+			if (textLogs.Count == 0) {
+				textLogs.Add(text);
+			}
+			else {
+				if (lastTextLogTime == Time.time) {
+					var lastMessage = textLogs[textLogs.Count - 1];
+					lastMessage += "\n" + text;
+					textLogs[textLogs.Count - 1] = lastMessage;
+				}
+				else {
+					textLogs.Add(text);
+				}
+			}
+
+			lastTextLogTime = Time.time;
+		}
 	}
 }
