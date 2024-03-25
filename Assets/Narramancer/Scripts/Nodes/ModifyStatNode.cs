@@ -36,6 +36,10 @@ namespace Narramancer {
 		private ToggleableFloat maxValue = new ToggleableFloat(false);
 		public static string MaxValueFieldName => nameof(maxValue);
 
+		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
+		[SerializeField]
+		private float value = 0f;
+
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
 
@@ -90,5 +94,19 @@ namespace Narramancer {
 			}
 		}
 
+		public override object GetValue(INodeContext context, NodePort port) {
+			if (Application.isPlaying) {
+				if (port.fieldName.Equals(nameof(value))) {
+					var inputInstance = GetInstance(context);
+
+					var inputStat = GetInputValue(context, nameof(stat), stat);
+
+
+					var statEffectiveValue = inputInstance.GetStatEffectiveValue(context, inputStat);
+					return statEffectiveValue;
+				}
+			}
+			return base.GetValue(context, port);
+		}
 	}
 }
