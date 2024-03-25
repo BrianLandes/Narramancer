@@ -4,11 +4,15 @@ using UnityEngine;
 using XNode;
 
 namespace Narramancer {
-    public class SpawnNode : ChainedRunnableNode {
+	public class SpawnNode : ChainedRunnableNode {
 
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		SerializableSpawner spawner = default;
+
+		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
+		[SerializeField]
+		NounInstance assignInstance = default;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
@@ -23,6 +27,12 @@ namespace Narramancer {
 				return;
 			}
 			var result = spawner.Spawn();
+
+			var assignInstance = GetInputValue<NounInstance>(runner.Blackboard, nameof(this.assignInstance));
+			if (assignInstance != null) {
+				assignInstance.GameObject = result;
+			}
+
 			var key = Blackboard.UniqueKey(this, nameof(gameObject));
 			runner.Blackboard.Set(key, result);
 		}
