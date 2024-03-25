@@ -6,30 +6,51 @@ using XNode;
 
 namespace Narramancer {
 
-	[NodeWidth(250)]
+	[NodeWidth(300)]
 	[CreateNodeMenu("Flow/Elements As Choices")]
 	public class OfferObjectsAsChoicesNode : RunnableNode {
 
 		[SerializeField]
 		private SerializableType type = new SerializableType();
+		public static string TypeFieldName => nameof(type);
+		public SerializableType ElementType => type;
 
 		[Output(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		private RunnableNode runWhenObjectSelected = default;
+		public static string RunWhenObjectSelectedFieldName => nameof(runWhenObjectSelected);
+
+
+		[SerializeField]
+		[Tooltip("Whether to append an option to the list of choices for going 'Back'")]
+		private bool addOptionForBack = false;
+		public static string AddOptionForBackFieldName => nameof(addOptionForBack);
+
 
 		[Output(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		private RunnableNode runWhenBackSelected = default;
+		public static string RunWhenBackSelectedFieldName => nameof(runWhenBackSelected);
+
+		[SerializeField]
+		private bool useValueVerbForDisplayname = false;
+		public static string UseValueVerbForDisplaynameFieldName => nameof(useValueVerbForDisplayname);
 
 		[SerializeField]
 		[RequireInputFromSerializableType(nameof(type), "element")]
 		[RequireOutput(typeof(string), "display name")]
 		private ValueVerb displayNamePredicate = default;
+		public static string DisplayNamePredicateFieldName => nameof(displayNamePredicate);
+
+		[SerializeField]
+		private bool useValueVerbForEnabled = false;
+		public static string UseValueVerbForEnabledFieldName => nameof(useValueVerbForEnabled);
 
 		[SerializeField]
 		[RequireInputFromSerializableType(nameof(type), "element")]
 		[RequireOutput(typeof(bool), "enabled")]
 		private ValueVerb enabledPredicate = default;
+		public static string EnabledPredicateFieldName => nameof(enabledPredicate);
 
 		// TODO: Predicate for Custom Color
 		// TODO: Predicate for Show if Disabled
@@ -37,11 +58,13 @@ namespace Narramancer {
 		// TODO: allow 'Back' text to be an input
 
 		[SerializeField]
+		[Tooltip("Whether to show the option even if it is disabled")]
 		private bool showIfDisabled = true;
+		public static string ShowIfDisabledFieldName => nameof(showIfDisabled);
 
-		private const string INPUT_ELEMENTS = "Input Elements";
-		private const string INPUT_LIST = "Input List";
-		private const string SELECTED_ELEMENT = "Selected Element";
+		public const string INPUT_ELEMENTS = "Input Elements";
+		public const string INPUT_LIST = "Input List";
+		public const string SELECTED_ELEMENT = "Selected Element";
 
 		private string ElementKey => Blackboard.UniqueKey(this, "Element");
 
@@ -96,13 +119,15 @@ namespace Narramancer {
 				}
 			}
 
-			foreach (var element in elementsList) {
+			var useEnabledPredicate = useValueVerbForEnabled && enabledPredicate;
 
-				var enabled = enabledPredicate == null || enabledPredicate.RunForValue<bool>(runner.Blackboard, type.Type, element);
+			foreach (var element in elementsList) {
+				
+				var enabled = !useEnabledPredicate || enabledPredicate.RunForValue<bool>(runner.Blackboard, type.Type, element);
 				if (enabled) {
 
 					var displayText = element.ToString();
-					if (displayNamePredicate != null) {
+					if (useValueVerbForDisplayname && displayNamePredicate != null) {
 						displayText = displayNamePredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
 					}
 					choicePrinter.AddChoice(displayText, () => {
@@ -114,18 +139,21 @@ namespace Narramancer {
 				else
 				if (showIfDisabled) {
 					var displayText = element.ToString();
-					if (displayNamePredicate != null) {
+					if (useValueVerbForDisplayname && displayNamePredicate != null) {
 						displayText = displayNamePredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
 					}
 					choicePrinter.AddDisabledChoice(displayText);
 				}
 			}
 
-			choicePrinter.AddChoice("Back", () => {
-				runner.Blackboard.Set(ElementKey, null, type.Type);
-				var nextNode = GetRunnableNodeFromPort(nameof(runWhenBackSelected));
-				runner.Resume(nextNode);
-			});
+			if (addOptionForBack) {
+				choicePrinter.AddChoice("Back", () => {
+					runner.Blackboard.Set(ElementKey, null, type.Type);
+					var nextNode = GetRunnableNodeFromPort(nameof(runWhenBackSelected));
+					runner.Resume(nextNode);
+				});
+			}
+			
 
 			choicePrinter.ShowChoices();
 		}

@@ -90,6 +90,27 @@ namespace Narramancer {
 			}
 		}
 
+		public static WideLabelScope WideLabel(float? labelWidth = null) {
+			var scope = new WideLabelScope() {
+				originalWidth = EditorGUIUtility.labelWidth
+			};
+			if (labelWidth != null) {
+				EditorGUIUtility.labelWidth = labelWidth.Value;
+			}
+			else {
+				EditorGUIUtility.labelWidth = 160f;
+			}
+			return scope;
+		}
+
+		public struct WideLabelScope : System.IDisposable {
+			public float originalWidth;
+
+			public void Dispose() {
+				EditorGUIUtility.labelWidth = originalWidth;
+			}
+		}
+
 
 		private static readonly Type[] primitiveTypes = new Type[] {
 			typeof(bool),
