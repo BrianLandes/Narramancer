@@ -25,18 +25,7 @@ namespace Narramancer {
 		public static void OpenWindow() {
 			var narramancer = Resources.LoadAll<NarramancerSingleton>(string.Empty).FirstOrDefault();
 			if (narramancer == null) {
-				narramancer = ScriptableObject.CreateInstance<NarramancerSingleton>();
-				narramancer.name = "Narramancer";
-				var path = "Assets/Resources";
-				// ensure the folder exists
-				{
-					var directoryAbsolutePath = PathUtilities.AsAbsolutePath(path);
-					Directory.CreateDirectory(directoryAbsolutePath);
-				}
-				path = PathUtilities.CreateNewAssetPath(path, narramancer.name);
-				AssetDatabase.CreateAsset(narramancer, path);
-				AssetDatabase.SaveAssets();
-				AssetDatabase.Refresh();
+				narramancer = CreateSingletonInResources();
 			}
 #if UNITY_2021_1_OR_NEWER
 			EditorUtility.OpenPropertyEditor(narramancer);
@@ -44,6 +33,18 @@ namespace Narramancer {
 			Selection.activeObject = narramancer;
 			EditorGUIUtility.PingObject(narramancer);
 #endif
+		}
+
+		public static NarramancerSingleton CreateSingletonInResources(string resourcesPath = "Assets/Resources") {
+			var narramancer = ScriptableObject.CreateInstance<NarramancerSingleton>();
+			narramancer.name = "Narramancer";
+			var directoryAbsolutePath = PathUtilities.AsAbsolutePath(resourcesPath);
+			Directory.CreateDirectory(directoryAbsolutePath);
+			var path = PathUtilities.CreateNewAssetPath(resourcesPath, narramancer.name);
+			AssetDatabase.CreateAsset(narramancer, path);
+			AssetDatabase.SaveAssets();
+			AssetDatabase.Refresh();
+			return narramancer;
 		}
 
 		public override void OnInspectorGUI() {
