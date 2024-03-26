@@ -112,11 +112,11 @@ namespace Narramancer {
 		}
 
 
-		private static readonly Type[] primitiveTypes = new Type[] {
-			typeof(bool),
-			typeof(int),
-			typeof(float),
-			typeof(string)
+		public static readonly Dictionary<Type,string> primitiveTypes = new Dictionary<Type, string> {
+			{ typeof(bool), "bool" },
+			{ typeof(int), "int" },
+			{ typeof(float), "float" },
+			{ typeof(string), "string" },
 		};
 
 		private static readonly Type[] narramancerTypes = new Type[] {
@@ -154,9 +154,9 @@ namespace Narramancer {
 
 			onBeforeTypeItems?.Invoke(context);
 
-			foreach (var type in primitiveTypes) {
-				if (typeFilter==null || typeFilter(type)) {
-					context.AddItem(new GUIContent("Primitive/" + type.Name), false, () => onTypeSelected(type));
+			foreach (var pair in primitiveTypes) {
+				if (typeFilter==null || typeFilter(pair.Key)) {
+					context.AddItem(new GUIContent("Primitive/" + pair.Value), false, () => onTypeSelected(pair.Key));
 				}
 			}
 

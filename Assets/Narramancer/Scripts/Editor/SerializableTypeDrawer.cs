@@ -38,11 +38,15 @@ namespace Narramancer {
 			else {
 				var type = AssemblyUtilities.GetType(typeName);
 				if (type != null) {
+					var name = type.Name;
+					if (EditorDrawerUtilities.primitiveTypes.TryGetValue(type, out var primitiveName)) {
+						name = primitiveName;
+					}
 					if (listProperty.boolValue) {
-						buttonText = $"List<{type.Name}>";
+						buttonText = $"List<{name}>";
 					}
 					else {
-						buttonText = type.Name;
+						buttonText = name;
 					}
 					buttonTooltip = type.FullName;
 				}
