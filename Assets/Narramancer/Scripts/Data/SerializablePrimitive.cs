@@ -68,6 +68,33 @@ namespace Narramancer {
 			return type.AssemblyQualifiedName;
 		}
 
+		public static bool IsSupportedType(Type type ) {
+			if (typeof(int) == type) {
+				return true;
+			}
+			if (typeof(float) == type) {
+				return true;
+			}
+			if (typeof(bool) == type) {
+				return true;
+			}
+			if (typeof(string) == type) {
+				return true;
+			}
+			if (typeof(Color) == type) {
+				return true;
+			}
+			if (typeof(Vector2) == type) {
+				return true;
+			}
+			if (typeof(Vector3) == type) {
+				return true;
+			}
+			if (typeof(UnityEngine.Object).IsAssignableFrom( type)) {
+				return true;
+			}
+			return false;
+		}
 	}
 
 }

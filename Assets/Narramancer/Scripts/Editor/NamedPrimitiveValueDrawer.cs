@@ -41,7 +41,8 @@ namespace Narramancer {
 					var typeProperty = valueProperty.FindPropertyRelative(nameof(SerializablePrimitive.type));
 					typeProperty.stringValue = SerializablePrimitive.TypeToString(type);
 					property.serializedObject.ApplyModifiedProperties();
-				});
+				},
+				typeFilter: SerializablePrimitive.IsSupportedType );
 			}
 
 			EditorGUI.EndProperty();

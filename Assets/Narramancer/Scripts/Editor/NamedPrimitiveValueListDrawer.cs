@@ -35,7 +35,8 @@ namespace Narramancer {
 						valueTypeProperty.stringValue = SerializablePrimitive.TypeToString(type);
 
 						property.serializedObject.ApplyModifiedProperties();
-					});
+					},
+					typeFilter: SerializablePrimitive.IsSupportedType);
 				};
 
 			}
