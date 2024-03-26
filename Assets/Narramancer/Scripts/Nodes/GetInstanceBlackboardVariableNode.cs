@@ -10,6 +10,7 @@ namespace Narramancer {
 		private SerializableType valueType = new SerializableType();
 
 		[SerializeField]
+		[Input(ShowBackingValue.Unconnected,ConnectionType.Override, TypeConstraint.Inherited)]
 		string key = "value";
 
 		protected override void Init() {
@@ -34,6 +35,7 @@ namespace Narramancer {
 
 			if (Application.isPlaying && port.fieldName.Equals("value")) {
 				var instance = GetInstance(context);
+				var key = GetInputValue(context, nameof(this.key), this.key);
 				var value = instance?.Blackboard.Get(key, port.ValueType);
 				return value;
 			}
