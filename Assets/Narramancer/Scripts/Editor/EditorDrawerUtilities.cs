@@ -146,7 +146,7 @@ namespace Narramancer {
 			typeof(Rigidbody2D)
 		};
 
-		public static void ShowTypeSelectionPopup(Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null) {
+		public static void ShowTypeSelectionPopup(Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null, Func<Type, bool> typeFilter = null) {
 			var mousePosition = Event.current.mousePosition;
 			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
@@ -155,11 +155,15 @@ namespace Narramancer {
 			onBeforeTypeItems?.Invoke(context);
 
 			foreach (var type in primitiveTypes) {
-				context.AddItem(new GUIContent("Primitive/" + type.Name), false, () => onTypeSelected(type));
+				if (typeFilter==null || typeFilter(type)) {
+					context.AddItem(new GUIContent("Primitive/" + type.Name), false, () => onTypeSelected(type));
+				}
 			}
 
 			foreach (var type in narramancerTypes) {
-				context.AddItem(new GUIContent($"{nameof(Narramancer)}/" + type.Name), false, () => onTypeSelected(type));
+				if (typeFilter == null || typeFilter(type)) {
+					context.AddItem(new GUIContent($"{nameof(Narramancer)}/" + type.Name), false, () => onTypeSelected(type));
+				}
 			}
 
 			var allTypes = AssemblyUtilities.GetAllPublicTypes().Where(type =>
@@ -169,11 +173,14 @@ namespace Narramancer {
 					   !typeof(Attribute).IsAssignableFrom(type) &&
 					   !typeof(PropertyDrawer).IsAssignableFrom(type)
 					)
+				.Where(type => typeFilter == null || typeFilter(type))
 				.ToArray();
 
 
 			foreach (var type in unityTypes) {
-				context.AddItem(new GUIContent($"Unity Object/" + type.Name), false, () => onTypeSelected(type));
+				if (typeFilter == null || typeFilter(type)) {
+					context.AddItem(new GUIContent($"Unity Object/" + type.Name), false, () => onTypeSelected(type));
+				}
 			}
 
 			context.AddItem(new GUIContent("Unity Object/Search..."), false, () => {
@@ -181,8 +188,10 @@ namespace Narramancer {
 				var allUnityObjects = new List<Type>();
 
 				foreach (var type in allTypes) {
-					if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
-						allUnityObjects.Add(type);
+					if (typeFilter == null || typeFilter(type)) {
+						if (typeof(UnityEngine.Object).IsAssignableFrom(type) || (type.Namespace.IsNotNullOrEmpty() && type.Namespace.Contains("Unity"))) {
+							allUnityObjects.Add(type);
+						}
 					}
 				}
 

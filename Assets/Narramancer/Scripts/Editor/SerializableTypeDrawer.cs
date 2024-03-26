@@ -67,39 +67,44 @@ namespace Narramancer {
 				}
 
 				void AddListButtons(GenericMenu menu) {
-					var className = AssemblyUtilities.GetClassName(typeName);
+					var targetProperty = property?.GetTargetObject<SerializableType>();
+					if (targetProperty.canBeList) {
+						var className = AssemblyUtilities.GetClassName(typeName);
 
-					var listText = "List of " + className;
-					var notListText = "Single Element of " + className;
-					if (listProperty.boolValue) {
-						menu.AddDisabledItem(new GUIContent(listText), true);
-					}
-
-					var text = listProperty.boolValue ? notListText : listText;
-
-					menu.AddItem(new GUIContent(text), false, () => {
-						property.serializedObject.Update();
-						listProperty.boolValue = !listProperty.boolValue;
-						property.serializedObject.ApplyModifiedProperties();
-
-						var targetObject = property.serializedObject.targetObject;
-						var parentType = targetObject.GetType();
-						var fieldInfo = parentType.GetField(property.propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-						if (fieldInfo != null) {
-							var targetProperty = fieldInfo.GetValue(targetObject) as SerializableType;
-							targetProperty.ApplyChanges();
+						var listText = "List of " + className;
+						var notListText = "Single Element of " + className;
+						if (listProperty.boolValue) {
+							menu.AddDisabledItem(new GUIContent(listText), true);
 						}
-						// TODO: account for SerializableTypes that are part of lists (eg: Story.GlobalVariables)
-					});
 
-					if (!listProperty.boolValue) {
-						menu.AddDisabledItem(new GUIContent(notListText), true);
+						var text = listProperty.boolValue ? notListText : listText;
+
+						menu.AddItem(new GUIContent(text), false, () => {
+							property.serializedObject.Update();
+							listProperty.boolValue = !listProperty.boolValue;
+							property.serializedObject.ApplyModifiedProperties();
+
+							var targetObject = property.serializedObject.targetObject;
+							var parentType = targetObject.GetType();
+							var fieldInfo = parentType.GetField(property.propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+							if (fieldInfo != null) {
+								var targetProperty = fieldInfo.GetValue(targetObject) as SerializableType;
+								targetProperty.ApplyChanges();
+							}
+							// TODO: account for SerializableTypes that are part of lists (eg: Story.GlobalVariables)
+						});
+
+						if (!listProperty.boolValue) {
+							menu.AddDisabledItem(new GUIContent(notListText), true);
+						}
+
+						menu.AddSeparator(string.Empty);
 					}
-
-					menu.AddSeparator(string.Empty);
+					
 				}
 
-				EditorDrawerUtilities.ShowTypeSelectionPopup(ApplyType, onBeforeTypeItems: AddListButtons);
+				var targetProperty = property?.GetTargetObject<SerializableType>();
+				EditorDrawerUtilities.ShowTypeSelectionPopup(ApplyType, onBeforeTypeItems: AddListButtons, typeFilter: targetProperty?.typeFilter);
 			}
 
 			EditorGUI.EndProperty();

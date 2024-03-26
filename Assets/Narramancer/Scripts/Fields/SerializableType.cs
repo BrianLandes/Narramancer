@@ -23,6 +23,10 @@ namespace Narramancer {
 		/// </summary>
 		public event Action OnChanged;
 
+		public Func<Type, bool> typeFilter = null;
+
+		public bool canBeList = true;
+
 		public Type Type {
 			get {
 				if (typeName.IsNullOrEmpty()) {
