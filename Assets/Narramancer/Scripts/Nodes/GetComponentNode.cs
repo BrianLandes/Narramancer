@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using XNode;
 
 namespace Narramancer {
@@ -12,23 +13,27 @@ namespace Narramancer {
 		private GameObject inputGameObject = default;
 
 		[SerializeField]
-		private SerializableType listType = new SerializableType();
+		[FormerlySerializedAs("listType")]
+		private SerializableType componentType = new SerializableType();
 
 		[SerializeField]
 		private bool includeChildren = false;
 
 		protected override void Init() {
-			listType.OnChanged -= UpdatePorts;
-			listType.OnChanged += UpdatePorts;
+			componentType.OnChanged -= UpdatePorts;
+			componentType.OnChanged += UpdatePorts;
+
+			componentType.typeFilter = (type) => typeof(Component).IsAssignableFrom(type);
+			componentType.canBeList = false;
 		}
 
 		public override void UpdatePorts() {
 
-			if (listType.Type == null) {
+			if (componentType.Type == null) {
 				ClearDynamicPorts();
 			}
 			else {
-				var nodePort = this.GetOrAddDynamicOutput(listType.Type, "component");
+				var nodePort = this.GetOrAddDynamicOutput(componentType.Type, "component");
 				this.ClearDynamicPortsExcept(nodePort);
 			}
 
@@ -38,7 +43,7 @@ namespace Narramancer {
 		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (Application.isPlaying) {
-				if (listType.Type == null || !typeof(Component).IsAssignableFrom(listType.Type)) {
+				if (componentType.Type == null || !typeof(Component).IsAssignableFrom(componentType.Type)) {
 					Debug.LogError("Type not set", this);
 					return null;
 				}
@@ -47,9 +52,9 @@ namespace Narramancer {
 					Debug.LogError("No gameobject connected", this);
 					return null;
 				}
-				var component = inputGameObject.GetComponent(listType.Type);
+				var component = inputGameObject.GetComponent(componentType.Type);
 				if (component == null && includeChildren) {
-					component = inputGameObject.GetComponentInChildren(listType.Type);
+					component = inputGameObject.GetComponentInChildren(componentType.Type);
 				}
 				return component;
 			}
