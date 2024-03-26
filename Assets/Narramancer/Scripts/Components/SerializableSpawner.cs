@@ -190,7 +190,8 @@ namespace Narramancer {
 		}
 
 		public List<GameObject> GetAllGameObjects() {
-			return spawns.ToList();
+			spawns = spawns.Where(x => x != null).ToList();
+			return spawns;
 		}
 
 		public override void Serialize(StoryInstance story) {
