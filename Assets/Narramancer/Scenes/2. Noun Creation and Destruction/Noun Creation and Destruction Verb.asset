@@ -1121,8 +1121,11 @@ MonoBehaviour:
       PublicKeyToken=null
     list: 0
   runWhenObjectSelected: {fileID: 0}
+  addOptionForBack: 1
   runWhenBackSelected: {fileID: 0}
+  useValueVerbForDisplayname: 0
   displayNamePredicate: {fileID: 0}
+  useValueVerbForEnabled: 0
   enabledPredicate: {fileID: 0}
   showIfDisabled: 1
 --- !u!114 &3963393208591951986
