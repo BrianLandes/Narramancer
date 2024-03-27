@@ -583,12 +583,13 @@ MonoBehaviour:
   - {fileID: 4676683578539320298}
   - {fileID: 2990326011256094367}
   - {fileID: -9151430109981777640}
-  panOffset: {x: -492.28946, y: -215.60815}
+  panOffset: {x: -440.31522, y: -334.13766}
   inputs:
   - type:
       typeName: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       list: 0
+      canBeList: 1
     name: Weapon UI
     id: acd86d17-eb02-4054-8849-2cbf8deb1e36
     passThrough: 0
@@ -596,6 +597,7 @@ MonoBehaviour:
       typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       list: 0
+      canBeList: 1
     name: equipmentType
     id: a983dabd-116e-49ec-9222-3174e013eaa3
     passThrough: 0
@@ -622,6 +624,7 @@ MonoBehaviour:
     - scriptableObject
     - passThroughInstance
     - value
+    - key
     values:
     - _fieldName: instance
       _node: {fileID: -6649591812416490664}
@@ -696,6 +699,22 @@ MonoBehaviour:
       dynamicValueString: 
       dynamicValueInt: 0
       dynamicValueFloat: 0
+    - _fieldName: key
+      _node: {fileID: -6649591812416490664}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
   nounType: 0
   instance:
     displayName: 
@@ -754,6 +773,7 @@ MonoBehaviour:
     typeName: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 1
   key: sprite
 --- !u!114 &-6535584010390754521
 MonoBehaviour:
@@ -1669,7 +1689,7 @@ MonoBehaviour:
   - {fileID: -693363015771467201}
   - {fileID: 2468108964932425690}
   - {fileID: 9184788198490279322}
-  panOffset: {x: -1437.9789, y: -192.40398}
+  panOffset: {x: -2506.272, y: -355.6371}
   inputs: []
   outputs: []
   references:
@@ -1848,10 +1868,11 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   inputGameObject: {fileID: 0}
-  listType:
+  componentType:
     typeName: UnityEngine.UI.Text, UnityEngine.UI, Version=1.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 0
   includeChildren: 0
 --- !u!114 &1824535002699997108
 MonoBehaviour:
@@ -2427,10 +2448,11 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   inputGameObject: {fileID: 0}
-  listType:
+  componentType:
     typeName: UnityEngine.UI.Image, UnityEngine.UI, Version=1.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 0
   includeChildren: 0
 --- !u!114 &5886908311127120326
 MonoBehaviour:
@@ -2490,10 +2512,11 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   inputGameObject: {fileID: 0}
-  listType:
+  componentType:
     typeName: UnityEngine.UI.Text, UnityEngine.UI, Version=1.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 0
   includeChildren: 0
 --- !u!114 &6170207694069170962
 MonoBehaviour:
