@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 40, y: -8}
+  position: {x: -120, y: -8}
   ports:
     keys:
     - runNode
@@ -538,12 +538,13 @@ MonoBehaviour:
   - {fileID: -8929541663818695317}
   - {fileID: -4569456906963578815}
   - {fileID: -6452628387533228403}
-  panOffset: {x: -958.09106, y: -77.44072}
+  panOffset: {x: -645.16315, y: -93.648254}
   inputs:
   - type:
       typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       list: 0
+      canBeList: 1
     name: equipmentType
     id: 6c116dc5-a27c-46f4-92f0-dc3f10f7b947
     passThrough: 0
@@ -610,7 +611,7 @@ MonoBehaviour:
   m_Name: Offer Objects As Choices
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 190, y: -8}
+  position: {x: 56, y: -8}
   ports:
     keys:
     - runWhenObjectSelected
@@ -733,9 +734,13 @@ MonoBehaviour:
     typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 1
   runWhenObjectSelected: {fileID: 0}
+  addOptionForBack: 0
   runWhenBackSelected: {fileID: 0}
+  useValueVerbForDisplayname: 0
   displayNamePredicate: {fileID: 0}
+  useValueVerbForEnabled: 0
   enabledPredicate: {fileID: 0}
   showIfDisabled: 1
 --- !u!114 &4776062876269169353
