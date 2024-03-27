@@ -207,8 +207,8 @@ MonoBehaviour:
       _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
-      - fieldName: runNode
-        node: {fileID: 7961528512809786203}
+      - fieldName: runNodeIfTrue
+        node: {fileID: 290405587050965642}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_Name: Get Instance
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 216, y: 72}
+  position: {x: -152, y: 88}
   ports:
     keys:
     - noun
@@ -404,18 +404,117 @@ MonoBehaviour:
   - {fileID: -1057321544887451047}
   - {fileID: -3411949153491184962}
   - {fileID: -5529937498891568826}
+  - {fileID: 290405587050965642}
   panOffset: {x: -412.27896, y: -171.73293}
   inputs:
   - type:
       typeName: Narramancer.PropertyScriptableObject, Narramancer, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       list: 0
+      canBeList: 1
     name: equipmentType
     id: c0fa7e9c-f3d3-43ed-9397-8b2550864c79
     passThrough: 0
   outputs: []
   references:
     objects: []
+--- !u!114 &290405587050965642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f54812b1e7ee0f4998ed523560df78e, type: 3}
+  m_Name: Conditional
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 232, y: -24}
+  ports:
+    keys:
+    - condition
+    - runNodeIfTrue
+    - runNodeIfFalse
+    - thisNode
+    values:
+    - _fieldName: condition
+      _node: {fileID: 290405587050965642}
+      _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections:
+      - fieldName: hasEquipped
+        node: {fileID: 1183500691602286656}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: runNodeIfTrue
+      _node: {fileID: 290405587050965642}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: thisNode
+        node: {fileID: -3411949153491184962}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: runNodeIfFalse
+      _node: {fileID: 290405587050965642}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 1
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: thisNode
+      _node: {fileID: 290405587050965642}
+      _typeQualifiedName: Narramancer.RunnableNode, Narramancer, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: runNode
+        node: {fileID: 7961528512809786203}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+  condition: 1
+  runNodeIfTrue: {fileID: 0}
+  runNodeIfFalse: {fileID: 0}
 --- !u!114 &1183500691602286656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,7 +528,7 @@ MonoBehaviour:
   m_Name: 'Execute Graph: Get Current Equipment'
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 152, y: 184}
+  position: {x: -216, y: 200}
   ports:
     keys:
     - equipmentType
@@ -478,7 +577,10 @@ MonoBehaviour:
       _node: {fileID: 1183500691602286656}
       _typeQualifiedName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
-      connections: []
+      connections:
+      - fieldName: condition
+        node: {fileID: 290405587050965642}
+        reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 1
@@ -504,7 +606,7 @@ MonoBehaviour:
   m_Name: Get Variable
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -136, y: 184}
+  position: {x: -504, y: 200}
   ports:
     keys:
     - value
@@ -548,7 +650,7 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 296, y: -24}
+  position: {x: -72, y: -8}
   ports:
     keys:
     - runNode
@@ -559,7 +661,7 @@ MonoBehaviour:
         Culture=neutral, PublicKeyToken=null
       connections:
       - fieldName: thisNode
-        node: {fileID: -3411949153491184962}
+        node: {fileID: 290405587050965642}
         reroutePoints: []
       _direction: 1
       _connectionType: 1
