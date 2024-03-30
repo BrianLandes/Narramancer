@@ -72,7 +72,7 @@ namespace Narramancer {
 
 				void AddListButtons(GenericMenu menu) {
 					var targetProperty = property?.GetTargetObject<SerializableType>();
-					if (targetProperty.canBeList) {
+					if (targetProperty != null && targetProperty.canBeList) {
 						var className = AssemblyUtilities.GetClassName(typeName);
 
 						var listText = "List of " + className;

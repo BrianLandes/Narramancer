@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -11,21 +12,65 @@ using UnityEngine.UI;
 namespace Narramancer {
 	public static class EditorDrawerUtilities {
 
+		private static Regex propertyArrayRegex = new Regex(@"([\w\d]*).Array.data\[(\d*)\].([\w\d]*)");
+
 		public static T GetTargetObject<T>(this SerializedProperty property) where T : class {
-			var fieldInfo = property.GetFieldInfo();
-			var targetObject = property.serializedObject.targetObject;
-			var targetProperty = fieldInfo?.GetValue(targetObject);
-			return targetProperty as T;
+
+			var match = propertyArrayRegex.Match(property.propertyPath);
+			if (match.Success) {
+				var listFieldName = match.Groups[1].Value;
+				var index = int.Parse(match.Groups[2].Value);
+				var elementFieldName = match.Groups[3].Value;
+
+				var targetObject = property.serializedObject.targetObject;
+				var listType = targetObject.GetType();
+
+				var listFieldInfo = listType.GetFieldInfo(listFieldName);
+
+				var targetListObject = listFieldInfo?.GetValue(targetObject);
+
+				var targetList = AssemblyUtilities.ToListOfObjects(targetListObject);
+				var targetElement = targetList[index];
+
+				var elementType = targetElement.GetType();
+				var elementFieldInfo = elementType.GetFieldInfo(elementFieldName);
+
+				var elementObject = elementFieldInfo?.GetValue(targetElement);
+
+				return elementObject as T;
+
+			}
+			else {
+				var fieldInfo = property.GetFieldInfo();
+				var targetObject = property.serializedObject.targetObject;
+				var targetProperty = fieldInfo?.GetValue(targetObject);
+				return targetProperty as T;
+			}
+
 		}
 
 
 		public static FieldInfo GetFieldInfo(this SerializedProperty property) {
+			var propertyPath = property.propertyPath;
+			if (propertyPath.Contains(".Array.")) {
+				propertyPath = propertyPath.Split(".")[0];
+			}
 			var targetObject = property.serializedObject.targetObject;
 			var parentType = targetObject.GetType();
-			var fieldInfo = parentType.GetField(property.propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			var fieldInfo = parentType.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
 			while (fieldInfo == null && parentType.BaseType != null) {
 				parentType = parentType.BaseType;
-				fieldInfo = parentType.GetField(property.propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+				fieldInfo = parentType.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			}
+			return fieldInfo;
+		}
+
+		public static FieldInfo GetFieldInfo(this Type type, string fieldName) {
+
+			var fieldInfo = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+			while (fieldInfo == null && type.BaseType != null) {
+				type = type.BaseType;
+				fieldInfo = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
 			}
 			return fieldInfo;
 		}
