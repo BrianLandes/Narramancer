@@ -400,6 +400,7 @@ MonoBehaviour:
   listType:
     typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     list: 0
+    canBeList: 1
   useReplacement: 1
 --- !u!114 &-7201890699062893359
 MonoBehaviour:
@@ -1120,6 +1121,7 @@ MonoBehaviour:
     typeName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     list: 0
+    canBeList: 1
   runWhenObjectSelected: {fileID: 0}
   addOptionForBack: 1
   runWhenBackSelected: {fileID: 0}
@@ -1436,6 +1438,7 @@ MonoBehaviour:
   listType:
     typeName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
     list: 0
+    canBeList: 1
 --- !u!114 &7927551452980075578
 MonoBehaviour:
   m_ObjectHideFlags: 0
