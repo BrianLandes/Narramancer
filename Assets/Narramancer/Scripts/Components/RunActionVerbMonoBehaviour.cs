@@ -17,6 +17,9 @@ namespace Narramancer {
 		[SerializeField]
 		private bool runOnStart = true;
 
+		[SerializeField]
+		private bool stopOnDestroy = true;
+
 		[SerializeMonoBehaviourField]
 		private NodeRunner runner = default;
 		public NodeRunner Runner => runner;
@@ -44,6 +47,13 @@ namespace Narramancer {
 		private void Start() {
 			if (!valuesOverwrittenByDeserialize && runOnStart) {
 				RunVerb();
+			}
+		}
+
+		override public void OnDestroy() {
+			base.OnDestroy();
+			if (stopOnDestroy && runner != null) {
+				runner.StopAndReset();
 			}
 		}
 
