@@ -44,7 +44,12 @@ namespace Narramancer {
 
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
 
+		[SerializeField]
+		public int maxNodesRunPerFrame = 100;
+
 		public event Action<NounInstance> OnCreateInstance;
+
+		public event Action PreUpdateActions;
 
 		public override void OnPreprocessBuild() {
 			Clear();
@@ -71,7 +76,13 @@ namespace Narramancer {
 		}
 
 		public override void OnUpdate() {
-			UpdateTimers();
+			PreUpdateActions?.Invoke();
+			PreUpdateActions = null;
+			if (storyInstance != null) {
+				UpdateTimers();
+				UpdateNodeRunners();
+			}
+
 		}
 
 		#region Timers
@@ -101,6 +112,22 @@ namespace Narramancer {
 		#endregion
 
 		#region Node Runners
+
+		private void UpdateNodeRunners() {
+			var runs = 0;
+			var didAnyUpdates = true;
+			while (runs < maxNodesRunPerFrame && didAnyUpdates) {
+				didAnyUpdates = false;
+				foreach (var pair in storyInstance.NodeRunners.ToArray()) {
+					var updated = pair.Value.Update();
+					if (updated) {
+						runs += 1;
+						didAnyUpdates = true;
+					}
+				}
+			}
+
+		}
 
 		public NodeRunner CreateNodeRunner(string name) {
 			var runner = new NodeRunner();
@@ -228,18 +255,22 @@ namespace Narramancer {
 		}
 
 		public void LoadStory(StoryInstance storyInstance) {
-			this.storyInstance = storyInstance;
+			PreUpdateActions += () => {
+				this.storyInstance = null;
 
-			if (storyInstance.sceneIndex >= 0) {
-				var asyncOperation = SceneManager.LoadSceneAsync(storyInstance.sceneIndex, LoadSceneMode.Single);
-				asyncOperation.completed += _ => {
-					foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
-						monoBehaviour.Deserialize(storyInstance);
-					}
+				if (storyInstance.sceneIndex >= 0) {
+					var asyncOperation = SceneManager.LoadSceneAsync(storyInstance.sceneIndex, LoadSceneMode.Single);
+					asyncOperation.completed += _ => {
+						foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
+							monoBehaviour.Deserialize(storyInstance);
+						}
 
-					storyInstance.SaveTable = null;
-				};
-			}
+						storyInstance.SaveTable = null;
+
+						this.storyInstance = storyInstance;
+					};
+				}
+			};
 		}
 
 	}

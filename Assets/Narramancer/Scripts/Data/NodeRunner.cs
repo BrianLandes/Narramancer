@@ -10,9 +10,14 @@ namespace Narramancer {
 
 		#region Private Members
 
-		/// <summary> Whether the process is currently running. </summary>
-		[NonSerialized]
-		protected bool runningProcess = false;
+		enum RunStatus {
+			Stopped,
+			Running,
+			Suspended,
+		}
+
+		[SerializeField]
+		private RunStatus runStatus = RunStatus.Stopped;
 
 		/// <summary> The current node be run. </summary>
 		[SerializeField]
@@ -32,13 +37,9 @@ namespace Narramancer {
 		[NonSerialized]
 		private bool doPostRunLogic = false;
 
-		[NonSerialized]
-		private bool stopped = false;
-
 		enum PostNodeBehavior {
 			Suspend,
 			Continue,
-			WaitFrame,
 		}
 
 		[NonSerialized]
@@ -62,7 +63,7 @@ namespace Narramancer {
 		public RunnableNode CurrentNode => runningNode;
 
 		public bool IsRunning() {
-			return runningProcess && runningNode != null;
+			return runStatus == RunStatus.Running && runningNode != null;
 		}
 
 		public bool verbose = false;
@@ -75,7 +76,7 @@ namespace Narramancer {
 			recentlyRunNodes.Clear();
 		}
 
-		public NodeRunner( bool verbose = false) : this() {
+		public NodeRunner(bool verbose = false) : this() {
 			this.verbose = verbose;
 		}
 
@@ -120,10 +121,11 @@ namespace Narramancer {
 		protected Promise StartPostProcess() {
 
 			promise = new Promise();
-			stopped = false;
+
 			QueueNextNodeOrEnd();
 
-			RunAsync();
+			runStatus = RunStatus.Running;
+
 			return promise;
 		}
 
@@ -133,7 +135,7 @@ namespace Narramancer {
 
 		/// <summary> Interrupts the process and resets it to a cleared state. </summary>
 		public void StopAndReset() {
-			var node = runningProcess ? runningNode : lastRunningNode;
+			var node = runStatus == RunStatus.Running ? runningNode : lastRunningNode;
 
 			if (TryGetLastNodeEvent(runningNode, out var @event)) {
 				@event.name = "Canceled";
@@ -151,12 +153,12 @@ namespace Narramancer {
 			if (node != null) {
 				node.Cancel(this);
 			}
-			if (runningProcess) {
+			if (runStatus == RunStatus.Running) {
 				doPostRunLogic = false;
 			}
 
 			promise = null;
-			stopped = true;
+			runStatus = RunStatus.Stopped;
 			Reset();
 		}
 
@@ -169,13 +171,12 @@ namespace Narramancer {
 		/// This must be called after the runner has been suspended.
 		/// </summary>
 		public void Resume() {
-			if (stopped) {
+			if (runStatus == RunStatus.Stopped) {
 				return;
 			}
-			if (!runningProcess) {
+			if (runStatus != RunStatus.Running) {
 				QueueNextNodeOrEnd();
-
-				RunAsync();
+				runStatus = RunStatus.Running;
 			}
 			else {
 				postCurrentNodeBehavior = PostNodeBehavior.Continue;
@@ -188,16 +189,15 @@ namespace Narramancer {
 		/// Allows for a node to be 'inserted' and run.
 		/// </summary>
 		public void Resume(RunnableNode node) {
-			if (stopped) {
+			if (runStatus == RunStatus.Stopped) {
 				return;
 			}
 			if (node != null) {
 				queuedNodes.Prepend(node);
 			}
-			if (!runningProcess) {
+			if (runStatus != RunStatus.Running) {
 				QueueNextNodeOrEnd();
-
-				RunAsync();
+				runStatus = RunStatus.Running;
 			}
 			else {
 				postCurrentNodeBehavior = PostNodeBehavior.Continue;
@@ -268,8 +268,7 @@ namespace Narramancer {
 			lastRunningNode = null;
 
 			queuedNodes.Clear();
-
-			runningProcess = false;
+			runStatus = RunStatus.Stopped;
 
 			doPostRunLogic = false;
 
@@ -277,72 +276,71 @@ namespace Narramancer {
 
 		}
 
-		/// <summary> The main async process that runs nodes.  </summary>
-		protected void RunAsync() {
-			Print("Starting Async Process...");
+		public bool Update() {
+			switch (runStatus) {
 
-			runningProcess = true;
+				case RunStatus.Running:
+					if (runningNode != null) {
+						postCurrentNodeBehavior = PostNodeBehavior.Continue;
 
-			while (runningNode != null) {
-				postCurrentNodeBehavior = PostNodeBehavior.Continue;
+						Print("Running Node: " + runningNode.GetType().ToString());
 
-				Print("Running Node: " + runningNode.GetType().ToString());
+						if (TryGetLastNodeEvent(runningNode, out var @event)) {
+							@event.name = "Ran";
+							@event.timeStamp = Time.time;
+						}
+						else {
+							@event = new NodeRunnerEvent() {
+								name = "Ran",
+								node = runningNode,
+								timeStamp = Time.time
+							};
+							recentlyRunNodes.Add(@event);
+						}
 
-				if (TryGetLastNodeEvent(runningNode, out var @event)) {
-					@event.name = "Ran";
-					@event.timeStamp = Time.time;
-				}
-				else {
-					@event = new NodeRunnerEvent() {
-						name = "Ran",
-						node = runningNode,
-						timeStamp = Time.time
-					};
-					recentlyRunNodes.Add(@event);
-				}
+						runningNode.Run(this);
 
-				runningNode.Run(this);
-
-				lastRunningNode = runningNode;
-				runningNode = null;
+						lastRunningNode = runningNode;
+						runningNode = null;
 
 
-				switch (postCurrentNodeBehavior) {
-					case PostNodeBehavior.Suspend:
-						// this area left blank intentionally
-						break;
+						switch (postCurrentNodeBehavior) {
+							case PostNodeBehavior.Suspend:
+								runStatus = RunStatus.Suspended;
+								break;
 
-					case PostNodeBehavior.Continue:
-						QueueNextNodeOrEnd();
-						break;
+							case PostNodeBehavior.Continue:
+								QueueNextNodeOrEnd();
+								break;
 
-					case PostNodeBehavior.WaitFrame:
-						// TODO
-						break;
+						}
+					}
 
-				}
+					if (runningNode == null) {
+						// == Post Run Logic ==
+						if (doPostRunLogic) {
+							// End the Runner.
+							Print("At end, invoking callback...");
+
+							// store the callback
+							var lastPromise = promise;
+
+							// put the runner back in a fresh state
+							Reset();
+
+							// invoke the callback here
+							lastPromise?.Resolve();
+						}
+						else {
+							Print("Process suspending...");
+						}
+					}
+
+					return true;
+
+				default:
+					return false;
 			}
-
-			runningProcess = false;
-
-			// == Post Run Logic ==
-			if (doPostRunLogic) {
-				// End the Runner.
-				Print("At end, invoking callback...");
-
-				// store the callback
-				var lastPromise = promise;
-
-				// put the runner back in a fresh state
-				Reset();
-
-				// invoke the callback here
-				lastPromise?.Resolve();
-			}
-			else {
-				Print("Process suspending...");
-			}
-
 		}
 
 		protected void QueueNextNodeOrEnd() {
