@@ -11,7 +11,7 @@ namespace Narramancer {
 	public class ChoosePrioritizedBranchNode : RunnableNode {
 
 
-		[Output(ShowBackingValue.Never, ConnectionType.Multiple,TypeConstraint.Inherited)]
+		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
 		[SerializeField]
 		[SameLine]
 		PrioritizedBranchNode branches = default;
@@ -34,12 +34,12 @@ namespace Narramancer {
 		RunnableNode runNodeOnCancel = default;
 
 
-		public IEnumerable<PrioritizedBranchNode> Branches {
+		public IOrderedEnumerable<PrioritizedBranchNode> Branches {
 			get {
 				var port = GetOutputPort(nameof(branches));
 				var connections = port.GetConnections();
 				if (connections == null) {
-					return Enumerable.Empty<PrioritizedBranchNode>();
+					return Enumerable.Empty<PrioritizedBranchNode>().OrderBy(node => node.position.y);
 				}
 				var connectedNodes = connections.Select(connection => connection.node).ToList();
 				var connectedCoiceNodes = connectedNodes.Cast<PrioritizedBranchNode>().ToList();
@@ -57,6 +57,10 @@ namespace Narramancer {
 			return null;
 		}
 
+		private string SubRunnerName(NodeRunner runner) {
+			return $"{runner.name} {this.GetHashCode()}";
+		}
+
 		public override void Run(NodeRunner runner) {
 
 
@@ -66,9 +70,7 @@ namespace Narramancer {
 
 				runner.Suspend();
 
-				var nameKey = Blackboard.UniqueKey(this, "Name") + Blackboard.UniqueKey(runner, "Name");
-
-				var subRunner = NarramancerSingleton.Instance.CreateNodeRunner($"{name} - {graph.name} ({nameKey})");
+				var subRunner = NarramancerSingleton.Instance.CreateNodeRunner(SubRunnerName(runner));
 				subRunner.Blackboard = runner.Blackboard;
 
 				var runningKey = Blackboard.UniqueKey(this, "Running");
@@ -146,11 +148,12 @@ namespace Narramancer {
 			var subRunnerStillRunning = runner.Blackboard.GetBool(runningKey);
 
 			if (subRunnerStillRunning) {
-				var nameKey = Blackboard.UniqueKey(this, "Name") + Blackboard.UniqueKey(runner, "Name");
-				var subRunner = NarramancerSingleton.Instance.GetNodeRunner($"{name} - {graph.name} ({nameKey})");
+				var subRunner = NarramancerSingleton.Instance.GetNodeRunner(SubRunnerName(runner));
+				if (subRunner != null) {
+					subRunner.StopAndReset();
+					NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
+				}
 
-				subRunner.StopAndReset();
-				NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
 
 				runner.Blackboard.Set(runningKey, false);
 
