@@ -90,6 +90,7 @@ namespace Narramancer {
 
 		public void AddProperty(PropertyInstance propertyInstance) {
 			properties.Add(propertyInstance);
+			NarramancerSingleton.Instance.ClearQueryInstancesTable();
 			foreach (var modifier in propertyInstance.Adjective.Modifiers) {
 				modifier.OnAdded(propertyInstance, this);
 			}
@@ -125,6 +126,7 @@ namespace Narramancer {
 
 		public void RemoveProperty(PropertyInstance propertyInstance) {
 			properties.Remove(propertyInstance);
+			NarramancerSingleton.Instance.ClearQueryInstancesTable();
 			foreach (var modifier in propertyInstance.Adjective.Modifiers) {
 				modifier.OnRemoved(propertyInstance, this);
 			}

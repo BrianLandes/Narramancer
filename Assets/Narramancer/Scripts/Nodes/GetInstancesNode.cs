@@ -7,10 +7,14 @@ using XNode;
 namespace Narramancer {
 
 	[CreateNodeMenu("Noun/Get Instances")]
+	[NodeSearchTerms("Get All Instances")]
 	public class GetInstancesNode : Node {
 
 		[SerializeField]
 		List<PropertyScriptableObject> mustHaveProperties = new List<PropertyScriptableObject>();
+
+		[SerializeField]
+		List<PropertyScriptableObject> mustNotHaveProperties = new List<PropertyScriptableObject>();
 
 		[Output]
 		[SerializeField]
@@ -20,11 +24,12 @@ namespace Narramancer {
 		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying && port.fieldName.Equals(nameof(instances))) {
 
-				var resultList = NarramancerSingleton.Instance.GetInstances();
+				var query = new NounInstancesQuery() {
+					mustHaveProperties = mustHaveProperties.ToArray(),
+					mustNotHaveProperties = mustNotHaveProperties.ToArray(),
+				};
 
-				if (mustHaveProperties.Any()) {
-					resultList = resultList.Where(x => mustHaveProperties.All(property => x.HasProperty(property))).ToList();
-				}
+				var resultList = NarramancerSingleton.Instance.GetInstances(query);
 
 				return resultList;
 			}

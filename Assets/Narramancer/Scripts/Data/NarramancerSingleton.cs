@@ -131,12 +131,19 @@ namespace Narramancer {
 
 		public NodeRunner CreateNodeRunner(string name) {
 			var runner = new NodeRunner();
+			runner.name = name;
 			storyInstance.NodeRunners.Add(name, runner);
 			return runner;
 		}
 
 		public NodeRunner GetNodeRunner(string name) {
-			return storyInstance.NodeRunners[name];
+			if (storyInstance == null) {
+				return null;
+			}
+			if (storyInstance.NodeRunners.TryGetValue(name, out var nodeRunner)) {
+				return nodeRunner;
+			}
+			return null;
 		}
 
 		public void ReleaseNodeRunner(NodeRunner runner) {
@@ -201,8 +208,33 @@ namespace Narramancer {
 			return storyInstance.Instances;
 		}
 
+		[NonSerialized]
+		private Dictionary<NounInstancesQuery, List<NounInstance>> queryInstancesTable = new Dictionary<NounInstancesQuery, List<NounInstance>>();
+
+		public List<NounInstance> GetInstances(NounInstancesQuery query) {
+			if (queryInstancesTable.TryGetValue(query, out var instances)) {
+				return instances;
+			}
+
+			bool HasAllMustHaveProperties(NounInstance instance) {
+				return query.mustHaveProperties.All(property => instance.HasProperty(property));
+			}
+
+			bool DoesNotHaveMustNotHaveProperties(NounInstance instance) {
+				return query.mustNotHaveProperties.All(property => !instance.HasProperty(property));
+			}
+			var newResultList = storyInstance.Instances.Where(x => HasAllMustHaveProperties(x) && DoesNotHaveMustNotHaveProperties(x)).ToList();
+			queryInstancesTable[query] = newResultList;
+			return storyInstance.Instances;
+		}
+
+		public void ClearQueryInstancesTable() {
+			queryInstancesTable.Clear();
+		}
+
 		public NounInstance CreateInstance(IInstancable instancable) {
 			var instance = storyInstance.CreateInstance(instancable);
+			queryInstancesTable.Clear();
 			OnCreateInstance?.Invoke(instance);
 			return instance;
 		}
@@ -218,6 +250,8 @@ namespace Narramancer {
 				if (instance.HasGameObject) {
 					Destroy(instance.GameObject);
 				}
+
+				queryInstancesTable.Clear();
 			}
 		}
 
