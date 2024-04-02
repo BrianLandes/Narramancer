@@ -300,7 +300,7 @@ namespace Narramancer {
 						}
 
 						storyInstance.SaveTable = null;
-
+						ClearQueryInstancesTable();
 						this.storyInstance = storyInstance;
 					};
 				}
