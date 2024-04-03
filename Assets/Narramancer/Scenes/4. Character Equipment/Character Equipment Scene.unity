@@ -417,6 +417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 5428168a98ff33c4d8924234d2888652, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: 6c116dc5-a27c-46f4-92f0-dc3f10f7b947
@@ -441,6 +442,7 @@ GameObject:
   - component: {fileID: 136371100}
   - component: {fileID: 136371102}
   - component: {fileID: 136371101}
+  - component: {fileID: 136371103}
   m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
@@ -506,6 +508,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136371099}
   m_CullTransparentMesh: 1
+--- !u!114 &136371103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136371099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &148121190
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,6 +972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 4ea426cc1f861e94f93146615c3d805e, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: c0fa7e9c-f3d3-43ed-9397-8b2550864c79
@@ -1208,6 +1223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 5428168a98ff33c4d8924234d2888652, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: 6c116dc5-a27c-46f4-92f0-dc3f10f7b947
@@ -1872,6 +1888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 5428168a98ff33c4d8924234d2888652, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: 6c116dc5-a27c-46f4-92f0-dc3f10f7b947
@@ -2052,6 +2069,7 @@ GameObject:
   - component: {fileID: 782143593}
   - component: {fileID: 782143595}
   - component: {fileID: 782143594}
+  - component: {fileID: 782143596}
   m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
@@ -2117,6 +2135,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 782143592}
   m_CullTransparentMesh: 1
+--- !u!114 &782143596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 782143592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &784560171
 GameObject:
   m_ObjectHideFlags: 0
@@ -3460,6 +3490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 4ea426cc1f861e94f93146615c3d805e, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: c0fa7e9c-f3d3-43ed-9397-8b2550864c79
@@ -3739,6 +3770,7 @@ GameObject:
   - component: {fileID: 1322376837}
   - component: {fileID: 1322376839}
   - component: {fileID: 1322376838}
+  - component: {fileID: 1322376840}
   m_Layer: 5
   m_Name: Sprite
   m_TagString: Untagged
@@ -3804,6 +3836,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1322376836}
   m_CullTransparentMesh: 1
+--- !u!114 &1322376840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1322376836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1345425360
 GameObject:
   m_ObjectHideFlags: 0
@@ -3888,7 +3932,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1659040200}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.29491794
+  m_Size: 0.2949813
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4152,7 +4196,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1102.3933
+      value: 1101.5403
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -4160,7 +4204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 557.19666
+      value: 556.77014
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4369,7 +4413,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 672533849}
   m_Direction: 0
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4968,6 +5012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verb: {fileID: 11400000, guid: 4ea426cc1f861e94f93146615c3d805e, type: 2}
   runOnStart: 0
+  stopOnDestroy: 1
   assignments:
   - name: equipmentType
     id: c0fa7e9c-f3d3-43ed-9397-8b2550864c79
