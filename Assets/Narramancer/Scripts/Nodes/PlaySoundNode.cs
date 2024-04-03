@@ -1,4 +1,5 @@
 using UnityEngine;
+using XNode;
 
 namespace Narramancer {
 	public class PlaySoundNode : ChainedRunnableNode {
@@ -10,6 +11,17 @@ namespace Narramancer {
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		private AudioSource audioSource = default;
+
+		public enum PlayType {
+			Music,
+			OneShot
+		}
+		[SerializeField]
+		[NodeEnum]
+		private PlayType playType = PlayType.Music;
+
+		[SerializeField]
+		private bool loop = true;
 
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
@@ -26,7 +38,19 @@ namespace Narramancer {
 				audioSource = newAudioSource.AddComponent<AudioSource>();
 			}
 
-			audioSource.PlayOneShot(audioClip);
+			switch (playType) {
+				case PlayType.Music:
+					audioSource.Stop();
+					audioSource.clip = audioClip;
+					audioSource.loop = loop;
+					audioSource.Play();
+					break;
+				case PlayType.OneShot:
+					audioSource.PlayOneShot(audioClip);
+					break;
+			}
+
+
 		}
 	}
 }
