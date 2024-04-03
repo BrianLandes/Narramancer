@@ -225,7 +225,7 @@ namespace Narramancer {
 			}
 			var newResultList = storyInstance.Instances.Where(x => HasAllMustHaveProperties(x) && DoesNotHaveMustNotHaveProperties(x)).ToList();
 			queryInstancesTable[query] = newResultList;
-			return storyInstance.Instances;
+			return newResultList;
 		}
 
 		public void ClearQueryInstancesTable() {
