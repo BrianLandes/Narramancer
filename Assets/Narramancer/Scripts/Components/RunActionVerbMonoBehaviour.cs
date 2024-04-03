@@ -8,6 +8,7 @@ using UnityEditor;
 #endif
 
 namespace Narramancer {
+	[DefaultExecutionOrder(1000)]
 	public class RunActionVerbMonoBehaviour : SerializableMonoBehaviour {
 
 		[SerializeField]
@@ -15,6 +16,9 @@ namespace Narramancer {
 
 		[SerializeField]
 		private bool runOnStart = true;
+
+		[SerializeField]
+		private bool stopOnDestroy = true;
 
 		[SerializeMonoBehaviourField]
 		private NodeRunner runner = default;
@@ -46,6 +50,13 @@ namespace Narramancer {
 			}
 		}
 
+		override public void OnDestroy() {
+			base.OnDestroy();
+			if (stopOnDestroy && runner != null) {
+				runner.StopAndReset();
+			}
+		}
+
 		public void CreateInputs() {
 			if (verb == null) { return; }
 
@@ -56,7 +67,7 @@ namespace Narramancer {
 		public void RunVerb() {
 
 			if (runner == null) {
-				runner = NarramancerSingleton.Instance.CreateNodeRunner(gameObject.name + this.GetHashCode());
+				runner = NarramancerSingleton.Instance.CreateNodeRunner(Key(nameof(runner))); // name must match the name/key that is used during SerializableMonoBehaviour.Serialize()/Deserialize()
 			}
 
 			if (verb == null) {

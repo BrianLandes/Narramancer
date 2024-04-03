@@ -11,10 +11,12 @@ namespace Narramancer {
 		[SerializeField]
 		private List<InputNarramancerPort> inputs = new List<InputNarramancerPort>();
 		public List<InputNarramancerPort> Inputs => inputs;
+		public static string InputsFieldName => nameof(inputs);
 
 		[SerializeField]
 		private List<NarramancerPort> outputs = new List<NarramancerPort>();
 		public List<NarramancerPort> Outputs => outputs;
+		public static string OutputsFieldName => nameof(outputs);
 
 		[SerializeField]
 		private ReferenceList references = new ReferenceList();

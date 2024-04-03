@@ -10,8 +10,6 @@ namespace Narramancer {
 
 		protected bool valuesOverwrittenByDeserialize = false;
 
-		public virtual string UniqueKey => transform.FullPath();
-
 		public virtual void Awake() {
 			NarramancerSingleton.Instance.Register(this);
 		}
@@ -20,8 +18,8 @@ namespace Narramancer {
 			NarramancerSingleton.Instance.Unregister(this);
 		}
 
-		public string Key(string key) {
-			return $"{key} {UniqueKey}";
+		public virtual string Key(string key) {
+			return $"{key} {transform.FullPath()}[{transform.IndexOfComponent(this)}]";
 		}
 
 		public virtual void Serialize(StoryInstance story) {
@@ -35,12 +33,16 @@ namespace Narramancer {
 
 						if (field.FieldType == typeof(Promise)) {
 							var value = (Promise)field.GetValue(this);
-							story.Promises[Key(field.Name)] = value;
+							if (value != null) {
+								story.Promises[Key(field.Name)] = value;
+							}
 						}
 						else
 						if (field.FieldType == typeof(NodeRunner)) {
 							var value = (NodeRunner)field.GetValue(this);
-							story.NodeRunners[Key(field.Name)] = value;
+							if (value != null) {
+								story.NodeRunners[Key(field.Name)] = value;
+							}
 						}
 						else {
 							var value = field.GetValue(this);

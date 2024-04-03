@@ -44,7 +44,12 @@ namespace Narramancer {
 
 		private HashSet<ISerializableMonoBehaviour> monoBehaviourTable = new HashSet<ISerializableMonoBehaviour>();
 
+		[SerializeField]
+		public int maxNodesRunPerFrame = 100;
+
 		public event Action<NounInstance> OnCreateInstance;
+
+		public event Action PreUpdateActions;
 
 		public override void OnPreprocessBuild() {
 			Clear();
@@ -71,7 +76,13 @@ namespace Narramancer {
 		}
 
 		public override void OnUpdate() {
-			UpdateTimers();
+			PreUpdateActions?.Invoke();
+			PreUpdateActions = null;
+			if (storyInstance != null) {
+				UpdateTimers();
+				UpdateNodeRunners();
+			}
+
 		}
 
 		#region Timers
@@ -102,14 +113,37 @@ namespace Narramancer {
 
 		#region Node Runners
 
+		private void UpdateNodeRunners() {
+			var runs = 0;
+			var didAnyUpdates = true;
+			while (runs < maxNodesRunPerFrame && didAnyUpdates) {
+				didAnyUpdates = false;
+				foreach (var pair in storyInstance.NodeRunners.ToArray()) {
+					var updated = pair.Value.Update();
+					if (updated) {
+						runs += 1;
+						didAnyUpdates = true;
+					}
+				}
+			}
+
+		}
+
 		public NodeRunner CreateNodeRunner(string name) {
 			var runner = new NodeRunner();
+			runner.name = name;
 			storyInstance.NodeRunners.Add(name, runner);
 			return runner;
 		}
 
 		public NodeRunner GetNodeRunner(string name) {
-			return storyInstance.NodeRunners[name];
+			if (storyInstance == null) {
+				return null;
+			}
+			if (storyInstance.NodeRunners.TryGetValue(name, out var nodeRunner)) {
+				return nodeRunner;
+			}
+			return null;
 		}
 
 		public void ReleaseNodeRunner(NodeRunner runner) {
@@ -174,8 +208,33 @@ namespace Narramancer {
 			return storyInstance.Instances;
 		}
 
+		[NonSerialized]
+		private Dictionary<NounInstancesQuery, List<NounInstance>> queryInstancesTable = new Dictionary<NounInstancesQuery, List<NounInstance>>();
+
+		public List<NounInstance> GetInstances(NounInstancesQuery query) {
+			if (queryInstancesTable.TryGetValue(query, out var instances)) {
+				return instances;
+			}
+
+			bool HasAllMustHaveProperties(NounInstance instance) {
+				return query.mustHaveProperties.All(property => instance.HasProperty(property));
+			}
+
+			bool DoesNotHaveMustNotHaveProperties(NounInstance instance) {
+				return query.mustNotHaveProperties.All(property => !instance.HasProperty(property));
+			}
+			var newResultList = storyInstance.Instances.Where(x => HasAllMustHaveProperties(x) && DoesNotHaveMustNotHaveProperties(x)).ToList();
+			queryInstancesTable[query] = newResultList;
+			return newResultList;
+		}
+
+		public void ClearQueryInstancesTable() {
+			queryInstancesTable.Clear();
+		}
+
 		public NounInstance CreateInstance(IInstancable instancable) {
 			var instance = storyInstance.CreateInstance(instancable);
+			queryInstancesTable.Clear();
 			OnCreateInstance?.Invoke(instance);
 			return instance;
 		}
@@ -191,6 +250,8 @@ namespace Narramancer {
 				if (instance.HasGameObject) {
 					Destroy(instance.GameObject);
 				}
+
+				queryInstancesTable.Clear();
 			}
 		}
 
@@ -228,18 +289,22 @@ namespace Narramancer {
 		}
 
 		public void LoadStory(StoryInstance storyInstance) {
-			this.storyInstance = storyInstance;
+			PreUpdateActions += () => {
+				this.storyInstance = null;
 
-			if (storyInstance.sceneIndex >= 0) {
-				var asyncOperation = SceneManager.LoadSceneAsync(storyInstance.sceneIndex, LoadSceneMode.Single);
-				asyncOperation.completed += _ => {
-					foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
-						monoBehaviour.Deserialize(storyInstance);
-					}
+				if (storyInstance.sceneIndex >= 0) {
+					var asyncOperation = SceneManager.LoadSceneAsync(storyInstance.sceneIndex, LoadSceneMode.Single);
+					asyncOperation.completed += _ => {
+						foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
+							monoBehaviour.Deserialize(storyInstance);
+						}
 
-					storyInstance.SaveTable = null;
-				};
-			}
+						storyInstance.SaveTable = null;
+						ClearQueryInstancesTable();
+						this.storyInstance = storyInstance;
+					};
+				}
+			};
 		}
 
 	}

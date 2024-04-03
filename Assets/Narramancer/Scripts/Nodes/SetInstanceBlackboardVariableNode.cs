@@ -12,6 +12,7 @@ namespace Narramancer {
 		[SerializeField]
 		private SerializableType valueType = new SerializableType();
 
+		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		string key = "value";
 
@@ -32,9 +33,10 @@ namespace Narramancer {
 			}
 
 			var instance = GetInstance(runner.Blackboard);
+			var key = GetInputValue(runner.Blackboard, nameof(this.key), this.key);
 
 			var inputValue = nodePort.GetInputValue(runner.Blackboard);
-			instance.Blackboard.Set(key, inputValue);
+			instance.Blackboard.Set(key, inputValue, valueType.Type);
 
 		}
 

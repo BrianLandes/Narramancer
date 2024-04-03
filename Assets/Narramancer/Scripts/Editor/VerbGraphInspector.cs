@@ -33,6 +33,24 @@ namespace Narramancer {
 				var graph = target as NarramancerGraph;
 				graph.ValidatePorts();
 			}
+			
+			var inputsProperty = serializedObject.FindProperty(VerbGraph.InputsFieldName);
+			for (int ii = 0; ii < inputsProperty.arraySize; ii++) {
+				var inputProperty = inputsProperty.GetArrayElementAtIndex(ii);
+				var typeProperty = inputProperty.FindPropertyRelative(NarramancerPort.TypeFieldName);
+				var canBeListProperty = typeProperty.FindPropertyRelative(nameof(SerializableType.canBeList));
+				canBeListProperty.boolValue = true;
+			}
+
+
+			var outputsProperty = serializedObject.FindProperty(VerbGraph.OutputsFieldName);
+			for (int ii = 0; ii < outputsProperty.arraySize; ii++) {
+				var outputProperty = outputsProperty.GetArrayElementAtIndex(ii);
+				var typeProperty = outputProperty.FindPropertyRelative(NarramancerPort.TypeFieldName);
+				var canBeListProperty = typeProperty.FindPropertyRelative(nameof(SerializableType.canBeList));
+				canBeListProperty.boolValue = true;
+			}
+
 		}
 	}
 #else
@@ -61,6 +79,24 @@ namespace Narramancer {
 			if (EditorGUI.EndChangeCheck()) {
 				var graph = target as VerbGraph;
 				graph.ValidatePorts();
+			}
+
+
+			var inputsProperty = serializedObject.FindProperty(VerbGraph.InputsFieldName);
+			for (int ii = 0; ii < inputsProperty.arraySize; ii++) {
+				var inputProperty = inputsProperty.GetArrayElementAtIndex(ii);
+				var typeProperty = inputProperty.FindPropertyRelative(NarramancerPort.TypeFieldName);
+				var canBeListProperty = typeProperty.FindPropertyRelative(nameof(SerializableType.canBeList));
+				canBeListProperty.boolValue = true;
+			}
+
+
+			var outputsProperty = serializedObject.FindProperty(VerbGraph.OutputsFieldName);
+			for (int ii = 0; ii < outputsProperty.arraySize; ii++) {
+				var outputProperty = outputsProperty.GetArrayElementAtIndex(ii);
+				var typeProperty = outputProperty.FindPropertyRelative(NarramancerPort.TypeFieldName);
+				var canBeListProperty = typeProperty.FindPropertyRelative(nameof(SerializableType.canBeList));
+				canBeListProperty.boolValue = true;
 			}
 
 			serializedObject.ApplyModifiedProperties();
