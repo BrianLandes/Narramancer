@@ -117,6 +117,27 @@ namespace Narramancer {
 			}
 		}
 
+		public static void ExtractChildNodeGraphField(UnityEngine.Object targetObject) {
+			if (GUILayout.Button("Extract into Asset")) {
+				var nodeGraph = targetObject as XNode.NodeGraph;
+				var path = EditorUtility.SaveFilePanelInProject("Save child asset as main asset", nodeGraph.name, "asset", "Choose a folder and name for the new asset");
+				if (path.IsNotNullOrEmpty()) {
+
+					AssetDatabase.RemoveObjectFromAsset(nodeGraph);
+					AssetDatabase.CreateAsset(nodeGraph, path);
+
+					foreach (var node in nodeGraph.nodes) {
+						AssetDatabase.RemoveObjectFromAsset(node);
+						AssetDatabase.AddObjectToAsset(node, path);
+					}
+					EditorUtility.SetDirty(nodeGraph);
+					AssetDatabase.SaveAssets();
+					AssetDatabase.Refresh();
+				}
+
+			}
+		}
+
 		public static ColorScope Color(Color? color = null) {
 			var scope = new ColorScope() {
 				originalColor = GUI.color
@@ -157,7 +178,7 @@ namespace Narramancer {
 		}
 
 
-		public static readonly Dictionary<Type,string> primitiveTypes = new Dictionary<Type, string> {
+		public static readonly Dictionary<Type, string> primitiveTypes = new Dictionary<Type, string> {
 			{ typeof(bool), "bool" },
 			{ typeof(int), "int" },
 			{ typeof(float), "float" },
@@ -200,7 +221,7 @@ namespace Narramancer {
 			onBeforeTypeItems?.Invoke(context);
 
 			foreach (var pair in primitiveTypes) {
-				if (typeFilter==null || typeFilter(pair.Key)) {
+				if (typeFilter == null || typeFilter(pair.Key)) {
 					context.AddItem(new GUIContent("Primitive/" + pair.Value), false, () => onTypeSelected(pair.Key));
 				}
 			}
@@ -446,7 +467,7 @@ namespace Narramancer {
 			return listProperty.GetArrayElementAtIndex(listProperty.arraySize - 1);
 		}
 
-		public static SerializedProperty AddObject(this SerializedProperty listProperty, UnityEngine.Object @object ) {
+		public static SerializedProperty AddObject(this SerializedProperty listProperty, UnityEngine.Object @object) {
 			var newElement = listProperty.CreateNewElement();
 			newElement.objectReferenceValue = @object;
 			return newElement;

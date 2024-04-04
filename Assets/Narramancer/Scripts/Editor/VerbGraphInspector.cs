@@ -24,6 +24,8 @@ namespace Narramancer {
 				EditorDrawerUtilities.RenameField(serializedObject.targetObject, ref renaming);
 				
 				EditorDrawerUtilities.DuplciateNodeGraphField(serializedObject.targetObject);
+
+				EditorDrawerUtilities.ExtractChildNodeGraphField(serializedObject.targetObject);
 			}
 
 			base.OnInspectorGUI();
@@ -72,6 +74,8 @@ namespace Narramancer {
 				EditorDrawerUtilities.RenameField(serializedObject.targetObject, ref renaming);
 
 				EditorDrawerUtilities.DuplicateNodeGraphField(serializedObject.targetObject);
+
+				EditorDrawerUtilities.ExtractChildNodeGraphField(serializedObject.targetObject);
 			}
 
 			DrawDefaultInspector();
