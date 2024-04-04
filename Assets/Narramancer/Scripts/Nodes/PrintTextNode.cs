@@ -73,7 +73,7 @@ namespace Narramancer {
 				}
 
 			},
-			clearPreviousText);
+			clearPreviousText, waitForContinue);
 		}
 	}
 }

@@ -50,16 +50,16 @@ namespace Narramancer {
 
 		#region Text Printer
 
-		public override void SetText(string text, Action callback, bool clearPreviousText = true) {
-			this.StopCoroutineMaybe( scrollCoroutine);
-			base.SetText(text, callback, clearPreviousText);
+		public override void SetText(string text, Action callback, bool clearPreviousText = true, bool waitForContinue = true) {
+			this.StopCoroutineMaybe(scrollCoroutine);
+			base.SetText(text, callback, clearPreviousText, waitForContinue);
 
 			Canvas.ForceUpdateCanvases();
 			if (clearPreviousText) {
 				scrollRect.verticalNormalizedPosition = 1f;
 			}
 			else {
-				this.RestartCoroutine(ref scrollCoroutine, scrollRect.ScrollToBottom() );
+				this.RestartCoroutine(ref scrollCoroutine, scrollRect.ScrollToBottom());
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace Narramancer {
 						ClearChoices();
 						choice.callback.Action();
 					}
-				
+
 				});
 				button.interactable = choice.enabled;
 
@@ -142,6 +142,9 @@ namespace Narramancer {
 			}
 			showingChoices = true;
 			parentCanvasGroup.interactable = true;
+
+			continueIndicator.SetActive(false);
+
 			ShowParentCanvas();
 
 			Canvas.ForceUpdateCanvases();
