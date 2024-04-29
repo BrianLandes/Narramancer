@@ -60,7 +60,7 @@ namespace Narramancer {
 
 			GUILayout.Space(8);
 
-#region Editor or Runtime Selector
+			#region Editor or Runtime Selector
 
 			GUILayout.BeginHorizontal();
 
@@ -68,25 +68,25 @@ namespace Narramancer {
 			//	isInEditorMode = true;
 			//}
 
-			using (EditorDrawerUtilities.Color(isInEditorMode ? GUI.skin.settings.selectionColor : GUI.color )) {
+			using (EditorDrawerUtilities.Color(isInEditorMode ? GUI.skin.settings.selectionColor : GUI.color)) {
 				if (GUILayout.Button("Editor")) {
 					isInEditorMode = true;
 				}
 			}
-				
+
 
 			//using (new EditorGUI.DisabledScope(!Application.isPlaying)) {
-				using (EditorDrawerUtilities.Color(!isInEditorMode ? GUI.skin.settings.selectionColor : GUI.color)) {
-					if (GUILayout.Button("Runtime")) {
-						isInEditorMode = false;
-					}
+			using (EditorDrawerUtilities.Color(!isInEditorMode ? GUI.skin.settings.selectionColor : GUI.color)) {
+				if (GUILayout.Button("Runtime")) {
+					isInEditorMode = false;
 				}
+			}
 			//}
 
 			GUILayout.EndHorizontal();
-#endregion
+			#endregion
 
-#region Draw Editor Assets
+			#region Draw Editor Assets
 
 			if (isInEditorMode) {
 
@@ -99,16 +99,16 @@ namespace Narramancer {
 				GUILayout.BeginVertical("box");
 
 				switch (editorTab) {
-#region Nouns
+					#region Nouns
 					case 0:
 
 						var nounsProperty = serializedObject.FindProperty(NarramancerSingleton.NounsFieldName);
 						EditorGUILayout.PropertyField(nounsProperty);
 
 						break;
-#endregion
+					#endregion
 
-#region Adjectives
+					#region Adjectives
 					case 1:
 
 						if (singleton.Adjectives.Any(x => x == null)) {
@@ -195,18 +195,18 @@ namespace Narramancer {
 						EditorDrawerUtilities.DrawSearchableListOfUnityObjectsWithDragSupport(ref adjectiveSearch, adjectives, ref draggedElement, ref lastHoveredElement);
 
 						break;
-#endregion
+					#endregion
 
-#region Verbs
+					#region Verbs
 					case 2:
 
 						var runAtStartProperty = serializedObject.FindProperty(NarramancerSingleton.RunAtStartFieldName);
 						EditorGUILayout.PropertyField(runAtStartProperty);
-						
-						break;
-#endregion
 
-#region Variables
+						break;
+					#endregion
+
+					#region Variables
 					case 3:
 
 						var globalVariablesProperty = serializedObject.FindProperty(NarramancerSingleton.GlobalVariablesFieldName);
@@ -259,16 +259,24 @@ namespace Narramancer {
 						singleton.GlobalVariables.EnsurePortsHaveUniqueIds();
 
 
+						for (int ii = 0; ii < globalVariablesProperty.arraySize; ii++) {
+							var variableProperty = globalVariablesProperty.GetArrayElementAtIndex(ii);
+							var typeProperty = variableProperty.FindPropertyRelative(NarramancerPort.TypeFieldName);
+							var canBeListProperty = typeProperty.FindPropertyRelative(nameof(SerializableType.canBeList));
+							canBeListProperty.boolValue = true;
+						}
+
+
 						break;
-#endregion
+						#endregion
 				}
 				GUILayout.EndVertical();
 
 				GUILayout.EndVertical();
 			}
-#endregion Draw Editor Assets
+			#endregion Draw Editor Assets
 
-#region Draw Runtime Assets
+			#region Draw Runtime Assets
 
 			if (!isInEditorMode) {
 
@@ -287,9 +295,9 @@ namespace Narramancer {
 				GUILayout.EndVertical();
 			}
 
-#endregion
+			#endregion
 
-#region Accept DragAndDrop
+			#region Accept DragAndDrop
 			if (Event.current.type == EventType.DragUpdated) {
 				DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
 			}
@@ -317,7 +325,7 @@ namespace Narramancer {
 				}
 
 			}
-#endregion
+			#endregion
 
 			serializedObject.ApplyModifiedProperties();
 		}
