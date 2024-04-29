@@ -90,6 +90,14 @@ namespace Narramancer {
 				var outputPort = this.GetOrAddDynamicOutput(type.Type, SELECTED_ELEMENT);
 				keepPorts.Add(outputPort);
 
+				if (useValueVerbForEnabled && enabledPredicate != null) {
+					var baseInputPort = enabledPredicate.GetInput(type.Type);
+					var baseOutputPort = enabledPredicate.GetOutput<bool>();
+
+					var miscPorts = this.GetOrAddPortsForGraph(enabledPredicate, new[] { baseInputPort, baseOutputPort });
+					keepPorts.AddRange(miscPorts);
+				}
+
 				this.ClearDynamicPortsExcept(keepPorts);
 			}
 
@@ -122,7 +130,12 @@ namespace Narramancer {
 			var useEnabledPredicate = useValueVerbForEnabled && enabledPredicate;
 
 			foreach (var element in elementsList) {
-				
+				if (useEnabledPredicate && enabledPredicate != null) {
+					foreach (var inputPort in DynamicInputs) {
+						var verbPort = enabledPredicate.GetInput(inputPort.ValueType, inputPort.fieldName);
+						verbPort?.AssignValueFromNodePort(runner.Blackboard, inputPort);
+					}
+				}
 				var enabled = !useEnabledPredicate || enabledPredicate.RunForValue<bool>(runner.Blackboard, type.Type, element);
 				if (enabled) {
 
@@ -153,7 +166,7 @@ namespace Narramancer {
 					runner.Resume(nextNode);
 				});
 			}
-			
+
 
 			choicePrinter.ShowChoices();
 		}

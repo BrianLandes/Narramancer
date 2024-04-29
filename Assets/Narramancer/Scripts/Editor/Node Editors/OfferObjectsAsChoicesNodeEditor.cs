@@ -18,7 +18,7 @@ namespace Narramancer {
 			EditorGUILayout.PropertyField(typeProperty);
 
 
-			var inputElementsPort= target.GetDynamicInput(OfferObjectsAsChoicesNode.INPUT_ELEMENTS);
+			var inputElementsPort = target.GetDynamicInput(OfferObjectsAsChoicesNode.INPUT_ELEMENTS);
 			if (inputElementsPort != null) {
 				NodeEditorGUILayout.PortField(inputElementsPort, serializedObject);
 			}
@@ -42,8 +42,9 @@ namespace Narramancer {
 				EditorGUILayout.PropertyField(addOptionForBackProperty);
 			}
 
+			NodePort runWhenBackSelectedPort = null;
 			if (addOptionForBackProperty.boolValue) {
-				var runWhenBackSelectedPort = target.GetOutputPort(OfferObjectsAsChoicesNode.RunWhenBackSelectedFieldName);
+				runWhenBackSelectedPort = target.GetOutputPort(OfferObjectsAsChoicesNode.RunWhenBackSelectedFieldName);
 				NodeEditorGUILayout.PortField(runWhenBackSelectedPort, serializedObject);
 			}
 
@@ -75,6 +76,13 @@ namespace Narramancer {
 				}
 			}
 
+			foreach (var dynamicPort in target.DynamicPorts) {
+				if (dynamicPort == thisNodePort || dynamicPort == inputElementsPort || dynamicPort == inputListPort
+					|| dynamicPort == runWhenObjectSelectedPort || dynamicPort == selectedElementPort || dynamicPort == runWhenBackSelectedPort) {
+					continue;
+				}
+				NodeEditorGUILayout.PortField(dynamicPort, serializedObject);
+			}
 		}
 
 
@@ -87,7 +95,7 @@ namespace Narramancer {
 		public override void PerformCustomDroppedPortLogic(Node hoveredNode, NodePort draggedOutput) {
 			var typeProperty = serializedObject.FindProperty(OfferObjectsAsChoicesNode.TypeFieldName);
 			var typeTypeProperty = typeProperty.FindPropertyRelative(SerializableType.TypeFieldName);
-			if( typeTypeProperty.stringValue.IsNotNullOrEmpty()) {
+			if (typeTypeProperty.stringValue.IsNotNullOrEmpty()) {
 				return;
 			}
 
@@ -109,8 +117,8 @@ namespace Narramancer {
 					inputElementsPort.Connect(draggedOutput);
 				}
 			}
-			
-			
+
+
 
 		}
 	}
