@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Narramancer {
@@ -42,6 +43,10 @@ namespace Narramancer {
 		[SerializeField]
 		private List<NarramancerPortWithAssignment> blackboardAssignments = new List<NarramancerPortWithAssignment>();
 		public List<NarramancerPortWithAssignment> BlackboardAssignments => blackboardAssignments;
+
+		[SerializeField]
+		protected IngredientList<AbstractNounIngredient> ingredients = new IngredientList<AbstractNounIngredient>();
+		public List<AbstractNounIngredient> Ingredients => ingredients.ToList();
 
 #if UNITY_EDITOR
 		private void OnValidate() {

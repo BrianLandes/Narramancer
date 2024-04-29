@@ -315,5 +315,10 @@ namespace Narramancer {
 		}
 
 		#endregion
+
+		public T GetIngredient<T>() where T : AbstractNounIngredient {
+			var ingredient = noun.Ingredients.FirstOrDefault(x => x.GetType().IsAssignableFrom(typeof(T)));
+			return (T)ingredient;
+		}
 	}
 }

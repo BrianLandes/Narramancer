@@ -223,9 +223,13 @@ namespace Narramancer {
 
 			variableList.DoLayoutList();
 
-
-
 			serializedObject.ApplyModifiedProperties();
+
+			var ingredients = serializedObject.FindProperty("ingredients");
+			EditorGUILayout.PropertyField(ingredients, true);
+
+
+
 		}
 
 	}
