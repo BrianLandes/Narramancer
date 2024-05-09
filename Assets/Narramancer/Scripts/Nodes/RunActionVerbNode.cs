@@ -16,7 +16,8 @@ namespace Narramancer {
 		[VerbRequired]
 		[HideLabelInNode]
 		[FormerlySerializedAs("runnableGraph")]
-		[Input(ShowBackingValue.Unconnected,ConnectionType.Override, TypeConstraint.Inherited)]
+		[HideInInspector] // handled in RunActionVerbNodeEditor.cs
+		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		public ActionVerb actionVerb;
 
 		public override void Run(NodeRunner runner) {
