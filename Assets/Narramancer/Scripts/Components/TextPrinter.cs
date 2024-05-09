@@ -48,7 +48,7 @@ namespace Narramancer {
 			}
 		}
 
-		public virtual void SetText(string text, Action callback, bool clearPreviousText = true) {
+		public virtual void SetText(string text, Action callback, bool clearPreviousText = true, bool waitForContinue = true) {
 			ShowParentCanvas();
 			var previousText = string.Empty;
 			if (!clearPreviousText && targetText.IsNotNullOrEmpty()) {
@@ -58,7 +58,7 @@ namespace Narramancer {
 			continueIndicator?.SetActive(false);
 			targetText = previousText + text;
 
-			this.RestartCoroutine(ref revealTextCoroutine, RevealText(text, previousText));
+			this.RestartCoroutine(ref revealTextCoroutine, RevealText(text, previousText, waitForContinue));
 
 			if (callback != null) {
 				promise = new Promise();
@@ -74,7 +74,7 @@ namespace Narramancer {
 		Regex openTagRegex = new Regex(@"<[0-9a-zA-Z=#]*>");
 		Regex closeTagRegex = new Regex(@"<\/[0-9a-zA-Z=#]*>");
 
-		IEnumerator RevealText(string text, string seenText = "") {
+		IEnumerator RevealText(string text, string seenText = "", bool waitForContinue = true) {
 
 			var tagsInText = tagRegex.Matches(text);
 
@@ -143,7 +143,10 @@ namespace Narramancer {
 			} while (textIndex < text.Length - 1);
 
 			textField.text = seenText + text;
-			continueIndicator?.SetActive(true);
+			if (waitForContinue) {
+				continueIndicator?.SetActive(true);
+			}
+
 			IsRevealingText = false;
 		}
 

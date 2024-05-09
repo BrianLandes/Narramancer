@@ -12,7 +12,7 @@ namespace Narramancer {
 
 		void ClearChoices();
 
-		void AddChoice(string displayText, Action callbackAction);
+		void AddChoice(string displayText, string toolTip, Action callbackAction);
 
 		void AddDisabledChoice(string displayText);
 
@@ -39,6 +39,7 @@ namespace Narramancer {
 		[Serializable]
 		public class VisibleChoice {
 			public string displayText;
+			public string toolTip;
 			public bool enabled = true;
 			public SerializableAction callback;
 		}
@@ -76,9 +77,10 @@ namespace Narramancer {
 			showingChoices = false;
 		}
 
-		public void AddChoice(string displayText, Action callbackAction) {
+		public void AddChoice(string displayText, string toolTip, Action callbackAction) {
 			var newChoice = new VisibleChoice() {
 				displayText = displayText,
+				toolTip = toolTip,
 				callback = new SerializableAction(callbackAction)
 			};
 

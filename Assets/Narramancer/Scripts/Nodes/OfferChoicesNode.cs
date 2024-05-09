@@ -38,7 +38,8 @@ namespace Narramancer {
 			foreach (var choiceNode in ChoiceNodes) {
 				if (choiceNode.IsConditionMet(runner.Blackboard)) {
 					var displayText = choiceNode.GetDisplayText(runner.Blackboard);
-					choicePrinter.AddChoice(displayText, () => {
+					var toolTip = choiceNode.GetToolTip(runner.Blackboard);
+					choicePrinter.AddChoice(displayText, toolTip, () => {
 
 						var nextNode = choiceNode.GetNextNode();
 						runner.Resume(nextNode);

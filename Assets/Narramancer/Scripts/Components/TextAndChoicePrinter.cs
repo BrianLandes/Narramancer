@@ -2,6 +2,7 @@ using Narramancer.SerializableActionHelper;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Narramancer {
@@ -21,9 +22,14 @@ namespace Narramancer {
 		float scrollToBottomSpeed = 10f;
 
 
+		[SerializeField]
+		GameObject toolTipView = default;
+
+
 		[Serializable]
 		public class VisibleChoice {
 			public string displayText;
+			public string toolTip;
 			public bool enabled = true;
 			public SerializableAction callback;
 		}
@@ -42,6 +48,7 @@ namespace Narramancer {
 
 		void Start() {
 			choiceButtonPrefab.SetActive(false);
+			toolTipView.SetActive(false);
 			if (!valuesOverwrittenByDeserialize) {
 				textField.text = targetText = string.Empty;
 				continueIndicator.SetActive(false);
@@ -50,16 +57,16 @@ namespace Narramancer {
 
 		#region Text Printer
 
-		public override void SetText(string text, Action callback, bool clearPreviousText = true) {
-			this.StopCoroutineMaybe( scrollCoroutine);
-			base.SetText(text, callback, clearPreviousText);
+		public override void SetText(string text, Action callback, bool clearPreviousText = true, bool waitForContinue = true) {
+			this.StopCoroutineMaybe(scrollCoroutine);
+			base.SetText(text, callback, clearPreviousText, waitForContinue);
 
 			Canvas.ForceUpdateCanvases();
 			if (clearPreviousText) {
 				scrollRect.verticalNormalizedPosition = 1f;
 			}
 			else {
-				this.RestartCoroutine(ref scrollCoroutine, scrollRect.ScrollToBottom() );
+				this.RestartCoroutine(ref scrollCoroutine, scrollRect.ScrollToBottom());
 			}
 		}
 
@@ -96,13 +103,14 @@ namespace Narramancer {
 			choiceGameObjects.Clear();
 
 			choices.Clear();
-
+			toolTipView.SetActive(false);
 			showingChoices = false;
 		}
 
-		public void AddChoice(string displayText, Action callbackAction) {
+		public void AddChoice(string displayText, string toolTip, Action callbackAction) {
 			var newChoice = new VisibleChoice() {
 				displayText = displayText,
+				toolTip = toolTip,
 				callback = new SerializableAction(callbackAction)
 			};
 
@@ -129,7 +137,7 @@ namespace Narramancer {
 						ClearChoices();
 						choice.callback.Action();
 					}
-				
+
 				});
 				button.interactable = choice.enabled;
 
@@ -138,10 +146,20 @@ namespace Narramancer {
 
 				newChoiceObject.SetActive(true);
 
+				if (choice.toolTip.IsNotNullOrEmpty()) {
+					var choiceButtonTooltip = newChoiceObject.AddComponent<ChoiceButtonTooltip>();
+					choiceButtonTooltip.SetText(choice.toolTip);
+					choiceButtonTooltip.SetToolTipObject(toolTipView);
+				}
+
+
 				choiceGameObjects.Add(newChoiceObject);
 			}
 			showingChoices = true;
 			parentCanvasGroup.interactable = true;
+
+			continueIndicator.SetActive(false);
+
 			ShowParentCanvas();
 
 			Canvas.ForceUpdateCanvases();

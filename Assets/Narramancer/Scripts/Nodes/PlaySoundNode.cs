@@ -23,10 +23,17 @@ namespace Narramancer {
 		[SerializeField]
 		private bool loop = true;
 
+		[SerializeField]
+		private bool wait = false;
+
 		public override void Run(NodeRunner runner) {
 			base.Run(runner);
 
 			var audioClip = GetInputValue(runner.Blackboard, nameof(this.audioClip), this.audioClip);
+			if (audioClip == null) {
+				Debug.Log("AudioClip was null", this);
+				return;
+			}
 
 			var audioSource = GetInputValue(runner.Blackboard, nameof(this.audioSource), this.audioSource);
 
@@ -50,7 +57,13 @@ namespace Narramancer {
 					break;
 			}
 
-
+			if (wait) {
+				runner.Suspend();
+				var time = audioClip.length;
+				NarramancerSingleton.Instance.MakeTimer(time).WhenDone(() => {
+					runner.Resume();
+				});
+			}
 		}
 	}
 }
