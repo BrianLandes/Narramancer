@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 using XNode;
 
 namespace Narramancer {
@@ -23,35 +21,40 @@ namespace Narramancer {
 
 		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
 		[SerializeField]
+		private int intValue = 0;
+
+		[Output(backingValue = ShowBackingValue.Never, typeConstraint = TypeConstraint.Inherited)]
+		[SerializeField]
 		private float percentage = 0f;
 
 
 		public override object GetValue(INodeContext context, NodePort port) {
 			if (Application.isPlaying) {
+				var inputInstance = GetInstance(context);
+				if (inputInstance == null) {
+					Debug.LogError("Instance was null", this);
+					return null;
+				}
+				var inputStat = GetInputValue(context, nameof(stat), stat);
+				if (inputStat == null) {
+					Debug.LogError("Stat was null", this);
+					return null;
+				}
 				if (port.fieldName.Equals(nameof(hasStat))) {
-					var inputInstance = GetInstance(context);
-					var inputStat = GetInputValue(context, nameof(stat), stat);
-					if (inputInstance != null && inputStat != null) {
-						return inputInstance.HasStat(inputStat);
-					}
+					return inputInstance.HasStat(inputStat);
 				}
 				else
 				if (port.fieldName.Equals(nameof(value))) {
-					var inputInstance = GetInstance(context);
-					Assert.IsNotNull(inputInstance);
-					var inputStat = GetInputValue(context, nameof(stat), stat);
-					Assert.IsNotNull(inputStat);
-
 					var statEffectiveValue = inputInstance.GetStatEffectiveValue(context, inputStat);
 					return statEffectiveValue;
 				}
 				else
+				if (port.fieldName.Equals(nameof(intValue))) {
+					var statEffectiveValue = inputInstance.GetStatEffectiveValue(context, inputStat);
+					return Mathf.RoundToInt(statEffectiveValue);
+				}
+				else
 				if (port.fieldName.Equals(nameof(percentage))) {
-					var inputInstance = GetInstance(context);
-					Assert.IsNotNull(inputInstance);
-					var inputStat = GetInputValue(context, nameof(stat), stat);
-					Assert.IsNotNull(inputStat);
-
 					var percentageValue = inputInstance.GetStatInstance(stat).GetEffectiveValuePercentage(instance, context);
 					return percentageValue;
 				}

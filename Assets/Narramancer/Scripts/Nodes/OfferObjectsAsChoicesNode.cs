@@ -52,6 +52,16 @@ namespace Narramancer {
 		private ValueVerb enabledPredicate = default;
 		public static string EnabledPredicateFieldName => nameof(enabledPredicate);
 
+		[SerializeField]
+		private bool useToolTip = false;
+		public static string UseToolTipFieldName => nameof(useToolTip);
+
+		[SerializeField]
+		[RequireInputFromSerializableType(nameof(type), "element")]
+		[RequireOutput(typeof(string), "toolTip")]
+		private ValueVerb toolTipPredicate = default;
+		public static string ToolTipPredicateFieldName => nameof(toolTipPredicate);
+
 		// TODO: Predicate for Custom Color
 		// TODO: Predicate for Show if Disabled
 		// TODO: Show a disabled choice if there are no elements that says 'None'
@@ -143,7 +153,11 @@ namespace Narramancer {
 					if (useValueVerbForDisplayname && displayNamePredicate != null) {
 						displayText = displayNamePredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
 					}
-					choicePrinter.AddChoice(displayText, () => {
+					var toolTip = string.Empty;
+					if (useToolTip && toolTipPredicate != null) {
+						toolTip = toolTipPredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
+					}
+					choicePrinter.AddChoice(displayText, toolTip, () => {
 						runner.Blackboard.Set(ElementKey, element);
 						var nextNode = GetRunnableNodeFromPort(nameof(runWhenObjectSelected));
 						runner.Resume(nextNode);
@@ -160,7 +174,7 @@ namespace Narramancer {
 			}
 
 			if (addOptionForBack) {
-				choicePrinter.AddChoice("Back", () => {
+				choicePrinter.AddChoice("Back", string.Empty, () => {
 					runner.Blackboard.Set(ElementKey, null, type.Type);
 					var nextNode = GetRunnableNodeFromPort(nameof(runWhenBackSelected));
 					runner.Resume(nextNode);

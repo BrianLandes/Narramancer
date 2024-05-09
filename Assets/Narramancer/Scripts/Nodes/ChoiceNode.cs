@@ -30,6 +30,11 @@ namespace Narramancer {
 		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
 		private string displayText = "";
 
+
+		[SerializeField]
+		[Input(ShowBackingValue.Unconnected, ConnectionType.Override, TypeConstraint.Inherited)]
+		private string toolTip = "";
+
 		[SerializeField]
 		private ToggleableValue<Color> customColor = new ToggleableValue<Color>(false, Color.white);
 
@@ -84,6 +89,11 @@ namespace Narramancer {
 				displayText = $"<color=#{ColorUtility.ToHtmlStringRGB(customColor.value)}>{displayText}</color>";
 			}
 			return displayText;
+		}
+
+		public string GetToolTip(INodeContext context) {
+			var toolTip = GetInputValue(context, nameof(this.toolTip), this.toolTip);
+			return toolTip;
 		}
 
 	}
