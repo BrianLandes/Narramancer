@@ -58,7 +58,7 @@ namespace Narramancer {
 			OnBaseBodyGUI();
 		}
 
-		public void OnBaseBodyGUI() {
+		public virtual void OnBaseBodyGUI() {
 			base.OnBodyGUI();
 		}
 
