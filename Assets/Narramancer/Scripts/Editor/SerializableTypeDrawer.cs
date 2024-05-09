@@ -31,12 +31,13 @@ namespace Narramancer {
 			var typeName = typeNameProperty.stringValue;
 			var buttonText = "";
 			var buttonTooltip = "";
+			Type type = null;
 			if (typeName.IsNullOrEmpty()) {
 				buttonText = "(No Type)";
 				buttonTooltip = "Please select a type";
 			}
 			else {
-				var type = AssemblyUtilities.GetType(typeName);
+				type = AssemblyUtilities.GetType(typeName);
 				if (type != null) {
 					var name = type.Name;
 					if (EditorDrawerUtilities.primitiveTypes.TryGetValue(type, out var primitiveName)) {
@@ -104,11 +105,11 @@ namespace Narramancer {
 
 						menu.AddSeparator(string.Empty);
 					}
-					
+
 				}
 
 				var targetProperty = property?.GetTargetObject<SerializableType>();
-				EditorDrawerUtilities.ShowTypeSelectionPopup(ApplyType, onBeforeTypeItems: AddListButtons, typeFilter: targetProperty?.typeFilter);
+				EditorDrawerUtilities.ShowTypeSelectionPopup(ApplyType, onBeforeTypeItems: AddListButtons, typeFilter: targetProperty?.typeFilter, selectedType: type);
 			}
 
 			EditorGUI.EndProperty();

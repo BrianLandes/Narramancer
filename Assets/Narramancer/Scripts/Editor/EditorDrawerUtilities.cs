@@ -212,7 +212,7 @@ namespace Narramancer {
 			typeof(Rigidbody2D)
 		};
 
-		public static void ShowTypeSelectionPopup(Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null, Func<Type, bool> typeFilter = null) {
+		public static void ShowTypeSelectionPopup(Action<Type> onTypeSelected, Action<GenericMenu> onBeforeTypeItems = null, Action<GenericMenu> onAfterTypeItems = null, Func<Type, bool> typeFilter = null, Type selectedType = null) {
 			var mousePosition = Event.current.mousePosition;
 			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
@@ -222,13 +222,13 @@ namespace Narramancer {
 
 			foreach (var pair in primitiveTypes) {
 				if (typeFilter == null || typeFilter(pair.Key)) {
-					context.AddItem(new GUIContent("Primitive/" + pair.Value), false, () => onTypeSelected(pair.Key));
+					context.AddItem(new GUIContent("Primitive/" + pair.Value), selectedType == pair.Key, () => onTypeSelected(pair.Key));
 				}
 			}
 
 			foreach (var type in narramancerTypes) {
 				if (typeFilter == null || typeFilter(type)) {
-					context.AddItem(new GUIContent($"{nameof(Narramancer)}/" + type.Name), false, () => onTypeSelected(type));
+					context.AddItem(new GUIContent($"{nameof(Narramancer)}/" + type.Name), selectedType == type, () => onTypeSelected(type));
 				}
 			}
 
@@ -243,27 +243,35 @@ namespace Narramancer {
 				.ToArray();
 
 
-			foreach (var type in unityTypes) {
-				if (typeFilter == null || typeFilter(type)) {
-					context.AddItem(new GUIContent($"Unity Object/" + type.Name), false, () => onTypeSelected(type));
+			var filteredUnityTypes = typeFilter == null ? unityTypes : unityTypes.Where(x => typeFilter(x)).ToArray();
+
+			if (filteredUnityTypes.Any()) {
+				foreach (var type in filteredUnityTypes) {
+					context.AddItem(new GUIContent($"Unity Object/" + type.Name), selectedType == type, () => onTypeSelected(type));
 				}
-			}
 
-			context.AddItem(new GUIContent("Unity Object/Search..."), false, () => {
+				context.AddItem(new GUIContent("Unity Object/Search..."), false, () => {
 
-				var allUnityObjects = new List<Type>();
+					var allUnityObjects = new List<Type>();
 
-				foreach (var type in allTypes) {
-					if (typeFilter == null || typeFilter(type)) {
-						if (typeof(UnityEngine.Object).IsAssignableFrom(type) || (type.Namespace.IsNotNullOrEmpty() && type.Namespace.Contains("Unity"))) {
-							allUnityObjects.Add(type);
+					foreach (var type in allTypes) {
+						if (typeFilter == null || typeFilter(type)) {
+							if (typeof(UnityEngine.Object).IsAssignableFrom(type) || (type.Namespace.IsNotNullOrEmpty() && type.Namespace.Contains("Unity"))) {
+								allUnityObjects.Add(type);
+							}
 						}
 					}
-				}
 
-				TypeSearchModalWindow window = ScriptableObject.CreateInstance(typeof(TypeSearchModalWindow)) as TypeSearchModalWindow;
-				window.SearchTypes(screenPosition, allUnityObjects.ToArray(), onTypeSelected);
-			});
+					TypeSearchModalWindow window = ScriptableObject.CreateInstance(typeof(TypeSearchModalWindow)) as TypeSearchModalWindow;
+					window.SearchTypes(screenPosition, allUnityObjects.ToArray(), onTypeSelected);
+				});
+			}
+
+			if (typeFilter != null && allTypes.Count() < 20) {
+				foreach (var type in allTypes) {
+					context.AddItem(new GUIContent(type.Name), selectedType == type, () => onTypeSelected(type));
+				}
+			}
 
 			context.AddItem(new GUIContent("Search All..."), false, () => {
 
