@@ -60,8 +60,13 @@ namespace Narramancer {
 		public override void OnBodyGUI() {
 			OnInstanceInputGUI();
 
+			OnTailGUI();
+
 			base.OnBodyGUI();
 		}
 
+		public virtual void OnTailGUI() {
+
+		}
 	}
 }

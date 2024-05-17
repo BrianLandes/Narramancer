@@ -7,9 +7,8 @@ using XNode;
 
 namespace Narramancer {
 
-	[NodeWidth(350)]
-	[CreateNodeMenu("Verb/Run Noun Ingredient Action Verb")]
-	public class RunNounIngredientActionVerbNode : AbstractInstanceInputChainedRunnableNode {
+	[CreateNodeMenu("Verb/Run Noun Ingredient Value Verb")]
+	public class RunNounIngredientValueVerbNode : AbstractInstanceInputNode {
 
 		[SerializeField]
 		[HideInInspector] // handled in RunNounIngredientActionVerbNodeEditor.cs
@@ -25,6 +24,11 @@ namespace Narramancer {
 
 		public const string INSTANCE_INPUT = "instance";
 
+		[SerializeField]
+		[Output(ShowBackingValue.Never, ConnectionType.Multiple, TypeConstraint.Inherited)]
+		private bool hasIngredient = false;
+
+
 		protected override void Init() {
 			ingredientType.OnChanged -= UpdatePorts;
 			ingredientType.OnChanged += UpdatePorts;
@@ -33,56 +37,6 @@ namespace Narramancer {
 
 			ingredientType.typeFilter = type => typeof(AbstractNounIngredient).IsAssignableFrom(type);
 
-		}
-
-		public override void Run(NodeRunner runner) {
-			base.Run(runner);
-
-			var instance = GetInstance(runner.Blackboard);
-			var ingredient = instance?.GetIngredient(ingredientType.Type);
-			if (ingredient == null) {
-				return;
-			}
-			var verbFieldInfo = VerbFieldInfo;
-			if (verbFieldInfo == null) {
-				return;
-			}
-
-			var actionVerb = verbFieldInfo.GetValue(ingredient) as ActionVerb;
-			if (actionVerb == null) {
-				return;
-			}
-
-			if (actionVerb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
-
-				NarramancerPort GetCorrespondingRunnableGraphPort(Type type, string name) {
-					return actionVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
-				}
-
-				var instanceInputPort = GetCorrespondingRunnableGraphPort(typeof(NounInstance), INSTANCE_INPUT);
-				if (instanceInputPort != null) {
-					runner.Blackboard.Set(instanceInputPort.VariableKey, instance);
-				}
-
-				foreach (var inputPort in DynamicInputs) {
-					try {
-						var runnableGraphPort = GetCorrespondingRunnableGraphPort(inputPort.ValueType, inputPort.fieldName);
-						if (runnableGraphPort != null) {
-							runnableGraphPort.AssignValueFromNodePort(runner.Blackboard, inputPort);
-						}
-
-					}
-					catch (Exception e) {
-						Debug.LogError($"Exception during AssignGraphVariableInputs for NodePort '{inputPort.fieldName}', RunnableGraph: '{actionVerb.name}', Within Graph: '{graph.name}': {e.Message}", actionVerb);
-						throw;
-					}
-				}
-
-				runner.Prepend(runnableNode);
-			}
-			else {
-				Debug.LogError("Runnable Graph missing Root Node", actionVerb);
-			}
 		}
 
 		public override void UpdatePorts() {
@@ -128,30 +82,61 @@ namespace Narramancer {
 			}
 			var instance = GetInstance(context);
 			var ingredient = instance?.GetIngredient(ingredientType.Type);
+			if (port.fieldName.Equals(nameof(hasIngredient))) {
+				return ingredient !=null;
+			}
 			if (ingredient != null) {
 				var verbFieldInfo = VerbFieldInfo;
 				if (verbFieldInfo != null) {
-					var actionVerb = verbFieldInfo.GetValue(ingredient) as ActionVerb;
-					if (actionVerb != null) {
-						foreach (var outputPort in actionVerb.Outputs) {
-
-							if (port.fieldName.Equals(outputPort.Name)) {
-								var blackboard = context as Blackboard;
-								var value = blackboard.Get(outputPort.VariableKey, outputPort.Type);
-								return value;
-							}
+					var valueVerb = verbFieldInfo.GetValue(ingredient) as ValueVerb;
+					if (valueVerb != null) {
+						NarramancerPort GetCorrespondingVerbPort(Type type, string name) {
+							return valueVerb.Inputs.FirstOrDefault(x => x.Type == type && x.Name.Equals(name));
 						}
 
-						foreach (var inputPort in actionVerb.Inputs) {
+						try {
 
-							if (inputPort.PassThrough && port.fieldName.StartsWith(inputPort.Name)) {
-								var nodePort = DynamicInputs.FirstOrDefault(xnodePort => xnodePort.fieldName.Equals(inputPort.Name));
-								if (nodePort != null) {
-									return nodePort.GetInputValue(context);
+							if (valueVerb.TryGetOutputNode(out var outputNode)) {
+
+								var instanceInputPort = GetCorrespondingVerbPort(typeof(NounInstance), INSTANCE_INPUT);
+								if (instanceInputPort != null) {
+									var blackboard = context as Blackboard;
+									blackboard.Set(instanceInputPort.VariableKey, instance);
 								}
-								break;
+
+								foreach (var inputPort in DynamicInputs) {
+									var verbPort = GetCorrespondingVerbPort(inputPort.ValueType, inputPort.fieldName);
+									verbPort.AssignValueFromNodePort(context, inputPort);
+								}
+
+								foreach (var outputPort in valueVerb.Outputs) {
+
+									if (port.fieldName.Equals(outputPort.Name)) {
+
+										return outputNode.GetValue(context, outputPort);
+									}
+								}
+
+								foreach (var inputPort in valueVerb.Inputs) {
+
+									if (inputPort.PassThrough && port.fieldName.StartsWith(inputPort.Name)) {
+										var nodePort = DynamicInputs.FirstOrDefault(xnodePort => xnodePort.fieldName.Equals(inputPort.Name));
+										if (nodePort != null) {
+											return nodePort.GetInputValue(context);
+										}
+										break;
+									}
+								}
+							}
+							else {
+								Debug.LogError($"{nameof(ValueVerb).Nicify()} does not have an {nameof(OutputNode).Nicify()}.", valueVerb);
 							}
 						}
+						catch (Exception e) {
+							Debug.LogError($"Exception when Getting Value for '{valueVerb.name}' ('{graph.name}'): {e.Message}", valueVerb);
+							throw;
+						}
+
 					}
 				}
 			}
