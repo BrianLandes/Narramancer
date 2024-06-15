@@ -1,6 +1,9 @@
 # Narramancer
 A node-based narrative system for Unity.
 
+Full documentation at [the official website](https://narramancer.com/)
+[Getting Started](https://narramancer.com/getting_started)
+
 ## Overview
 Narramancer is a general solution behavior tree and save system. It acts as a scene independent table of the people and things in your game, as well as what they are doing.
 
