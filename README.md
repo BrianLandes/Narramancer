@@ -2,6 +2,7 @@
 A node-based narrative system for Unity.
 
 Full documentation at [the official website](https://narramancer.com/)
+
 [Getting Started](https://narramancer.com/getting_started)
 
 ## Overview
