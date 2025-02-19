@@ -22,7 +22,8 @@ namespace Narramancer {
 		UnityEngine.Object draggedElement;
 
 		string search;
-
+		public static Texture2D cross { get { return _cross != null ? _cross : _cross = Resources.Load<Texture2D>("d_winbtn_win_close@2x"); } }
+		private static Texture2D _cross;
 		void DrawObject(Rect position, UnityEngine.Object @object) {
 			var name = @object.name;
 
@@ -139,7 +140,7 @@ namespace Narramancer {
 			var searchTextRect = new Rect(position.x + searchIconRect.width, position.y, position.width - searchIconRect.width - searchCloseRect.width, EditorGUIUtility.singleLineHeight);
 			EditorGUI.LabelField(searchIconRect, EditorGUIUtility.IconContent("d_Search Icon") );
 			search = EditorGUI.TextField(searchTextRect, search);
-			if (GUI.Button(searchCloseRect, EditorGUIUtility.IconContent("winbtn_win_close"))) {
+			if (GUI.Button(searchCloseRect, cross)) {
 				EditorGUI.FocusTextInControl("");
 				search = string.Empty;
 			}
