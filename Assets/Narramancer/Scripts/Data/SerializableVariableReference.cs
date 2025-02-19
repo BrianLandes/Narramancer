@@ -91,11 +91,11 @@ namespace Narramancer {
 			switch (scope) {
 				default:
 				case ScopeType.Scene:
-					var narramancerScene = GameObjectExtensions.FindAnyObjectByType<NarramancerScene>();
-					if (narramancerScene == null) {
+					var narramancerScene = GameObjectExtensions.FindObjectsOfType<NarramancerScene>();
+					if (!narramancerScene.Any()) {
 						return Array.Empty<NarramancerPort>().ToList();
 					}
-					return narramancerScene.Variables.Cast<NarramancerPort>().ToList();
+					return narramancerScene.SelectMany( scene=>  scene.Variables.Cast<NarramancerPort>()).ToList();
 				case ScopeType.Global:
 					return NarramancerSingleton.Instance.GlobalVariables.Cast<NarramancerPort>().ToList();
 				case ScopeType.Verb:
