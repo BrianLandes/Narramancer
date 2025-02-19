@@ -350,12 +350,7 @@ namespace Narramancer {
 			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
 			menu.AddItem(new GUIContent("Search..."), false, () => {
-				NodeSearchModalWindow window = ScriptableObject.CreateInstance(typeof(NodeSearchModalWindow)) as NodeSearchModalWindow;
-				var allowRunnableNodes = typeof(ActionVerb).IsAssignableFrom(target.GetType());
-				window.ShowForValues(screenPosition, allowRunnableNodes, type => {
-					XNode.Node node = CreateNode(type, pos);
-					NodeEditorWindow.current.AutoConnect(node);
-				});
+				EditorDrawerUtilities.ShowSearchNodesPopup(target, mousePosition);
 			});
 
 			base.AddContextMenuItemsForNewNodes(menu);
@@ -452,6 +447,13 @@ namespace Narramancer {
 					});
 				}
 			}
+		}
+
+
+
+		public override void DoubleClick() {
+			var mousePosition = Event.current.mousePosition;
+			EditorDrawerUtilities.ShowSearchNodesPopup(target, mousePosition);
 		}
 
 	}

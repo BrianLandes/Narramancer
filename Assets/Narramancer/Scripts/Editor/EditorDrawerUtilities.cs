@@ -8,6 +8,8 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
+using XNodeEditor;
+using XNode;
 
 namespace Narramancer {
 	public static class EditorDrawerUtilities {
@@ -479,6 +481,18 @@ namespace Narramancer {
 			var newElement = listProperty.CreateNewElement();
 			newElement.objectReferenceValue = @object;
 			return newElement;
+		}
+
+		public static void ShowSearchNodesPopup(NodeGraph nodeGraph, Vector2 mousePosition) {
+			Vector2 windowMousePosition = NodeEditorWindow.current.WindowToGridPosition(mousePosition);
+			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
+
+			NodeSearchModalWindow window = ScriptableObject.CreateInstance(typeof(NodeSearchModalWindow)) as NodeSearchModalWindow;
+			var allowRunnableNodes = typeof(ActionVerb).IsAssignableFrom(nodeGraph.GetType());
+			window.ShowForValues(screenPosition, allowRunnableNodes, type => {
+				XNode.Node node = nodeGraph.CreateNode(type, windowMousePosition);
+				NodeEditorWindow.current.AutoConnect(node);
+			});
 		}
 	}
 }

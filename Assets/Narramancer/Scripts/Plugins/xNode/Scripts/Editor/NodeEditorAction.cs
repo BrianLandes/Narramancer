@@ -46,7 +46,7 @@ namespace XNodeEditor {
         private Vector2 lastMousePosition;
         private float dragThreshold = 1f;
 
-        [NonSerialized] public UnityEngine.Object selectedNodeRunnerUnityObject;
+		[NonSerialized] public UnityEngine.Object selectedNodeRunnerUnityObject;
         [NonSerialized] public INodeContext selectedContext;
 
         public void Controls() {
@@ -234,7 +234,10 @@ namespace XNodeEditor {
                                 selectedReroutes.Clear();
                                 Selection.activeObject = null;
                             }
-                        }
+
+							// Cache double click state, but only act on it in MouseUp - Except ClickCount only works in mouseDown.
+							isDoubleClick = (e.clickCount == 2);
+						}
                     }
                     break;
                 case EventType.MouseUp:
@@ -303,6 +306,10 @@ namespace XNodeEditor {
                             }
                             if (NodeEditorPreferences.GetSettings().autoSave)
                                 AssetDatabase.SaveAssets();
+
+                            if (isDoubleClick) {
+								graphEditor.DoubleClick();
+                            }
                         }
 
                         // If click node header, select it.

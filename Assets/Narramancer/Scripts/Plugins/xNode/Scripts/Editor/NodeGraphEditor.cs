@@ -118,6 +118,10 @@ namespace XNodeEditor {
 
         }
 
+        public virtual void DoubleClick() {
+
+        }
+
         /// <summary> Returned gradient is used to color noodles </summary>
         /// <param name="output"> The output this noodle comes from. Never null. </param>
         /// <param name="input"> The output this noodle comes from. Can be null if we are dragging the noodle. </param>
