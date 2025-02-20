@@ -23,6 +23,7 @@ namespace Narramancer {
 			Verb
 		}
 		[SerializeField]
+		[NodeEnum]
 		private ScopeType scope = ScopeType.Scene;
 		public static string ScopeFieldName => nameof(scope);
 		public ScopeType Scope => scope;

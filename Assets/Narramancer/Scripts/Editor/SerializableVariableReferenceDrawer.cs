@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -9,6 +10,9 @@ namespace Narramancer {
 
 	[CustomPropertyDrawer(typeof(SerializableVariableReference))]
 	public class SerializableVariableReferenceDrawer : PropertyDrawer {
+
+
+		List<NarramancerPort> cachedVariables = null;
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
 
@@ -39,7 +43,11 @@ namespace Narramancer {
 			var node = property.serializedObject.targetObject as Node;
 			var verbGraph = node?.graph as VerbGraph;
 
-			var variables = variableReference.GetScopeVariables(verbGraph);
+			var variables = cachedVariables;
+
+			if (variables == null) {
+				cachedVariables = variables = variableReference.GetScopeVariables(verbGraph);
+			}
 
 			//if (variableReference.IsSceneScopeAndCurrentSceneIsNotLoaded()) {
 			//	var text = $"Associated with a variable in a different scene: {variableReference.Scene}";
@@ -113,6 +121,10 @@ namespace Narramancer {
 				var dropdownRect = new Rect(position.x, position.y + scopeRect.height + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUIUtility.singleLineHeight);
 
 				if (EditorGUI.DropdownButton(dropdownRect, new GUIContent(buttonText, buttonText), FocusType.Passive)) {
+
+					// refresh cached variables here when user clicks
+					cachedVariables = variables = variableReference.GetScopeVariables(verbGraph);
+
 					GenericMenu context = new GenericMenu();
 
 					foreach (var variable in variables) {
@@ -141,23 +153,6 @@ namespace Narramancer {
 				}
 
 				GUI.color = originalColor;
-
-				//if (nodePort != null) {
-
-				//	bool IsTypeThatCanShowBackend(Type type) {
-				//		return typeof(bool).IsAssignableFrom(type) || typeof(string).IsAssignableFrom(type) || typeof(int).IsAssignableFrom(type)
-				//			|| typeof(float).IsAssignableFrom(type) || typeof(UnityEngine.Object).IsAssignableFrom(type);
-				//	}
-
-				//	if (IsTypeThatCanShowBackend(nodePort.ValueType) && !nodePort.IsConnected) {
-				//		NodeEditorGUILayout.PortField(GUIContent.none, nodePort, property.serializedObject);
-				//	}
-				//	else {
-				//		GUILayout.Space(-EditorGUIUtility.singleLineHeight);
-				//		NodeEditorGUILayout.PortField(GUIContent.none, nodePort, property.serializedObject);
-				//	}
-
-				//}
 
 				property.serializedObject.ApplyModifiedProperties();
 
