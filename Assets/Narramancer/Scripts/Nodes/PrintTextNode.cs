@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Narramancer {
 	public class PrintTextNode : ChainedRunnableNode {
-
 		[Input(ShowBackingValue.Never, ConnectionType.Override, TypeConstraint.Inherited)]
 		[SerializeField]
 		private TextPrinter textPrinter = default;
@@ -18,6 +17,11 @@ namespace Narramancer {
 		[SerializeField, HideInInspector]
 		private int height = 80;
 		public static string HeightFieldName => nameof(height);
+
+		[SerializeField, HideInInspector]
+		private bool simpleDisplay = true;
+		public static string SimpleDisplayFieldName => nameof(simpleDisplay);
+
 
 		[SerializeField]
 		private bool clearPreviousText = true;

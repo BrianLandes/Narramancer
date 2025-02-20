@@ -80,148 +80,186 @@ namespace Narramancer {
 				EditorGUILayout.EndHorizontal();
 			}
 
-			addInputContent = addInputContent != null ? addInputContent : new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
-			addInputContent.text = "Add New Input";
-
-			if (GUILayout.Button(addInputContent)) {
-
-				EditorDrawerUtilities.ShowTypeSelectionPopup(
-					type => {
-						serializedObject.ApplyModifiedProperties();
-						var otherInputCount = target.DynamicInputs.Count(x => x.fieldName.Contains(type.Name));
-						var name = $"{type.Name}{(otherInputCount > 0 ? otherInputCount.ToString() : string.Empty)}";
-						var newInput = target.AddDynamicInput(type, XNode.Node.ConnectionType.Override, XNode.Node.TypeConstraint.Inherited, name);
-						serializedObject.Update();
-					}
-				);
-			}
-
-			var waitForContinueProperty = serializedObject.FindProperty(PrintTextNode.WaitForContinueFieldName);
-			waitForContinueProperty.boolValue = GUILayout.Toggle(waitForContinueProperty.boolValue, new GUIContent("Wait for Continue",
-				"Whether or not to wait for the player to press 'continue' before moving on to the next node"));
-
-			var clearPreviousTextProperty = serializedObject.FindProperty(PrintTextNode.ClearPreviousTextFieldName);
-			clearPreviousTextProperty.boolValue = GUILayout.Toggle(clearPreviousTextProperty.boolValue, new GUIContent("Clear Previous Text",
-				"Whether to clear and replace any previously printed text, or simply append to it."));
-
-			var textPrinterPort = target.GetInputPort(PrintTextNode.TextPrinterFieldName);
-			NodeEditorGUILayout.PortField(textPrinterPort, serializedObject);
+			var simpleDisplayProperty = serializedObject.FindProperty(PrintTextNode.SimpleDisplayFieldName);
+			simpleDisplayProperty.boolValue = GUILayout.Toggle(simpleDisplayProperty.boolValue, new GUIContent("Simplified View",
+				"Whether or not to draw this node in simplified view or not. (helps with framerate)"));
 
 			var textPort = target.GetInputPort(nameof(PrintTextNode.text));
-			NodeEditorGUILayout.PortField(textPort, serializedObject);
-
 			var textProperty = serializedObject.FindProperty(nameof(PrintTextNode.text));
+			var enableRichTextProperty = serializedObject.FindProperty(PrintTextNode.EnableRichTextFieldName);
 
-			if (!textPort.IsConnected) {
+			if (!simpleDisplayProperty.boolValue) {
+				addInputContent = addInputContent != null ? addInputContent : new GUIContent(EditorGUIUtility.IconContent("CreateAddNew"));
+				addInputContent.text = "Add New Input";
 
-				#region Rich Text Tools
+				if (GUILayout.Button(addInputContent)) {
 
-				var toolButtonWidth = Mathf.Min( 55f, GetWidth()/5);
-				EditorGUILayout.BeginHorizontal();
-
-				EditorGUILayout.Space(1, true);
-
-				var enableRichTextProperty = serializedObject.FindProperty(PrintTextNode.EnableRichTextFieldName);
-				if (GUILayout.Button("R" , GUILayout.Width(toolButtonWidth))) {
-					enableRichTextProperty.boolValue = !enableRichTextProperty.boolValue;
+					EditorDrawerUtilities.ShowTypeSelectionPopup(
+						type => {
+							serializedObject.ApplyModifiedProperties();
+							var otherInputCount = target.DynamicInputs.Count(x => x.fieldName.Contains(type.Name));
+							var name = $"{type.Name}{(otherInputCount > 0 ? otherInputCount.ToString() : string.Empty)}";
+							var newInput = target.AddDynamicInput(type, XNode.Node.ConnectionType.Override, XNode.Node.TypeConstraint.Inherited, name);
+							serializedObject.Update();
+						}
+					);
 				}
 
-				if (GUILayout.Button("B", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
-					if (textEditor.SelectedText.TrimStart().StartsWith("<b>") && textEditor.SelectedText.TrimEnd().EndsWith("</b>")) {
-						var unboldedText = textEditor.SelectedText.Substring(3, textEditor.SelectedText.Length - 7);
-						textEditor.ReplaceSelection(unboldedText);
-						for (var jj = 0; jj < unboldedText.Length; jj++) {
-							textEditor.SelectLeft();
-						}
-					}
-					else {
-						var boldedText = $"<b>{textEditor.SelectedText}</b>";
+				var waitForContinueProperty = serializedObject.FindProperty(PrintTextNode.WaitForContinueFieldName);
+				waitForContinueProperty.boolValue = GUILayout.Toggle(waitForContinueProperty.boolValue, new GUIContent("Wait for Continue",
+					"Whether or not to wait for the player to press 'continue' before moving on to the next node"));
 
-						textEditor.ReplaceSelection(boldedText);
-						for (var jj = 0; jj < boldedText.Length; jj++) {
-							textEditor.SelectLeft();
+				var clearPreviousTextProperty = serializedObject.FindProperty(PrintTextNode.ClearPreviousTextFieldName);
+				clearPreviousTextProperty.boolValue = GUILayout.Toggle(clearPreviousTextProperty.boolValue, new GUIContent("Clear Previous Text",
+					"Whether to clear and replace any previously printed text, or simply append to it."));
+
+				var textPrinterPort = target.GetInputPort(PrintTextNode.TextPrinterFieldName);
+				NodeEditorGUILayout.PortField(textPrinterPort, serializedObject);
+
+
+				NodeEditorGUILayout.PortField(textPort, serializedObject);
+
+
+				if (!textPort.IsConnected) {
+
+					#region Rich Text Tools
+
+					var toolButtonWidth = Mathf.Min(55f, GetWidth() / 5);
+					EditorGUILayout.BeginHorizontal();
+
+					EditorGUILayout.Space(1, true);
+
+					
+					if (GUILayout.Button("R", GUILayout.Width(toolButtonWidth))) {
+						enableRichTextProperty.boolValue = !enableRichTextProperty.boolValue;
+					}
+
+					if (GUILayout.Button("B", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
+						if (textEditor.SelectedText.TrimStart().StartsWith("<b>") && textEditor.SelectedText.TrimEnd().EndsWith("</b>")) {
+							var unboldedText = textEditor.SelectedText.Substring(3, textEditor.SelectedText.Length - 7);
+							textEditor.ReplaceSelection(unboldedText);
+							for (var jj = 0; jj < unboldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						else {
+							var boldedText = $"<b>{textEditor.SelectedText}</b>";
+
+							textEditor.ReplaceSelection(boldedText);
+							for (var jj = 0; jj < boldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						textProperty.stringValue = textEditor.text;
+					}
+
+					if (GUILayout.Button("I", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
+						if (textEditor.SelectedText.TrimStart().StartsWith("<i>") && textEditor.SelectedText.TrimEnd().EndsWith("</i>")) {
+							var unboldedText = textEditor.SelectedText.Substring(3, textEditor.SelectedText.Length - 7);
+							textEditor.ReplaceSelection(unboldedText);
+							for (var jj = 0; jj < unboldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						else {
+							var boldedText = $"<i>{textEditor.SelectedText}</i>";
+
+							textEditor.ReplaceSelection(boldedText);
+							for (var jj = 0; jj < boldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						textProperty.stringValue = textEditor.text;
+					}
+
+					textColor = EditorGUILayout.ColorField(textColor, GUILayout.Width(50));
+
+					if (GUILayout.Button("C", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
+
+						if (textEditor.SelectedText.TrimStart().StartsWith("<color=") && textEditor.SelectedText.TrimEnd().EndsWith("</color>")) {
+							var closeingTagIndex = textEditor.SelectedText.IndexOf('>');
+							var unboldedText = textEditor.SelectedText.Substring(closeingTagIndex + 1, textEditor.SelectedText.Length - closeingTagIndex - 1 - 8);
+							textEditor.ReplaceSelection(unboldedText);
+							for (var jj = 0; jj < unboldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						else {
+							var boldedText = $"<color=#{ColorUtility.ToHtmlStringRGB(textColor)}>{textEditor.SelectedText}</color>";
+
+							textEditor.ReplaceSelection(boldedText);
+							for (var jj = 0; jj < boldedText.Length; jj++) {
+								textEditor.SelectLeft();
+							}
+						}
+						textProperty.stringValue = textEditor.text;
+					}
+
+					EditorGUILayout.EndHorizontal();
+					#endregion
+
+					var heightProperty = GetHeightProperty();
+
+
+					scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(heightProperty.intValue));
+
+					if (editorTextStyle == null) {
+						editorTextStyle = new GUIStyle(EditorStyles.textArea);
+						editorTextStyle.wordWrap = true;
+						editorTextStyle.padding.left = 8;
+						editorTextStyle.padding.top = 6;
+						editorTextStyle.fontSize = 16;
+					}
+
+					editorTextStyle.richText = enableRichTextProperty.boolValue;
+					GUI.SetNextControlName("text");
+					textProperty.stringValue = EditorGUILayout.TextArea(textProperty.stringValue, editorTextStyle, GUILayout.ExpandHeight(true));
+
+					var focusedControl = GUI.GetNameOfFocusedControl();
+					if (focusedControl.Equals("text")) {
+						var textEditor = typeof(EditorGUI)
+							.GetField("activeEditor", BindingFlags.Static | BindingFlags.NonPublic)
+							.GetValue(null) as TextEditor;
+						if (textEditor != null) {
+							this.textEditor = textEditor;
 						}
 					}
-					textProperty.stringValue = textEditor.text;
+
+
+
+					EditorGUILayout.EndScrollView();
+
 				}
-
-				if (GUILayout.Button("I", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
-					if (textEditor.SelectedText.TrimStart().StartsWith("<i>") && textEditor.SelectedText.TrimEnd().EndsWith("</i>")) {
-						var unboldedText = textEditor.SelectedText.Substring(3, textEditor.SelectedText.Length - 7);
-						textEditor.ReplaceSelection(unboldedText);
-						for (var jj = 0; jj < unboldedText.Length; jj++) {
-							textEditor.SelectLeft();
-						}
-					}
-					else {
-						var boldedText = $"<i>{textEditor.SelectedText}</i>";
-
-						textEditor.ReplaceSelection(boldedText);
-						for (var jj = 0; jj < boldedText.Length; jj++) {
-							textEditor.SelectLeft();
-						}
-					}
-					textProperty.stringValue = textEditor.text;
-				}
-
-				textColor = EditorGUILayout.ColorField(textColor, GUILayout.Width(50));
-
-				if (GUILayout.Button("C", GUILayout.Width(toolButtonWidth)) && textEditor != null) {
-
-					if (textEditor.SelectedText.TrimStart().StartsWith("<color=") && textEditor.SelectedText.TrimEnd().EndsWith("</color>")) {
-						var closeingTagIndex = textEditor.SelectedText.IndexOf('>');
-						var unboldedText = textEditor.SelectedText.Substring(closeingTagIndex+1, textEditor.SelectedText.Length - closeingTagIndex - 1 -8);
-						textEditor.ReplaceSelection(unboldedText);
-						for (var jj = 0; jj < unboldedText.Length; jj++) {
-							textEditor.SelectLeft();
-						}
-					}
-					else {
-						var boldedText = $"<color=#{ColorUtility.ToHtmlStringRGB(textColor)}>{textEditor.SelectedText}</color>";
-
-						textEditor.ReplaceSelection(boldedText);
-						for (var jj = 0; jj < boldedText.Length; jj++) {
-							textEditor.SelectLeft();
-						}
-					}
-					textProperty.stringValue = textEditor.text;
-				}
-
-				EditorGUILayout.EndHorizontal();
-				#endregion
-
-				var heightProperty = GetHeightProperty();
-
-
-				scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(heightProperty.intValue));
-
-				if (editorTextStyle == null) {
-					editorTextStyle = new GUIStyle(EditorStyles.textArea);
-					editorTextStyle.wordWrap = true;
-					editorTextStyle.padding.left = 8;
-					editorTextStyle.padding.top = 6;
-					editorTextStyle.fontSize = 16;
-				}
-
-				editorTextStyle.richText = enableRichTextProperty.boolValue;
-				GUI.SetNextControlName("text");
-				textProperty.stringValue = EditorGUILayout.TextArea(textProperty.stringValue, editorTextStyle, GUILayout.ExpandHeight(true));
-
-				var focusedControl = GUI.GetNameOfFocusedControl();
-				if (focusedControl.Equals("text")) {
-					var textEditor = typeof(EditorGUI)
-						.GetField("activeEditor", BindingFlags.Static | BindingFlags.NonPublic)
-						.GetValue(null) as TextEditor;
-					if (textEditor != null) {
-						this.textEditor = textEditor;
-					}
-				}
-
-
-
-				EditorGUILayout.EndScrollView();
-
 			}
+			else {
+				// Draw simplified view
+
+				if (!textPort.IsConnected) {
+					var heightProperty = GetHeightProperty();
+
+
+					scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(heightProperty.intValue));
+
+					if (editorTextStyle == null) {
+						editorTextStyle = new GUIStyle(EditorStyles.textArea);
+						editorTextStyle.wordWrap = true;
+						editorTextStyle.padding.left = 8;
+						editorTextStyle.padding.top = 6;
+						editorTextStyle.fontSize = 16;
+					}
+
+					editorTextStyle.richText = enableRichTextProperty.boolValue;
+					textProperty.stringValue = EditorGUILayout.TextArea(textProperty.stringValue, editorTextStyle, GUILayout.ExpandHeight(true));
+
+					EditorGUILayout.EndScrollView();
+				}
+				else {
+					NodeEditorGUILayout.PortField(textPort, serializedObject);
+				}
+			}
+
+
+			
 
 			DrawResizableButton();
 
