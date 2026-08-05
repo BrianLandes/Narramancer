@@ -102,9 +102,49 @@ Phase 3  #4 multi-window xNode ────────► independent; any time
   cheap Phase-1 wins get you selling; Phase 2's value is real but is "harden for the long haul," appropriately
   gated on the market saying yes (and on evening hours).
 
+## Phase 0 pre-check — Unity 6 break-point catalog (static scan)
+> Static scan of the plugin source against known 2021.3→6000.x API changes. **Verdict: very likely compiles
+> and runs on Unity 6 with only deprecation-*warning* cleanup — consistent with the changelog note that it was
+> already tested on 6.** The real risk isn't the editor; it's an IL2CPP/AOT *build* (where OdinSerializer's
+> codegen lives). *(Repo's `ProjectVersion.txt` still reads 2021.3.25f1 — the last-saved version in this
+> snapshot, not evidence against 6 compat.)*
+
+**🟢 Green — no action (nothing removed is used):**
+- **Zero removed APIs** present: no `Physics.autoSimulation`, `WWW`/`WWWForm`, `UnityEngine.Networking`/UNet,
+  `Application.LoadLevel`, `Experimental.UIElements`, or renamed particle/terrain APIs.
+- **OdinSerializer is 100% source** (186 `.cs`, **zero DLLs**) → recompiles against Unity 6's runtime. No
+  binary locked to an old runtime, no precompiled-DLL API-compat conflict — **this is the biggest de-risker**
+  for the "will Odin break on 6" worry. (There are **no precompiled DLLs anywhere** in the plugin.)
+- The `Find*` wrapper and vendored xNode already carry `#if UNITY_2021_3_OR_NEWER` new-API paths.
+- Package deps are standard modules at ordinary versions — Unity 6 upgrades them on open.
+
+**🟡 Yellow — deprecation warnings (non-blocking; clean up in Phase 0/1):**
+- `FindObjectsOfType`/`FindObjectOfType` are **deprecated (warning), not removed** in Unity 6. Choke points:
+  - **`GameObjectExtensions.FindObjectsOfType<T>()`, the `!includeInactive` branch (line 13)** — fix **once**
+    (`→ FindObjectsByType<T>(FindObjectsSortMode.None)`); everything routed through the wrapper is then covered.
+  - ~4 direct sites: `PlayAudioNode`/`PlaySoundNode` (`FindObjectOfType<AudioSource>()`), `VerbGraphEditor`
+    (2 editor calls), `SerializableVariableReference`.
+  - **Leave alone:** `Resources.FindObjectsOfTypeAll` (xNode `NodeEditorWindow`, Odin `AOTSupportScanner`) — **not** deprecated.
+
+**🟠 Orange — verify, don't assume (the "editor works ≠ build works" gap):**
+- **IL2CPP / AOT player build is the one thing to actually test.** OdinSerializer runs AOT codegen via its
+  `AOTSupportScanner` + a build preprocessor, and `NarramancerSingleton` has `OnPreprocessBuild` — none of
+  which editor Play mode exercises. **Do one IL2CPP build (and WebGL if targeted) and run the save/load smoke
+  on the built player.** The historical Odin-on-new-Unity failure mode is a *build/AOT* one, not an editor one.
+  → strongest argument for the Phase-1 save/load test net + a build smoke, and for removing Odin in the
+  zero-user window.
+- **TextMeshPro:** manifest pins `com.unity.textmeshpro 3.0.6`; Unity 6 folds TMP into UGUI 2.0. Usually
+  auto-migrates but may prompt "Import TMP Essentials" / a package re-resolve — verify sample-scene text renders.
+- **Demo-project vs plugin deps:** Cinemachine 2.8.9 / visualscripting etc. live in the *project* manifest, not
+  the plugin. Unity 6 upgrades Cinemachine to 3.x (can break the *demo*, **not** the shipped plugin) — separate
+  "demo upgrade noise" from "plugin compat" when validating.
+
+**Bottom line:** expect a clean compile + a handful of `FindObjectsOfType` warnings. Budget the real Phase-0
+effort for a **player build + save/load smoke**, not for editor fixes.
+
 ## Open questions
-- Does v1 compile/run on Unity 6 as-is, or does OdinSerializer/xNode force fixes (→ may reorder #1)?
-- Is the vendored OdinSerializer version recent enough for Unity 6, or would an upgrade be as much work as removal?
+- Confirm the **IL2CPP build** round-trips save/load (the one genuine unknown; editor pass isn't proof).
+- On upgrade, does TMP need the Essentials reimport for the sample scenes?
 - How much xNode editor state is global vs per-window (sizes #4)?
 - Save-format change (#1): confirm ~0 installed base so we can change it freely now — verify against publisher
   dashboard before assuming no migration is needed.
