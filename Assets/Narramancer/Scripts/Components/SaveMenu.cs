@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,11 +17,14 @@ namespace Narramancer {
 
 		List<GameObject> currentSlots = new List<GameObject>();
 
-		private void Start() {
-			slotPrefab.SetActive(false);
+		private void Awake() {
 			if (slotPrefab == null) {
 				Debug.LogError("slotPrefab is required", this);
+				return;
 			}
+			// Deactivate the template here rather than in Start(): OnEnable() runs before
+			// Start() and already instantiates from it.
+			slotPrefab.SetActive(false);
 		}
 
 		public void ClearSlots() {
@@ -76,19 +78,36 @@ namespace Narramancer {
 			Save(saveName);
 		}
 
-		public async void Save(string saveName) {
+		public void Save(string saveName) {
+			StartCoroutine(SaveRoutine(saveName));
+		}
+
+		private IEnumerator SaveRoutine(string saveName) {
 			var canvas = GetComponentInParent<Canvas>();
-			canvas?.gameObject.SetActive(false);
 
-			await Task.Delay(1);
+			// Hide the UI so it stays out of the save thumbnail. Disable the Canvas component
+			// rather than deactivating its GameObject: this menu lives under that canvas, and
+			// deactivating a GameObject terminates its coroutines, so the save would never run.
+			if (canvas != null) {
+				canvas.enabled = false;
+			}
 
-			var story = NarramancerSingleton.Instance.PrepareStoryForSave();
+			// The thumbnail reads the frame buffer, which is only valid at the end of a rendered
+			// frame. This also gives the canvas a frame to actually disappear.
+			yield return new WaitForEndOfFrame();
 
-			var jsonString = SaveLoadUtilities.SerializeData(story);
+			try {
+				var story = NarramancerSingleton.Instance.PrepareStoryForSave();
 
-			SaveLoadUtilities.WriteSaveData(saveName, jsonString);
+				var jsonString = SaveLoadUtilities.SerializeData(story);
 
-			canvas?.gameObject.SetActive(true);
+				SaveLoadUtilities.WriteSaveData(saveName, jsonString);
+			}
+			finally {
+				if (canvas != null) {
+					canvas.enabled = true;
+				}
+			}
 
 			OnEnable();
 		}

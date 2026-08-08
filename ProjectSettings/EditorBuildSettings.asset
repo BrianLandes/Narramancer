@@ -4,6 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Narramancer/Scenes/1. Text and Choices Example/Text and Choices
+      Example Scene.unity
+    guid: e7502ed328a900f49bf2916cd3553fca
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 12e2966de16cdcc43a3ccfbaf7456224, type: 2}

@@ -16,11 +16,14 @@ namespace Narramancer {
 
 		List<GameObject> currentSlots = new List<GameObject>();
 
-		private void Start() {
-			slotPrefab.SetActive(false);
+		private void Awake() {
 			if (slotPrefab == null) {
 				Debug.LogError("slotPrefab is required", this);
+				return;
 			}
+			// Deactivate the template here rather than in Start(): OnEnable() runs before
+			// Start() and already instantiates from it.
+			slotPrefab.SetActive(false);
 		}
 
 		public void ClearSlots() {

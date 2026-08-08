@@ -27,6 +27,7 @@ namespace Narramancer.OdinSerializer
     [Sirenix.OdinInspector.ShowOdinSerializedPropertiesInInspector]
 #endif
 
+
     public abstract class SerializedMonoBehaviour : MonoBehaviour, ISerializationCallbackReceiver, ISupportsPrefabSerialization
     {
         [SerializeField, HideInInspector]

@@ -33,6 +33,11 @@ namespace Narramancer {
 			var filePath = $"{saveDirectory}/{saveName}.json";
 
 			File.WriteAllText(filePath, jsonData);
+
+			// Persist to IndexedDB on WebGL, where the write above only lands in memory. No-op elsewhere.
+			// If a delete-save path is ever added, flush after the File.Delete too, or the deleted save
+			// reappears on the next page load.
+			SaveFileSync.Flush();
 		}
 
 		public static string ReadSaveData(string saveName) {
