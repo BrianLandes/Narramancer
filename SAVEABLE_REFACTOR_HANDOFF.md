@@ -20,7 +20,7 @@ swap only the *component granularity*. Don't rebuild the pipeline.
   Active, Animation, AudioSource, Image, SpriteRenderer, Text, NounInstanceReference) + `SerializableSpawner`
   — **REPLACE** with `Saveable` + drivers.
 - **Identity:** today `Key = "{field} {transform.FullPath()}[{componentIndex}]"` — **REPLACE** with a stable
-  GUID (rename/reparent/reorder-safe).
+  GUID (rename/reparent/reorder-safe). **✅ DECIDED — see the "GUID identity" section below.**
 - **`[SerializeMonoBehaviourField]`** (reflection over behavior-state fields, e.g. a tween's progress) — **KEEP
   the mechanism**, renamed/repurposed as the `[Save]` field capture (see below).
 
@@ -77,6 +77,48 @@ public interface IComponentSaver {
 | `SerializeNounInstanceReference` | `NounBindingSaver` | the GameObject↔`NounInstance` link (keep v1's approach; a Saveable option "represents a noun") |
 | `SerializableSpawner` | *keep as-is for now* | spawned prefabs carry a `Saveable`; full spawn/tombstone delta is **deferred** (see scope) |
 
+## GUID identity (✅ decided — the robustness upgrade)
+Replace the path+index+field `Key()` across the whole `ISerializableMonoBehaviour` save system with a **stable
+per-GameObject GUID**. This is the main reason the old system was brittle: renaming an object, reparenting it,
+reordering components, or two same-named siblings all broke the key. The GUID is immune to all of that.
+
+**Where it lives:** one `[SerializeField] private string guid;` on `Saveable` (the single guid holder per
+GameObject). Every key becomes `$"{guid}:{discriminator}"` — driver key for component state, `componentType +
+fieldName` for `[Save]` fields.
+
+**Minting + the gotchas (get these right — they're the classic failures):**
+1. **Mint at author time:** in `Reset()` (fires when the component is added) and as a safety net in
+   `OnValidate()` when the guid is empty. Use `System.Guid.NewGuid().ToString("N")`.
+2. **Duplicate-paste detection (critical):** copy-pasting a GameObject in the editor copies the serialized
+   `guid` → two objects with the **same** guid. On `OnValidate()` (editor) and `Awake()` (play), if another
+   live `Saveable` already claims this guid and it isn't me, **re-mint**. Keep a runtime
+   `Dictionary<string, Saveable>` of claimed guids for O(1) detection; in the editor, a paste triggers
+   `OnValidate` on the copy, which sees the collision and re-mints.
+   > **Prior art to copy:** Unity's open-source **`GuidComponent`** (the "guid-based-reference" sample) solves
+   > exactly this — serialized guid + editor duplicate detection. Lean on its approach rather than reinventing.
+3. **Prefabs:** don't bake a guid onto the **prefab asset** (all instances would share it). Leave it empty on
+   the asset; each **scene instance** / runtime spawn mints its own (Reset on placement / Awake on spawn +
+   the duplicate check).
+4. **Two object populations:**
+   - **Authored scene objects (the main win):** guid is baked into the scene at author time → stable across a
+     save/scene-reload, so keys match on `Deserialize`. This is what fixes the brittleness.
+   - **Runtime-spawned objects:** the guid is minted at runtime, so it **must be saved and re-applied** to the
+     re-spawned object on load — else the re-spawn mints a *different* guid and its saved state doesn't match.
+     v1's `SerializableSpawner` already re-spawns + re-deserializes its children on load; extend it to also
+     record and **reassign each spawn's guid** on re-spawn. *(This is the fiddly case — see scope: land
+     authored-object GUIDs first, spawned-object guid reassignment as the second step.)*
+
+**Extend to the runner-carrying savers (recommended, same rework):** `RunActionVerbMonoBehaviour` and
+`NarramancerScene` are also `SerializableMonoBehaviour`s today, keyed by path — and they're exactly the
+objects whose stable identity matters most (they hold in-flight `NodeRunner`s that must resume after load).
+Migrate them to the guid model: give their object a `Saveable`, and capture their `NodeRunner`/`Promise`/state
+via the `[Save]` scan keyed off the sibling `Saveable`'s guid. **Preserve v1's special-casing:** `NodeRunner`
+and `Promise` fields still route to `story.NodeRunners[...]` / `story.Promises[...]` side tables — just keyed
+by `guid` now instead of path. *(If time-boxed, these can stay path-keyed in the first cut, but that leaves
+identity inconsistent — prefer migrating them together.)*
+
+**Break freely:** ~0 users → the key-format change needs no save migration.
+
 ## Scope for v1 — what to build vs defer
 **Build (the win the user asked for):**
 - `Saveable` (single component) + stable GUID + auto-detect profile.
@@ -111,7 +153,13 @@ refactors are independent but both touch the save format — do them close toget
   assert restored (transform position, active state, sprite, text, …).
 - Round-trip through the save table: `Serialize` → new scene/instance → `Deserialize` → state matches.
 - GUID stability: rename / reparent / reorder components → the guid (and thus the keys) are unchanged.
-- `[Save]` field: a behavior component's annotated field round-trips.
+- **GUID duplicate detection:** duplicate a `Saveable` GameObject → the copy gets a **new, distinct** guid
+  (not the original's). Two objects never share a guid.
+- **GUID prefab:** the prefab asset carries no guid; two instances of the same prefab get distinct guids.
+- **Spawned-object guid (second step):** spawn → save → reload → the re-spawned object's saved state matches
+  (guid reassigned by the spawner, not re-minted).
+- `[Save]` field: a behavior component's annotated field round-trips; a `NodeRunner` field routes to the
+  side table under the guid key and resumes after load.
 (These feed the Phase-1 test net in `V1_IMPROVEMENT_PLAN.md`.)
 
 ## Naming
@@ -120,10 +168,19 @@ v1 doesn't use the `Narra*` prefix (that's a v2 convention). Match v1: either **
 **`NarramancerSaveable`** (collision-safe, matches `NarramancerScene`/`NarramancerSingleton`). Recommend
 `Saveable` + the menu attribute; fall back to `NarramancerSaveable` if the bare name collides in a real project.
 
+## Build order (suggested)
+1. `Saveable` + **GUID identity** (mint / duplicate-detect / prefab) + reuse the singleton registry.
+2. `IComponentSaver` + registry + the built-in drivers (port the `Serialize*` table).
+3. `[Save]` behavior-field scan (rename `[SerializeMonoBehaviourField]`), incl. `NodeRunner`/`Promise`
+   side-table routing under the guid key.
+4. Migrate the runner-carrying savers (`RunActionVerbMonoBehaviour`, `NarramancerScene`) to the guid model.
+5. Spawned-object guid reassignment in `SerializableSpawner`.
+6. Update the sample scenes; EditMode tests.
+
 ## Open questions
 - Auto-detect vs explicit driver list on `Saveable` (lean auto-detect + inspector opt-out).
 - `ActiveSaver` and any other non-component captures (gameObject active, layer, name?) — keyed on the Saveable.
-- Do we take the GUID all the way (author-time bake in `OnValidate`) now, or keep path-based keys for the first
-  cut? (Lean: GUID now — it's the main robustness upgrade and it's cheap.)
+- ✅ **GUID identity: DECIDED — do it now** (author-time mint + duplicate detection; see the GUID section).
+  Authored-object GUIDs are step 1; spawned-object guid reassignment is step 5.
 - Reference: the full design + rationale is v2's `docs/GAMEOBJECT_SERIALIZATION_SPEC.md` (in the narramancer2
   repo) — this handoff is the v1-scoped subset.
