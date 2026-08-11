@@ -19,6 +19,45 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-08-11
 
+- [x] **Swapped the assembly scanner to `UnityEditor.TypeCache`** — `AssemblyUtilities.GetAllTypes(Type)` and
+  `GetAllTypes<T>()` now use `TypeCache.GetTypesDerivedFrom` in the editor, with the old `AppDomain` scan kept
+  as the runtime path (`TypeCache` is editor-only). Everything built on those — `GetAllNonObsoleteTypes`,
+  `GetAllTypesInNamespace` — inherits the win.
+  *Measured: **137ms → 0.05ms per call** (~2500x).* That 137ms was a visible hitch every time the node-search
+  window opened.
+  *Two semantic differences had to be corrected for, or results would silently change:*
+  `GetTypesDerivedFrom` **excludes the queried type itself** (the old `IsAssignableFrom` included it, so the
+  type is re-added when it's concrete), and it **returns abstract types** (the old scan filtered them out).
+  *Verified rather than assumed:* diffed old vs new result sets across six probes — `XNode.Node` (147),
+  `ScriptableObject` (1268), `AbstractIngredient` (5), `RunnableNode` (56), `NounScriptableObject` (1, the
+  self-inclusion case), and `IInstancable` (interface, 3). **Zero missing, zero extra on every one.**
+  *Deliberately NOT done:* the task also said to drop the fuzzy-AQN fallback in `GetType()`
+  (`AssemblyUtilities.cs`, the `#if UNITY_EDITOR` block). Left in place — it silently recovers `SerializableType`
+  /`SerializableMethod` fields whose scripts changed assemblies, so removing it is a behavior change that could
+  break the sample scenes, and it is *not* what made the editor slow (it only runs after `Type.GetType` already
+  failed). Re-evaluate once the test net covers those fields.
+
+- [x] **Fixed the `FindObjectsOfType` deprecation warnings** — the `GameObjectExtensions` wrapper plus the
+  direct sites in `PlayAudioNode`, `PlaySoundNode`, and `VerbGraphEditor` (×2), which now route through the
+  wrapper. `Narramancer` and `Narramancer.Editor` compile warning-free.
+  *The catch worth remembering:* on Unity 6, **`FindObjectsSortMode` is itself deprecated**, along with every
+  overload that accepts one — so the fix everyone reaches for (`FindObjectsByType<T>(FindObjectsSortMode.None)`,
+  which is what the plan doc specified) is *also* deprecated here. Unity's message: *"InstanceID will be
+  replaced in the future with EntityId and previous sort order cannot be maintained."* The correct Unity 6 call
+  is the no-sort-mode overload. Guarded `UNITY_6000_0_OR_NEWER` / `UNITY_2021_3_OR_NEWER` / legacy so older
+  Unity support is unaffected.
+  *Consequence to know:* results are now **unordered**. The `FirstOrDefault` callers (`ChoicePrinter`,
+  `PrintTextNode`, `SerializableVariableReference`) are only correct because they either filter to a unique
+  match or genuinely accept any one — don't add a caller that assumes "the first one."
+
+- [x] **Started the test net: `Blackboard` typed set/get/remove** — `Tests.Editor` went from 3 tests to **24,
+  all passing**. Covers generic `Set`/`Get` across int/float/bool/string/enum, missing-key defaults, explicit
+  defaults, the `TryGet*` pair, `Remove`/`GetAndRemove`/`Clear`, `Increment`/`Decrement`, `IntKeys`, `Copy`
+  independence, and JSON round-trips.
+  *Two behaviors worth knowing, now pinned by tests:* missing keys return the type default (`0`, `false`, `""`)
+  rather than throwing, and **each type has its own backing dictionary**, so the same key can hold an int, a
+  string and a bool simultaneously and `Remove<int>` leaves the others untouched.
+
 - [x] **Decided: relicense to PolyForm Noncommercial 1.0.0, going forward only.** Free to read, fork, modify,
   and use noncommercially; **commercial use requires an Asset Store purchase**. Dual-licensing model.
   *Why PolyForm Noncommercial specifically:* it's the off-the-shelf license that says exactly this, in plain

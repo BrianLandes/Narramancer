@@ -38,7 +38,7 @@ namespace Narramancer {
 			var audioSource = GetInputValue(runner.Blackboard, nameof(this.audioSource), this.audioSource);
 
 			if (audioSource == null) {
-				audioSource = FindObjectOfType<AudioSource>();
+				audioSource = GameObjectExtensions.FindAnyObjectByType<AudioSource>();
 			}
 			if (audioSource == null) {
 				var newAudioSource = new GameObject("Audio Source");

@@ -110,11 +110,6 @@ recorded before anything changes anyway.
 - [ ] **Set up a CLA or DCO before accepting any external pull request** — not urgent (no external PRs yet), but
   contributions accepted without one land under terms that can block a future licensing change. Cheap now,
   expensive to retrofit. See [`LICENSING.md`](LICENSING.md).
-- [ ] **Fix `FindObjectsOfType` deprecation warnings** — fix the wrapper once at
-  `Assets/Narramancer/Scripts/Extensions/GameObjectExtensions.cs:13`
-  (`→ FindObjectsByType<T>(FindObjectsSortMode.None)`), which covers everything routed through it. Then the
-  direct sites: `PlayAudioNode`, `PlaySoundNode`, `VerbGraphEditor` (×2), `SerializableVariableReference`.
-  **Leave `Resources.FindObjectsOfTypeAll` alone** — not deprecated. Good warm-up task.
 - [ ] **Fix the `#if ODIN_INSPECTOR` branch of `VerbGraphInspector`** — it does not compile: line 26 calls
   `DuplciateNodeGraphField` (typo'd; the method is `DuplicateNodeGraphField`) and line 35 casts `target as
   NarramancerGraph`, a type that doesn't exist in this repo. Dead code here — this repo has no Odin Inspector —
@@ -126,14 +121,10 @@ recorded before anything changes anyway.
   §"Tier A" for the file:line table. Headline three: `StatInstance` silently discards the min clamp (it re-reads
   the parameter instead of the already-clamped field), `AddRelationshipNode` has `||` where `&&` was meant, and
   two `while` loops in `NarramancerGraphEditorUtilities` hang the editor on a cyclic graph. ~1 evening for all
-  nine. ⚠️ One of them (the nested-namespace AQN regex) is **subsumed** if the `TypeCache` task below lands
-  first and deletes the fuzzy fallback — do that one last, or skip it.
+  nine. ✅ **Update 2026-08-11:** the nested-namespace AQN regex fix is **no longer subsumed** — the `TypeCache`
+  swap landed but deliberately *kept* the fuzzy-AQN fallback (removing it could break `SerializableType` fields
+  whose scripts moved assemblies). So do all nine, that one included.
   *(from inbox 2026-08-11 — Tier A2–A10)*
-- [ ] **Swap the assembly scanner to `TypeCache`** — replace the `AppDomain` scan at
-  `Assets/Narramancer/Scripts/Utilities/AssemblyUtilities.cs:16` with `UnityEditor.TypeCache`. Immediate editor
-  responsiveness win with 156 node types being scanned. Drop the fuzzy-AQN fallback (lines 285–299) — v2 already
-  retired it. Note `TypeCache` is editor-only, so this is a `#if UNITY_EDITOR` fast path, not a wholesale
-  replacement.
 
 ---
 
@@ -145,13 +136,12 @@ net exists** — each such task carries an explicit *(needs the test net)*. The 
 `InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
 of the section.
 
-- [ ] **Build the test net** — precondition for everything below it. Currently one 50-line file
-  (`Assets/Test Suite/Editor/BlackboardTests.cs`). Build on the existing `Tests.Editor` asmdef; EditMode is
-  enough. Priority order:
+- [ ] **Build the test net** — precondition for everything below it. `Tests.Editor` is at 24 passing EditMode
+  tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Priority order:
   - [ ] Save → load round-trip: author a story, run a verb to a suspend point, `PrepareStoryForSave()` →
     `SerializeData` → `DeserializeData` → `LoadStory`; assert identical state and that the runner resumes.
-    **The headline feature currently has zero coverage.**
-  - [ ] `Blackboard` typed set/get/remove (extend the existing file)
+    **The headline feature still has zero coverage — this is the one that actually gates the refactors.**
+  - [x] `Blackboard` typed set/get/remove *(done 2026-08-11)*
   - [ ] Domain ops: `NounInstance` properties/stats/relationships, bidirectional relationship integrity by UID
   - [ ] `NodeRunner` suspend/resume
   - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode

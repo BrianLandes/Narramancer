@@ -161,12 +161,12 @@ namespace Narramancer {
 			GUILayout.BeginVertical();
 
 			IEnumerable<UnityEngine.Object> GetPossibleNodeRunnerObjects() {
-				var narramancerScenes = GameObject.FindObjectsOfType<NarramancerScene>();
+				var narramancerScenes = GameObjectExtensions.FindObjectsOfType<NarramancerScene>();
 				foreach (var scene in narramancerScenes) {
 					yield return scene;
 				}
 
-				var runActionVerbMonoBehaviours = GameObject.FindObjectsOfType<RunActionVerbMonoBehaviour>();
+				var runActionVerbMonoBehaviours = GameObjectExtensions.FindObjectsOfType<RunActionVerbMonoBehaviour>();
 				foreach (var runActionVerb in runActionVerbMonoBehaviours) {
 					yield return runActionVerb;
 				}
