@@ -115,6 +115,20 @@ recorded before anything changes anyway.
   (`→ FindObjectsByType<T>(FindObjectsSortMode.None)`), which covers everything routed through it. Then the
   direct sites: `PlayAudioNode`, `PlaySoundNode`, `VerbGraphEditor` (×2), `SerializableVariableReference`.
   **Leave `Resources.FindObjectsOfTypeAll` alone** — not deprecated. Good warm-up task.
+- [ ] **Fix the `#if ODIN_INSPECTOR` branch of `VerbGraphInspector`** — it does not compile: line 26 calls
+  `DuplciateNodeGraphField` (typo'd; the method is `DuplicateNodeGraphField`) and line 35 casts `target as
+  NarramancerGraph`, a type that doesn't exist in this repo. Dead code here — this repo has no Odin Inspector —
+  but it's the **only** branch an Odin Inspector owner compiles, i.e. exactly the buyer segment §2's Odin
+  removal exists to protect. Two lines, and the highest value-per-line item in the port-back survey.
+  *(from inbox 2026-08-11 — Tier A1)*
+- [ ] **Tier A bug-fix batch** — nine more small, independent defects found in the Pseudo World Gaia fork, each
+  1–10 lines, none needing the test net. See [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md)
+  §"Tier A" for the file:line table. Headline three: `StatInstance` silently discards the min clamp (it re-reads
+  the parameter instead of the already-clamped field), `AddRelationshipNode` has `||` where `&&` was meant, and
+  two `while` loops in `NarramancerGraphEditorUtilities` hang the editor on a cyclic graph. ~1 evening for all
+  nine. ⚠️ One of them (the nested-namespace AQN regex) is **subsumed** if the `TypeCache` task below lands
+  first and deletes the fuzzy fallback — do that one last, or skip it.
+  *(from inbox 2026-08-11 — Tier A2–A10)*
 - [ ] **Swap the assembly scanner to `TypeCache`** — replace the `AppDomain` scan at
   `Assets/Narramancer/Scripts/Utilities/AssemblyUtilities.cs:16` with `UnityEditor.TypeCache`. Immediate editor
   responsiveness win with 156 node types being scanned. Drop the fuzzy-AQN fallback (lines 285–299) — v2 already
@@ -126,7 +140,10 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is now the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. Nothing here is safe to start before the test net exists.
+reason this section moved ahead of the launch. **No save-format change here is safe to start before the test
+net exists** — each such task carries an explicit *(needs the test net)*. The two ungated groups are the
+`InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
+of the section.
 
 - [ ] **Build the test net** — precondition for everything below it. Currently one 50-line file
   (`Assets/Test Suite/Editor/BlackboardTests.cs`). Build on the existing `Tests.Editor` asmdef; EditMode is
@@ -139,6 +156,29 @@ reason this section moved ahead of the launch. Nothing here is safe to start bef
   - [ ] `NodeRunner` suspend/resume
   - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode
     structurally cannot catch — record it as a required pre-release step
+- [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subrunners`;
+  `StopAndReset()` recurses into them and releases each; the nodes that spawn sub-runners register and
+  deregister them. `RunnableNode.Cancel(NodeRunner)` is already declared virtual and already invoked from
+  `NodeRunner.cs:154` — and overridden by **nothing**, so today stopping a runner mid-flight *leaks* every
+  sub-runner it started, each still ticking against a blackboard nobody owns. A correctness bug in the
+  execution model, not a nicety. Port `WaitNode.Cancel` (cancels its timer) and
+  `RunActionVerbWhileConditionIsTrueNode.Cancel` alongside it.
+  **Do this before the two refactors below** — `subrunners` is a serialized field, so the Saveable work should
+  be designed against the final shape rather than retrofitted. *(needs the test net)*
+  *(from inbox 2026-08-11 — Tier B1)*
+- [ ] **Finish the Promise registry** — `StoryInstance.promises` (`StringPromiseDictionary`) exists with a
+  public accessor and **nothing in the repo reads or writes it**. Add
+  `NarramancerSingleton.MakePromise()/BreakPromise()/UpdatePromises()` driven from `Update()`, plus
+  `Promise.WithUpdate(Action)`, `Promise.removeOnResolve`, and `Promise.DefaultDone`. Worth doing for the
+  dead-code cleanup alone; it also puts live data into a serialized dictionary that currently ships empty, so
+  it belongs here rather than after. Pair it with the sub-runner work above. *(needs the test net)*
+  *(from inbox 2026-08-11 — Tier B2)*
+- [ ] **Fix `InequalityNode` comparison semantics** — `Comparison.GreaterThan` currently evaluates `>=` and
+  `LessThan` evaluates `<=`. Adding `GreaterThanOrEqualTo`/`LessThanOrEqualTo` at indices 1–2 fixes the
+  semantics *and* happens to be migration-safe: old index 1 (`GreaterThan`, behaving as `>=`) maps to new
+  index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
+  and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
+  break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
 - [ ] **Remove OdinSerializer** — a buyer who owns Odin Inspector hits a duplicate-assembly conflict because
   both ship OdinSerializer. That's a conversion blocker, not cleanup. Scope is far smaller than the 186
   vendored files suggest: **exactly 2 call sites**, both JSON-only, both in
@@ -157,7 +197,16 @@ reason this section moved ahead of the launch. Nothing here is safe to start bef
   *(needs the test net)*
   - [ ] `Saveable` + stable GUID (mint at author time; duplicate-paste detection — copy Unity's open-source
     `GuidComponent` approach; prefab assets carry no guid)
+  - [ ] **Fold in the fork's noun-instance init-order fixes** — `[DefaultExecutionOrder(-100)]` and an
+    idempotence guard on `CreateNounForGameObject.Start()`, plus lazy creation in
+    `SerializeNounInstanceReference.GetInstance()`. Fixes a real race (anything asking for a noun instance
+    during another component's `Awake`/`Start` gets null today), but it overlaps this task's GUID identity
+    work — fold it in rather than porting it standalone. *(from inbox 2026-08-11 — Tier B8)*
   - [ ] `IComponentSaver` registry + the 9 built-in drivers (port the `Serialize*` table)
+    - [ ] Port the fork's `SerializeNavMeshAgent` as the **reference driver** — it's the best real-world
+      hand-written save driver in either tree (serializes agent enabled/stoppingDistance plus either a
+      destination `Vector3` or a `Transform` full-path, and resumes a `Promise` on arrival). Ships as a
+      sample/driver, not core. *(from inbox 2026-08-11 — Tier C)*
   - [ ] `[Save]` behavior-field scan (rename of `[SerializeMonoBehaviourField]`), incl. `NodeRunner`/`Promise`
     side-table routing under the guid key
   - [ ] Migrate `RunActionVerbMonoBehaviour` + `NarramancerScene` to the guid model
@@ -173,6 +222,33 @@ reason this section moved ahead of the launch. Nothing here is safe to start bef
   ~2–3 evenings: four specific pieces of global state to make per-window, plus one known limitation to accept
   rather than fix. **Read [`docs/V1_ROADMAP.md`](docs/V1_ROADMAP.md) §4/B6 before starting** — it has the
   file:line breakdown.
+
+### Editor & authoring quality — non-breaking riders
+
+No save-format impact, so these gate nothing and can run in parallel with the work above. Do them in the
+order listed: the first is infrastructure the next two depend on. All four are ports —
+see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
+
+- [ ] **`EditorDrawerUtilities`: resolve nested `SerializedProperty` paths** — `GetTargetObject`/`GetFieldInfo`
+  only handle top-level fields, so any drawer used on a field *inside* a serializable class silently fails.
+  Walk dotted property paths, and add `GetParentType()`, `GetPropertyTargetType()`, `GetTargetObjectParent()`,
+  `GetFirstFieldWithType<T>()`. Then fix `VerbGraphDrawer`, which resolves its attribute lookup against the
+  wrong type. **Infrastructure — do this first.** *(from inbox 2026-08-11 — Tier B4)*
+- [ ] **`VariableAssignment` partial-match recovery** — renaming a verb input currently **wipes** every
+  assignment bound to it, silently, across every graph and component that referenced it. Match on *either* id
+  or name (with a type match) and repair the stale half. Pure authoring-quality fix. Optionally ships with the
+  `VariableAssignmentList` + drawer that wraps the same logic for reuse. *(needs the nested-path work above)*
+  *(from inbox 2026-08-11 — Tier B5)*
+- [ ] **`ChooseRankedWeightedActionNode` doesn't forward graph inputs** — missing both `UpdatePorts()` (so the
+  node never grows ports for its actions' verb inputs) and `AssignGraphVariableInputs()` (so the chosen effect
+  graph runs with unassigned inputs). Effectively only usable with zero-input action verbs today. Match the
+  pattern already used by `OfferObjectsAsChoicesNode`/`ListFilterNode`. *(from inbox 2026-08-11 — Tier B7)*
+- [ ] **Graph editor navigation** — a History dropdown beside Back listing the recently-opened stack, and a
+  corrected Back stack (the current one mutates the stack in `OnOpen()` and loses position). Plus live
+  `NodeRunner` inspection of `NarramancerSingleton` during play, which fills the two in-code
+  `// TODO: include NarramancerSingleton` comments in `VerbGraphEditor.cs` and is directly useful when
+  recording the §3 demo video. Skip the fork's `NARRAMANCER_SHOW_FPS` block — debug scaffolding.
+  *(from inbox 2026-08-11 — Tier B6)*
 
 ---
 
@@ -240,6 +316,11 @@ Larger builds that each have their own design doc — read the linked handoff be
   kept for the root-cause explanation.
 - [`docs/REBUILD_PLAN.md`](docs/REBUILD_PLAN.md) — **v2, paused at phase 2 of ~8.** Not active work. Referenced
   only as the R&D kit the v1 items harvest from (`NarraSerializer`, the Core-split pattern, `TypeCache` spec).
+- [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) — survey of the plugin fork living in the
+  *Pseudo World Gaia* project (32 new files, 54 modified), tiered by value with a recommended landing order.
+  The Tier A/B/C letters cited throughout this file refer to it. Also records what **not** to port — the
+  fork is frozen around Nov 2025, so several of its diffs are this repo being ahead, and a dozen of its files
+  depend on paid Odin Inspector.
 - [`docs/task-system-handoff.md`](docs/task-system-handoff.md) — how this three-file system works.
 
 ---
@@ -251,6 +332,18 @@ Larger builds that each have their own design doc — read the linked handoff be
   — nodes derive from xNode's `Node : ScriptableObject` and cannot move; pushing past that boundary *is* the v2
   rewrite. Genuine "harden for the long haul" value, but no buyer perceives it. **Skip entirely if the 30-day
   measurement comes back flat.**
+- [ ] **Tier C generic node adds (port-back)** — `MinFloatNode`/`MaxFloatNode`,
+  `GetDistanceBetweenGameObjectsNode`, `RemoveBlackboardVariableNode`/`RemoveInstanceBlackboardVariableNode`
+  (the `Blackboard.Remove(key, Type)` API already exists here — the nodes were simply never written, an obvious
+  gap next to the existing Set/Get nodes), `ClearRunningNodesNode`, `FirstTimeConditionalNode`,
+  `PrefabNounIngredient`, `SetImageFillToStat`. Each is small and dependency-free. Cheap riders on any of the
+  work above rather than an evening of their own. *(from inbox 2026-08-11 — Tier C)*
+- [ ] **Choice-authoring ergonomics + small API additions (port-back)** — `OfferChoicesNode.AddChoiceNode`
+  gaining add-at-top as well as add-at-bottom; `Blackboard.UniqueKey(string, params object[])`;
+  `NounInstance.HasProperties`/`IsValid` and `AddRelationship` returning the instance instead of dropping the
+  call; `NarramancerSingleton.GetInstance(GameObject)`/`GetInstancesWithProperty`; `ListExtensions.TryChooseOne`;
+  moving `Instancable` out of `CreateInstanceNode` into `IInstancable.cs` where it belongs. Grab these
+  opportunistically when touching the surrounding file. *(from inbox 2026-08-11 — Tier B9/B10)*
 - [ ] **Triage the 28 in-code `// TODO` comments** — mostly node-level polish and editor papercuts (predicate
   options on `OfferObjectsAsChoicesNode`, name-input dialogs in `ActionVerbListDrawer`, stat handling without
   min/max in `StatInstance`). Worth one pass to promote the few that matter and delete the rest, rather than
