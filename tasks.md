@@ -107,16 +107,9 @@ recorded before anything changes anyway.
   fetch. Check in a logged-out browser. Pure diagnostic, changes nothing. If blank, that alone plausibly
   explains 22 favorites against ~0 sales, and it means the listing has never had a fair test — which *raises*
   the value of launching from a hardened build rather than re-running a broken launch.
-- [ ] **Review and commit the license change** — drafted 2026-08-11, not yet reviewed or committed.
-  [`LICENSE`](LICENSE) is now PolyForm Noncommercial 1.0.0 (canonical text) with a scope preamble;
-  [`LICENSE-APACHE-2.0.txt`](LICENSE-APACHE-2.0.txt) preserves the prior grant; [`LICENSING.md`](LICENSING.md)
-  is the plain-language summary. Read both before committing — this is the one item here with legal weight, and
-  it's worth an hour of your own eyes even though the license text itself is unmodified boilerplate.
-  - **Commit it as its own commit**, so the effective date is unambiguous (the preamble anchors the change to
-    "the commit that introduced this file").
-  - **Never call it "open source"** in the listing, README, narramancer.com, or any forum post — PolyForm
-    Noncommercial is not OSI-approved. Say **"source-available."** See `LICENSING.md`.
-  - Set up a CLA/DCO *before* accepting any external pull request, or future licensing changes get blocked.
+- [ ] **Set up a CLA or DCO before accepting any external pull request** — not urgent (no external PRs yet), but
+  contributions accepted without one land under terms that can block a future licensing change. Cheap now,
+  expensive to retrofit. See [`LICENSING.md`](LICENSING.md).
 - [ ] **Fix `FindObjectsOfType` deprecation warnings** — fix the wrapper once at
   `Assets/Narramancer/Scripts/Extensions/GameObjectExtensions.cs:13`
   (`→ FindObjectsByType<T>(FindObjectsSortMode.None)`), which covers everything routed through it. Then the
@@ -203,7 +196,12 @@ Everything here goes out together, on a build that already has the new serialize
   `Graph`) for high-intent terms: `save system`, `save and load`, `game state`, `serialization`, `checkpoint`,
   `save anywhere`, `visual novel`, `dialogue`. Also confirm which category is primary.
 - [ ] **Rewrite README as a landing page** — demo GIF at top, one paragraph, link to the listing. Currently
-  it's feature documentation. Repos rank in Google for queries the Asset Store page never will.
+  it's feature documentation. Repos rank in Google for queries the Asset Store page never will. Add a short
+  licensing line pointing at [`LICENSING.md`](LICENSING.md) — "free for noncommercial use; commercial use needs
+  an Asset Store license" is a feature, stated plainly.
+  - ⚠️ **Say "source-available," never "open source"** — here, on the listing, on narramancer.com, and in any
+    forum post. PolyForm Noncommercial is not OSI-approved, and the distinction gets policed hard in developer
+    communities. Getting it wrong turns a selling point into an argument.
 - [ ] **Content-level secret scan of git history** — a filename scan across all history came back clean (no
   `.env`, `.pem`, `*key*`, `*token*`, `*credential*` ever added). Run `gitleaks` or `trufflehog` for a content
   pass before leaning on the repo as a channel.

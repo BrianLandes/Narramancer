@@ -38,8 +38,11 @@ Archive of completed tasks and finished phases, moved here from
   *Effect on the abandonment pitch* (the load-bearing objection for a save system): mostly unchanged. Buyers
   still get perpetual rights plus full source access; what they lose is the theoretical ability of a
   *non-purchaser* to fork and ship commercially — which is the point.
-  Drafted in `LICENSE` / `LICENSE-APACHE-2.0.txt` / `LICENSING.md`; **review and commit is still an open task**
-  in `tasks.md` §1.
+  *Shipped* in `LICENSE` (scope preamble + verbatim upstream PolyForm text, verified byte-identical to the
+  canonical `.txt` from polyformproject.org), `LICENSE-APACHE-2.0.txt` (previous grant preserved, verified
+  identical to the old `LICENSE`), and `LICENSING.md` (plain-language summary). Reviewed and approved by Brian
+  before the commit.
+  *Still open, low urgency:* set up a CLA/DCO before accepting any external pull request — `tasks.md` §1.
 
 - [x] **Decided: Core extraction (B5) stays gated behind the 30-day marketing measurement.** It's the item most
   likely to eat a month of evenings for benefits no buyer can perceive, and it's the gateway to scope-drifting
