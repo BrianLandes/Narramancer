@@ -40,6 +40,23 @@ base64 thumbnail and **14 KB is the actual Odin payload**.
 | `$rlength` / `$rcontent` | collection length + items | 14 |
 | `$k` / `$v` | dictionary entry key/value | 5 |
 
+### A second, much richer corpus — 40 real saves
+
+`~/Exodus_2026/Unity Projects/*/Assets/Saves/` holds **40 further Narramancer saves across 6 projects**
+(Cult Leader 19, SoC Packages 10, Shroom Tycoon 7, Show Surprise 2, Equipment System 1, My project 1). All 40
+parse as the same wrapper. This is a far better test corpus than the sample scene, and it answers empirically
+what §7 previously listed as an open question.
+
+**Aggregate shape:** 66 distinct types, 10,752 `$id`s, 3,209 `$iref`s, 8,474 dictionary entries, and
+**4,095 external Unity references across 2,608 object-list entries**.
+
+Two things it revealed that the single sample save did not — both material, see §2.
+
+> **Use these as golden files.** Any two of the largest (Cult Leader, Shroom Tycoon) exercise more of the
+> format than any test we'd write by hand. Note that a few saves reference `SubPropertyInstance` and
+> `PropertyRelationshipInstance`, which **do not exist in v1** — they're from the Pseudo World Gaia fork, so
+> those particular files are for reference, not as pass/fail fixtures.
+
 ### What that tells us is in the graph
 
 - **Polymorphism** everywhere — `AdjectiveInstance` subclasses, `StringObjectDictionary` holding arbitrary
@@ -125,6 +142,10 @@ identity. What this means in practice:
   resolves to the wrong object or none — a save that silently loads the wrong node into a resumed verb.
 - **In the editor it is not stable at all.**
 
+**Scale, from the 40-save corpus:** the sample scene's save has 3 external references. Real project saves carry
+**4,095 across 2,608 object-list entries** — averaging ~65 session-local asset pointers per save, peaking far
+higher. The exposure isn't a corner case; it's most of what a real save points at.
+
 For a plugin whose headline feature is save/load, "your players' saves break when you patch your game" is the
 worst possible failure. **The replacement must key Unity references by asset GUID**, not instanceID.
 
@@ -147,6 +168,23 @@ and a **baked manifest** ScriptableObject for builds, since `AssetDatabase` does
 That is a **compiler-generated lambda closure** from `PrintTextNode`, serialized by type name. There are
 **14 `WhenDone(() => ...)` sites** across the node library, so ~14 such classes.
 
+**The corpus proves the fragility is real, not theoretical.** Across the 40 saves plus this repo's,
+`PrintTextNode` has serialized closures under **three different ordinals**:
+
+| Save origin | Type written |
+|---|---|
+| this repo, 2026-08-11 | `PrintTextNode+<>c__DisplayClass22_0` |
+| other projects (14 saves) | `PrintTextNode+<>c__DisplayClass1_0` |
+| other projects (2 saves) | `PrintTextNode+<>c__DisplayClass19_0` |
+
+Same class, same purpose, three names — because the suffix is a **method ordinal assigned by the compiler**,
+and it moved as the source file changed. `OfferObjectsAsChoicesNode` shows the same drift (`13_0` and `36_0`).
+A save written before an edit to the node's source cannot resolve its continuation afterwards. **Editing a node
+file can silently invalidate saved games**, and nothing warns you.
+
+Seven distinct closure types appear in the corpus, plus two occurrences of a bare **`System.Action`** — a raw
+delegate serialized directly, which is worse still.
+
 The good news: for the *serializer*, a closure is just a POCO with fields. `<>4__this` and `runner` reflect
 fine, and `SerializableAction` already handles resolving the method. **The serializer does not have to be
 clever here — it has to not care.** Requirements it imposes are only:
@@ -163,13 +201,22 @@ The bad news is what this design costs regardless of serializer:
 v2. Continuations are **data**: a deque of `RunnerPosition { GraphId, NodeId }`, and `Finished` is a plain
 non-serialized C# event the host subscribes to. Nothing about the continuation touches a delegate.
 
-**Recommendation: keep v1's closure model for this port.** Swapping the continuation model is `NodeRunner`
-surgery, not serializer work — it is the top of the slope back into the v2 rewrite. The serializer port is
-already the risky item; do not bundle an execution-model change into it. Record the closure fragility as a
-known limitation, and revisit only if it actually bites.
+**Recommendation, in three parts** (the middle one changed once the corpus showed the ordinal actually drifting
+— it was written off as a theoretical risk before that):
 
-*(If it does bite, the smallest honest fix is to replace the 14 lambdas with named private methods on the
-node, which are stably named and resolvable — a much smaller change than adopting v2's deque.)*
+1. **Do not adopt v2's position deque.** That's `NodeRunner` surgery, not serializer work, and it's the top of
+   the slope back into the paused rewrite. The serializer port is already the risky item; don't bundle an
+   execution-model change into it.
+2. **Do fail loudly on an unresolvable closure type** — cheap, and it belongs in this port. Today an
+   unresolved `$type` degrades to a null callback, so a resumed verb just quietly never continues. A save that
+   refuses to load with "this save was written by a different build" is strictly better than one that loads
+   into a stuck story.
+3. **Treat the named-method conversion as a separate, later task**, not part of this port. Replacing the 14
+   `WhenDone(() => ...)` lambdas with named private methods removes the generated classes entirely.
+   **It isn't free, though:** these closures capture locals (the observed one captures `runner`), and `Action`
+   takes no parameters — so each site needs its captured state relocated somewhere serializable first. Roughly
+   1–2 evenings, and it's independent of the serializer. Worth doing before the plugin has users whose saves
+   would break; not worth entangling with this port.
 
 ---
 
@@ -226,8 +273,10 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
 ## 5. How we'll know it worked
 
 1. **The round-trip test** (Phase 1) passes against the new serializer.
-2. **Golden-file check**: deserialize the *existing* Odin save with the old path, re-serialize with the new one,
-   and compare the resulting object graphs field-by-field. Cheaper and far more convincing than eyeballing JSON.
+2. **Golden-file check against the 40-save corpus** (§0): deserialize each existing Odin save with the old path,
+   re-serialize with the new one, and compare the object graphs field-by-field. Cheaper and far more convincing
+   than eyeballing JSON, and it covers 66 types rather than the ~20 a hand-written test would reach. Exclude the
+   few fork-only files (`SubPropertyInstance`, `PropertyRelationshipInstance`).
 3. **The patch test**: save → add an asset → rebuild → load. Must pass, and it's the one that fails today.
 4. **Task Z build smoke** on IL2CPP and WebGL — mandatory, since AOT is exactly where a reflection-based
    serializer breaks and no EditMode test can see it.
@@ -244,14 +293,19 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
 2. **Build-time reference resolution — baked manifest, or Addressables?** Recommend a baked manifest
    ScriptableObject; Addressables is a dependency this plugin shouldn't take on.
 3. **Namespace** — `Narramancer.Serialization` (suggested) vs matching v2's `Narramancer.Core.Serialization`.
-4. **Does the `Saveable` refactor land before or after this?** They both touch the save format and both are
+4. **Named-method conversion — before the launch, or after?** Independent of this port (§2B part 3), ~1–2
+   evenings. The argument for before: it's another "free only while there are no users" change, and editing a
+   node file currently invalidates saves silently.
+5. **Does the `Saveable` refactor land before or after this?** They both touch the save format and both are
    free only in the zero-user window. Driver `StateType`s are deliberately simple structs, so the ordering is
    flexible — but doing the serializer first means the `Saveable` work is written against its final format.
 
 ## 7. Open questions
 
-- Full type inventory reachable from `StoryInstance` — Phase 3 produces it; it may surface types beyond the ten
-  features above.
+- ~~Full type inventory reachable from `StoryInstance`~~ — **answered** by the 40-save corpus: 66 distinct
+  types, listed by frequency in the §0 analysis. Notably beyond the sample scene: `UnityEngine.Rect`/`Vector2`/
+  `Color`/`Quaternion`/`Vector3`, `ChoicePrinter+VisibleChoice`, `SerializeRectTransform+SerializedRectTransform`,
+  `List<ScriptableObject>`, `List<object>`, `System.Type[]`, and a bare `System.Action`.
 - Does anything rely on Odin's `$type` **numeric table** for size? The payload is 14 KB; even a 2–3x expansion
   is irrelevant next to the 150 KB thumbnail.
 - `SerializableTimer`, `NounUID`, `Flag` (used as a *dictionary key*) — key types need stable equality under the
