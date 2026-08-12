@@ -41,6 +41,11 @@ namespace Narramancer {
 				var gameObjectA = GetInputValue(context, nameof(this.gameObjectA), this.gameObjectA);
 				var gameObjectB = GetInputValue(context, nameof(this.gameObjectB), this.gameObjectB);
 
+				if (gameObjectA == null || gameObjectB == null) {
+					Debug.LogError("Both GameObjects must be assigned to compare their distance", this);
+					return false;
+				}
+
 				var distance = GetInputValue(context, nameof(this.distance), this.distance);
 				var sqrDistance = distance * distance;
 

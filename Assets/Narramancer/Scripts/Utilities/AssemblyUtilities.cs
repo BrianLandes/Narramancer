@@ -288,7 +288,10 @@ namespace Narramancer {
 			return resultList;
 		}
 
-		private static Regex typeNameRegex = new Regex(@"([a-zA-Z_\-0-9]*)\.([a-zA-Z_\-0-9]*), ([\.a-zA-Z_-]*), Version[=0-9\.]*");
+		// Group 1 is the namespace, group 2 the class name. The namespace segment must allow dots or any type in
+		// a nested namespace (Narramancer.Nodes.Foo) fails to match at all; the quantifier is greedy, so the
+		// last dotted segment lands in group 2 as the class name.
+		private static Regex typeNameRegex = new Regex(@"([a-zA-Z_\-0-9\.]*)\.([a-zA-Z_\-0-9]*), ([\.a-zA-Z_-]*), Version[=0-9\.]*");
 
 		public static Type GetType(string assemblyQualifiedName) {
 			if (assemblyQualifiedName.IsNullOrEmpty()) {

@@ -23,7 +23,7 @@ namespace Narramancer {
 			if (!AssetDatabase.IsMainAsset(serializedObject.targetObject)) {
 				EditorDrawerUtilities.RenameField(serializedObject.targetObject, ref renaming);
 				
-				EditorDrawerUtilities.DuplciateNodeGraphField(serializedObject.targetObject);
+				EditorDrawerUtilities.DuplicateNodeGraphField(serializedObject.targetObject);
 
 				EditorDrawerUtilities.ExtractChildNodeGraphField(serializedObject.targetObject);
 			}
@@ -32,7 +32,7 @@ namespace Narramancer {
 
 
 			if (EditorGUI.EndChangeCheck()) {
-				var graph = target as NarramancerGraph;
+				var graph = target as VerbGraph;
 				graph.ValidatePorts();
 			}
 			

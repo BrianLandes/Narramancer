@@ -15,11 +15,14 @@ namespace Narramancer {
 			get => value;
 			set {
 				this.value = value;
+				// Clamp against this.value, not the incoming parameter: reading `value` here made the second
+				// clamp recompute from the unclamped input, silently discarding the first. A stat with both a
+				// min and a max only honored the max.
 				if (Adjective.MinValue.activated) {
-					this.value = Mathf.Max(value, Adjective.MinValue.value);
+					this.value = Mathf.Max(this.value, Adjective.MinValue.value);
 				}
 				if (Adjective.MaxValue.activated) {
-					this.value = Mathf.Min(value, Adjective.MaxValue.value);
+					this.value = Mathf.Min(this.value, Adjective.MaxValue.value);
 				}
 			}
 		}

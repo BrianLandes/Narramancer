@@ -22,7 +22,7 @@ namespace Narramancer {
 		UnityEngine.Object draggedElement;
 
 		string search;
-		public static Texture2D cross { get { return _cross != null ? _cross : _cross = Resources.Load<Texture2D>("d_winbtn_win_close@2x"); } }
+		public static Texture2D cross { get { return _cross != null ? _cross : _cross = EditorGUIUtility.IconContent("winbtn_win_close").image as Texture2D; } }
 		private static Texture2D _cross;
 		void DrawObject(Rect position, UnityEngine.Object @object) {
 			var name = @object.name;

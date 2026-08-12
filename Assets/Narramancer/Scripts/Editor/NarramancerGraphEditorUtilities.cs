@@ -79,15 +79,18 @@ namespace Narramancer {
 
 				bucket.Add(runnableNode);
 
+				// Both walks stop on a node already in the bucket. Without that, a cyclic graph — which is
+				// legal to author — revisits the same node forever and hangs the editor, growing the bucket
+				// unboundedly as it goes.
 				var node = runnableNode.GetConnectedInputRunnableNodes().FirstOrDefault();
-				while (node != null && nodes.Contains(node)) {
+				while (node != null && nodes.Contains(node) && !bucket.Contains(node)) {
 					bucket.Add(node);
 					node = node.GetConnectedInputRunnableNodes().FirstOrDefault();
 				}
 
 				if (runnableNode is ChainedRunnableNode chainedRunnableNode && chainedRunnableNode.TryGetNextNode(out node)) {
 
-					while (node != null && nodes.Contains(node)) {
+					while (node != null && nodes.Contains(node) && !bucket.Contains(node)) {
 						bucket.Add(node);
 						if (node is ChainedRunnableNode c) {
 							node = c.GetNextNode();

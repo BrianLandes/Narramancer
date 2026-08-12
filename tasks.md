@@ -110,21 +110,12 @@ recorded before anything changes anyway.
 - [ ] **Set up a CLA or DCO before accepting any external pull request** — not urgent (no external PRs yet), but
   contributions accepted without one land under terms that can block a future licensing change. Cheap now,
   expensive to retrofit. See [`LICENSING.md`](LICENSING.md).
-- [ ] **Fix the `#if ODIN_INSPECTOR` branch of `VerbGraphInspector`** — it does not compile: line 26 calls
-  `DuplciateNodeGraphField` (typo'd; the method is `DuplicateNodeGraphField`) and line 35 casts `target as
-  NarramancerGraph`, a type that doesn't exist in this repo. Dead code here — this repo has no Odin Inspector —
-  but it's the **only** branch an Odin Inspector owner compiles, i.e. exactly the buyer segment §2's Odin
-  removal exists to protect. Two lines, and the highest value-per-line item in the port-back survey.
-  *(from inbox 2026-08-11 — Tier A1)*
-- [ ] **Tier A bug-fix batch** — nine more small, independent defects found in the Pseudo World Gaia fork, each
-  1–10 lines, none needing the test net. See [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md)
-  §"Tier A" for the file:line table. Headline three: `StatInstance` silently discards the min clamp (it re-reads
-  the parameter instead of the already-clamped field), `AddRelationshipNode` has `||` where `&&` was meant, and
-  two `while` loops in `NarramancerGraphEditorUtilities` hang the editor on a cyclic graph. ~1 evening for all
-  nine. ✅ **Update 2026-08-11:** the nested-namespace AQN regex fix is **no longer subsumed** — the `TypeCache`
-  swap landed but deliberately *kept* the fuzzy-AQN fallback (removing it could break `SerializableType` fields
-  whose scripts moved assemblies). So do all nine, that one included.
-  *(from inbox 2026-08-11 — Tier A2–A10)*
+- [ ] **A10 — log a null target object in `AbstractDynamicMethodValueNode`** — the one Tier A item left; the
+  other nine landed 2026-08-12. Deliberately deferred rather than done: a null target is **legitimate** for
+  `CallStaticMethodRunnableNode` (static calls), so an unconditional log spams the console on a correct path.
+  Doing it properly means exposing staticness on `SerializableMethod`, whose `methodInfo` is `[NonSerialized]`
+  and lazily resolved — more than the 1–10 lines the rest of Tier A cost, for a purely cosmetic gain. Fold it
+  into whatever next touches `SerializableMethod`. *(from inbox 2026-08-11 — Tier A10)*
 
 ---
 

@@ -101,6 +101,11 @@ namespace Narramancer {
 		}
 
 		public override GUIStyle GetPortStyle(NodePort port) {
+			// A dynamic port has no ValueType while it is mid-rebuild, and the editor still repaints during
+			// that window, so both of these have to be tolerated rather than assumed.
+			if (port == null || port.ValueType == null) {
+				return base.GetPortStyle(port);
+			}
 			if (port.ValueType.IsAssignableFrom(typeof(RunnableNode))) {
 				if (runnablePortStyle == null) {
 

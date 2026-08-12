@@ -17,6 +17,44 @@ Archive of completed tasks and finished phases, moved here from
 
 ---
 
+## Completed 2026-08-12
+
+- [x] **Tier A bug-fix batch — 9 of 10 landed** (A10 deferred with reason, see `tasks.md` §1). All from the
+  Pseudo World Gaia port-back survey; see `docs/UPSTREAM_PORT_SCOPE.md` for the original table. Compiles clean,
+  24/24 EditMode tests still pass.
+  - **A1 `VerbGraphInspector`** — the `#if ODIN_INSPECTOR` branch didn't compile: a typo'd
+    `DuplciateNodeGraphField` and a cast to `NarramancerGraph`, a type that doesn't exist here (→ `VerbGraph`,
+    matching the `#else` branch). Two lines. **Highest value-per-line in the survey:** it's dead code in this
+    repo but the *only* branch an Odin Inspector owner compiles — i.e. exactly the buyer segment the §2 Odin
+    removal exists to protect.
+  - **A2 `StatInstance`** — the min/max clamp read the incoming parameter instead of the already-clamped field,
+    so the second clamp recomputed from the unclamped input and silently discarded the first. **A stat with
+    both a min and a max only honored the max.**
+  - **A3 `AddRelationshipNode`** — `||` where `&&` was meant; null-dereferenced whenever exactly one of
+    instance/relationship was set, i.e. precisely the case the guard existed to catch.
+  - **A4 `NounInstancesQuery`** — `Equals`/`GetHashCode` null-dereferenced on an unset property array. Both now
+    treat null and empty as the same thing ("no constraint") and **agree with each other**, which is required:
+    this struct is a dictionary key in `NarramancerSingleton.queryInstancesTable`, so a hash/equals
+    disagreement would corrupt lookups rather than just throw. *(Wrote the guard directly rather than porting
+    the fork's, which had a typo — one branch compared `mustHaveProperties` against `mustNotHaveProperties`.)*
+  - **A5 `GameObjectDistanceCheckNode`** — no null check before reading `.transform` on either GameObject.
+  - **A6 `VerbGraphEditor.GetPortStyle`** — no guard for a null port or null `ValueType`; threw while a dynamic
+    port was mid-rebuild, which the editor can repaint during.
+  - **A7 `NarramancerGraphEditorUtilities`** — two `while` loops with no visited-set, so a **cyclic graph hung
+    the editor** and grew the bucket unboundedly. Both now stop on a node already collected.
+  - **A8 `NamedPrimitiveValueListDrawer` + `NounScriptableObjectListDrawer`** — both cached
+    `Resources.Load<Texture2D>("d_winbtn_win_close@2x")`, which resolves to `null` because that's a built-in
+    editor icon, not a Resources asset; the search-clear button rendered blank. Now
+    `EditorGUIUtility.IconContent("winbtn_win_close")`.
+  - **A9 `AssemblyUtilities` fuzzy-AQN regex** — matched only a *single-segment* namespace, so any type in a
+    nested namespace failed the fallback entirely. **Verified after the fix:** `A.B.C.MyType` → `MyType`,
+    `Deep.Nested.Name.Space.Thing` → `Thing`, single-segment and `UnityEngine.*` still fine, `GetType`
+    round-trip intact.
+    *This one was nearly skipped:* the survey flagged it as subsumed if the `TypeCache` work deleted the fuzzy
+    fallback — but that deletion was deliberately **not** done (see 2026-08-11), so A9 was still live.
+
+---
+
 ## Completed 2026-08-11
 
 - [x] **Swapped the assembly scanner to `UnityEditor.TypeCache`** — `AssemblyUtilities.GetAllTypes(Type)` and
