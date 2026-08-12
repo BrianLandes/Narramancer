@@ -76,15 +76,38 @@ existing `#A54657`).
   spark-pink. This single idea sells "living, resumable behavior" better than any bullet list.
 - **Avoid the dev-tool clichés:** gears, brackets `</>`, puzzle pieces, generic circuit boards. They read cheap.
 
-## Logo direction (the current one isn't working — here are three to choose from)
-The **wordmark "Narramancer"** in the display face is the anchor; pair it with a compact **mark** that works
-at a 32px store icon:
-- **A · Node-sigil "N".** A small sigil built from connected nodes that implies an "N" (or a rune), one node
-  glowing spark-pink. Says *node graph* (robust) + *magic* (the glow). Best all-rounder.
-- **B · The Spark node.** A single stylized node/orb with a pink pulse and two wire stubs — iconic, dead
-  simple, scales tiny. Emphasizes the "running/alive" superpower. Best pure app-icon.
-- **C · Arcane connector-rune.** A minimal rune that doubles as a graph connector — most mystical, riskier.
-Recommend **A** for the wordmark lockup, **B** for the standalone app/store icon; they share the glowing-node idea.
+## Logo (✅ chosen: the node-sigil "N")
+**Direction A — the node-sigil "N".** Four connected nodes form the strokes of an "N"; the corner nodes are
+neutral (mist), and **the top-left node is "alive"** — spark-pink with a soft glow. It says *node graph*
+(robust) and *the running/living spell* (fun/magic) in one mark, and it's the origin of the stroke, so the
+eye starts there. Pair with the **"Narramancer"** wordmark (Narra in paper, mancer in slate).
+- **Alive node = top-left**, always. That single glowing node is the brand's recurring tell (it reappears in
+  the top-left of every object icon — see below).
+- **App/store icon:** the "N" mark alone in a rounded-square Ink tile (the same frame as the object icons).
+- Retired: the illustrative spellbook icon (off-brand vs the node system; reads clip-arty).
+
+## Object icon system (the bespoke ScriptableObjects)
+Every Narramancer asset icon is built from **one recipe** so the set reads as a family in the Project window,
+while each type reads as itself. Replaces the current mismatched set (an illustrative spellbook + stark B&W
+glyphs). Every icon = three ingredients:
+1. **Ink frame** — a rounded-square node tile (`ink-800 #0F2130` on a `ink-700 #17324A` border). The shared body.
+2. **The brand tell** — a small glowing node in the **top-left** corner (the logo's alive node), in the
+   type's accent. Same corner, every icon — the thread that ties the set to the mark.
+3. **Accent glyph** — a mark in **node-graph vernacular** (nodes, wires, a shape), in the type's accent color.
+
+**Glyph = the type · color = its role:**
+| Asset | Accent | Glyph |
+|---|---|---|
+| **Noun** | arcane `#9B5DE5` | a solid node with an orbit ring — the entity everything attaches to |
+| **Action Verb** | spark `#EF476F` | a node with a ▶ play mark + a flow arrow — behavior that *runs* |
+| **Value Verb** | azure `#118AB2` | a node with a return arrow — hands a value back, instantly |
+| **Property** | gold `#FFD166` | a tag — a quality a noun has or hasn't |
+| **Stat** | flow `#06D6A0` | rising bars — a number that changes |
+| **Relationship** | arcane-lite `#C77DFF` | two nodes + a directional arrow (A → B) |
+| **Flag** | slate `#63768D` | a pennant — a global state marker |
+
+- **Legibility:** glyphs are simple enough to read at ~20px (the Project-window size). Test every icon there.
+- **Consistency = the frame + the top-left node.** Distinctiveness = the glyph. Never break the frame to be clever.
 
 ## Applying it per layer
 - **Editor tools:** already the closest — formalize `ink-*` for chrome, the semantic type colors for ports,
