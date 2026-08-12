@@ -109,6 +109,17 @@ glyphs). Every icon = three ingredients:
 - **Legibility:** glyphs are simple enough to read at ~20px (the Project-window size). Test every icon there.
 - **Consistency = the frame + the top-left node.** Distinctiveness = the glyph. Never break the frame to be clever.
 
+**Coverage (v1 project scan):**
+- ✅ *Done* — the 7 above + **RankedWeightedAction** (gold; a source node fanning weighted arrows) + the
+  **app/package icon** = the node-sigil "N" in the Ink tile (replaces the old spellbook; wired to
+  `NarramancerSingleton`).
+- *No icon needed* — abstract/runtime types that aren't createable assets (`AdjectiveInstance`, `VerbGraph`,
+  `AdjectiveScriptableObject`, `Singleton` bases). `AbstractIngredient` only if ingredients stay user-facing.
+- *Next (optional polish)* — **component icons** for the menu-registered MonoBehaviours (`NarramancerScene`,
+  `RunActionVerbMonoBehaviour`, `SerializableSpawner`, `CreateNounForGameObject`,
+  `SetGlobalVariablesMonoBehaviour`, and the future `Saveable`): same Ink-tile frame, a node-graph glyph.
+  Sample-only UI components (printers, save/load menus) are lowest priority.
+
 ## Applying it per layer
 - **Editor tools:** already the closest — formalize `ink-*` for chrome, the semantic type colors for ports,
   `spark-500` for running/selected. Pull hex values from this doc (later: a shared `TypeColorService`-style
