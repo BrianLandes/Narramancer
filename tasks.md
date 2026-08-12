@@ -160,13 +160,25 @@ of the section.
   index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
   and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
   break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
-- [ ] **Remove OdinSerializer** — a buyer who owns Odin Inspector hits a duplicate-assembly conflict because
-  both ship OdinSerializer. That's a conversion blocker, not cleanup. Scope is far smaller than the 186
-  vendored files suggest: **exactly 2 call sites**, both JSON-only, both in
-  `Assets/Narramancer/Scripts/Utilities/SaveLoadUtilities.cs` (lines 56 and 82). Port `NarraSerializer` from
-  v2 behind those two calls, then delete the `Narramancer.OdinSerializer` assembly. Ship a `schemaVersion` in
-  the envelope from day one; fail with a clear "incompatible save" message rather than a crash.
-  *(needs the test net)*
+- [ ] **Prove the `instanceID` reference bug** — ~1 evening, **do this before the serializer work**, it sizes
+  everything else. Odin's external Unity refs land in the save as `"objects": [{"instanceID": 4206}, ...]`
+  (confirmed in a real save file). An instanceID is assigned by the running process — it is **not** a
+  persistent asset identity. Same-build restart usually works (which is why Task Z passed); **shipping a patch
+  can break every existing save.** The test: save in a build → add a dummy asset → rebuild → load the old save.
+  If it breaks, the Odin removal stops being a refactor and becomes a correctness fix, and the GUID-keyed
+  reference resolver moves from nice-to-have to required.
+- [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
+  before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
+  OdinSerializer — a conversion blocker, not cleanup. Port v2's `NarraSerializer` (~1,300 LOC) behind the two
+  `SerializationUtility` calls in `SaveLoadUtilities.cs`, then delete the vendored assembly. Ship a
+  `schemaVersion` from day one. ~7–9 evenings after the test net. *(needs the test net)*
+  - ⚠️ **The trap:** v2's field policy is "public or `[NarraSerialize]`", but v1 marks private fields
+    `[SerializeField]`. Ported verbatim it **silently skips almost the whole save** and still parses. Fix the
+    policy first.
+  - Three known gaps in the v2 code: the field policy above, `CollectionInfo` matching only exact
+    `Dictionary<,>` (v1's `SerializableDictionary` *derives* from it), and no `System.Type` support
+    (`SerializableType._type`).
+  - Free coverage: v2's `dotnet/Narramancer.Core.Tests/Serialization/` tests port straight across.
 - [ ] **Saveable refactor — one component + drivers** — see
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design. Do it adjacent
   to the Odin removal; both touch the save format.
@@ -289,6 +301,8 @@ Larger builds that each have their own design doc — read the linked handoff be
   and engineering tracks interlock, sequencing, risks. **Read this first.**
 - [`docs/narramancer-v1-handoff.md`](docs/narramancer-v1-handoff.md) — validation/marketing handoff:
   competitive landscape, the diagnosis, the measurement plan.
+- [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) — feature inventory read off a real save file, the
+  gaps in v2's serializer, the two landmines (instanceID refs, serialized closures), and a 6-phase plan.
 - [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) — full design for the single
   `Saveable` component + driver registry + GUID identity.
 - [`docs/V1_IMPROVEMENT_PLAN.md`](docs/V1_IMPROVEMENT_PLAN.md) — the original 5-item engineering plan.
