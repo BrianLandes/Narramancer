@@ -81,9 +81,9 @@ Two things it revealed that the single sample save did not — both material, se
 | 5 | `Dictionary<K,V>` | blackboards, `nodeRunners`, `promises`, `flags` | ⚠️ exact `Dictionary<,>` only | **must walk the base chain** |
 | 6 | Primitives + enums | everywhere | ✅ `Scalars` | widen (see below) |
 | 7 | Unity structs (`Vector3`, `Quaternion`, `Color`) | `Saveable` driver state, tweens | ✅ falls out of field reflection | none |
-| 8 | **`System.Type` values** | `SerializableType._type` (a `RuntimeType`) | ❌ | **new** |
+| 8 | **`System.Type` values** | `SerializableType._type` (a `RuntimeType`) | ❌ | **new — or deleted entirely, see §2B** |
 | 9 | **External Unity object references** | nodes, nouns, adjectives, sprites | ⚠️ `$assetRef` seam exists, no Unity impl | **new + a correctness fix** |
-| 10 | **Compiler-generated closure classes** | `Promise.doneCallbacks` | ❌ never faced it | **the hard one — see §2** |
+| 10 | **Compiler-generated closure classes** | `Promise.doneCallbacks` | ❌ never faced it | **avoidable — do §2B first and this disappears** |
 
 ### 1a. The field-selection policy is wrong for v1 — fix this first
 
@@ -149,12 +149,45 @@ higher. The exposure isn't a corner case; it's most of what a real save points a
 For a plugin whose headline feature is save/load, "your players' saves break when you patch your game" is the
 worst possible failure. **The replacement must key Unity references by asset GUID**, not instanceID.
 
-v2 already has the right seam: `IReferenceResolver` (`TryResolve(id, type, out asset)` / `TryGetId`) and the
-`$assetRef` handle. What's missing is a Unity implementation — `AssetDatabase.AssetPathToGUID` in the editor,
-and a **baked manifest** ScriptableObject for builds, since `AssetDatabase` doesn't exist there.
+#### This is a *different* GUID from the `Saveable` component's — both are needed
+
+Easy and expensive to conflate, so state it plainly. There are **two** identity problems:
+
+| | Question it answers | Identity | Where it lives |
+|---|---|---|---|
+| **Scene-object identity** | "Which GameObject does this saved state belong to?" | a minted GUID | `Saveable` component — see [`SAVEABLE_REFACTOR_HANDOFF.md`](SAVEABLE_REFACTOR_HANDOFF.md) |
+| **Asset identity** (Landmine A) | "Which *asset* does this saved reference point at?" | Unity's **asset GUID**, already in the `.meta` file | a new `UnityReferenceResolver` |
+
+The `Saveable` GUID does **not** help here, because none of the `$eref` targets are scene objects. They are
+project assets: `PrintTextNode` ScriptableObjects (xNode nodes *are* assets), `NounScriptableObject`,
+`PropertyScriptableObject`, sprites.
+
+**Proof that it's 100% assets:** `Blackboard.gameObjects` and `Blackboard.components` are both
+`[NonSerialized]` — scene references are deliberately never written to a save. So every one of the 4,095
+external references is an asset reference.
+
+Mechanism: `AssetDatabase.AssetPathToGUID` / `GUIDToAssetPath` in the editor, and a **baked manifest**
+ScriptableObject in builds, where `AssetDatabase` doesn't exist. **v1 already has the hook** —
+`SingletonBuildPreprocessor : IPreprocessBuildWithReport` calls `NarramancerSingleton.OnPreprocessBuild()`, so
+there is an existing build-time seam to populate the manifest from. The singleton already holds references to
+the noun/verb catalogue, so part of the manifest may fall out of what's there.
+
+v2 has the right seam on the Core side already: `IReferenceResolver` (`TryResolve(id, type, out asset)` /
+`TryGetId`) plus the `$assetRef` handle. Only the Unity implementation is missing.
 
 > **Worth proving before building anything.** Save in a build; add a dummy asset; rebuild; load the old save.
 > If it breaks, that's the bug demonstrated and this stops being a refactor and becomes a fix. One evening.
+
+#### One symptom, three causes
+
+"Saves break when the build or the scene changes" is a single observed symptom with three independent causes.
+All three are now tracked, and none of them fixes another:
+
+| Trigger | Cause | Fix |
+|---|---|---|
+| The **scene** changed | save keys are `path + component index` | `Saveable` GUID |
+| The **build** changed | asset refs are session-local instanceIDs | asset GUID (Landmine A) |
+| A **node's source file** changed | closure type names are compiler ordinals | Landmine B |
 
 ### Landmine B — the continuation is a serialized C# closure
 
@@ -185,38 +218,83 @@ file can silently invalidate saved games**, and nothing warns you.
 Seven distinct closure types appear in the corpus, plus two occurrences of a bare **`System.Action`** — a raw
 delegate serialized directly, which is worse still.
 
-The good news: for the *serializer*, a closure is just a POCO with fields. `<>4__this` and `runner` reflect
-fine, and `SerializableAction` already handles resolving the method. **The serializer does not have to be
-clever here — it has to not care.** Requirements it imposes are only:
-field reflection over compiler-generated names, `System.Type` support (#8), and external refs (#9).
+#### What the callbacks actually are — this reframes the whole problem
 
-The bad news is what this design costs regardless of serializer:
+The lambdas look general. They aren't. Every one is a one-liner, and the captured state is nearly always just
+"which runner":
 
-- `<>c__DisplayClass22_0` encodes a **method ordinal**. Add a lambda earlier in `PrintTextNode.cs` and the
-  suffix shifts — old saves silently fail to resolve their continuation.
-- It depends on `BinaryFormatter`-adjacent reflection that IL2CPP can strip.
-- It is why the save format is coupled to the compiler, not just to our types.
+```csharp
+// WaitNode        — captures: runner
+.WhenDone(() => { runner.Resume(); });
 
-**v2 deleted this problem rather than solving it.** There is no `Promise` or `SerializableAction` anywhere in
-v2. Continuations are **data**: a deque of `RunnerPosition { GraphId, NodeId }`, and `Finished` is a plain
-non-serialized C# event the host subscribes to. Nothing about the continuation touches a delegate.
+// PrintTextNode   — captures: runner, waitForContinue
+textPrinter.SetText(inputText, () => { if (waitForContinue) runner.Resume(); }, ...);
 
-**Recommendation, in three parts** (the middle one changed once the corpus showed the ordinal actually drifting
-— it was written off as a theoretical risk before that):
+// ParallelNode    — captures: subRunner
+.WhenDone(() => { NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner); });
+```
 
-1. **Do not adopt v2's position deque.** That's `NodeRunner` surgery, not serializer work, and it's the top of
-   the slope back into the paused rewrite. The serializer port is already the risky item; don't bundle an
-   execution-model change into it.
-2. **Do fail loudly on an unresolvable closure type** — cheap, and it belongs in this port. Today an
-   unresolved `$type` degrades to a null callback, so a resumed verb just quietly never continues. A save that
-   refuses to load with "this save was written by a different build" is strictly better than one that loads
-   into a stuck story.
-3. **Treat the named-method conversion as a separate, later task**, not part of this port. Replacing the 14
-   `WhenDone(() => ...)` lambdas with named private methods removes the generated classes entirely.
-   **It isn't free, though:** these closures capture locals (the observed one captures `runner`), and `Action`
-   takes no parameters — so each site needs its captured state relocated somewhere serializable first. Roughly
-   1–2 evenings, and it's independent of the serializer. Worth doing before the plugin has users whose saves
-   would break; not worth entangling with this port.
+**We are not serializing arbitrary functions — we're serializing a handful of fixed intentions.** Across the 14
+sites there are perhaps four or five distinct kinds ("resume this runner", "release this sub-runner", "resume
+if a flag"). That makes the problem far smaller than general delegate serialization.
+
+#### Recommended fix: a `Continuation` record
+
+Store a **stable identity for the code** plus its **arguments as data** — the durable-workflow / job-queue
+pattern. What can't be serialized safely is a *closure*, because its identity is compiler-generated; a named
+intention plus data has no such problem.
+
+This collapses neatly in v1 because runners are **already** addressed by string key in `story.NodeRunners`:
+
+```csharp
+[Serializable]
+public class Continuation {
+    public enum Kind { ResumeRunner, ReleaseSubRunner, ResumeIfFlag }
+    public Kind kind;
+    public string runnerKey;   // into story.NodeRunners — already how runners are addressed
+    public bool flag;          // the occasional captured primitive
+}
+```
+
+`Promise.doneCallbacks` becomes `List<Continuation>`. What that **deletes**:
+
+- the entire `SerializableActionHelper` plugin — `SerializableAction`, `SerializableMethodInfo`,
+  `SerializableObject`, `SerializableObjectOneLevel`/`TwoLevel`, `SerializableType`
+- serializer feature **#8 (`System.Type` support)**, needed only by `SerializableType._type`
+- serializer feature **#10 (closure reflection)** entirely
+- the `System.RuntimeType` and bare `System.Action` entries from the type inventory
+
+So it removes a vendored plugin *and* shrinks the serializer being ported. Roughly 1–2 evenings, independent of
+the serializer, and **cheapest done first** — then `NarraSerializer` never needs `System.Type` or
+compiler-generated-field support at all.
+
+#### Options considered and rejected
+
+**Adopt v2's position deque.** v2 deleted this problem rather than solving it: no `Promise` or
+`SerializableAction` exists there. Continuations are a deque of `RunnerPosition { GraphId, NodeId }`, and
+`Finished` is a plain non-serialized C# event. Correct, but it's `NodeRunner` surgery and the top of the slope
+back into the paused rewrite. **The `Continuation` record gets most of the benefit for a fraction of the risk.**
+
+**Named parameterless methods** (`promise.WhenDone(this.OnDone)`). Doesn't actually work on its own: the
+lambdas capture *locals* (`runner`, `waitForContinue`) and `Action` takes no parameters, so the captured state
+still needs a serializable home. Once you build that home you've built `Continuation` — so go there directly.
+
+**Fuzzy-match the closure by shape.** Search the outer type's nested compiler-generated classes and match on
+field names (`<>4__this`, `runner`, `waitForContinue`). **Rejected** — it fails precisely where it matters:
+
+- `OfferChoicesNode` emits `<>c__DisplayClass3_0` *and* `3_1` in the same save. Two lambdas with identical
+  capture shapes are indistinguishable.
+- Having guessed the class, you must still choose between `<Run>b__0` and `b__1` — the same ambiguity again.
+- It converts a loud failure into a silently **wrong** callback. For a save system that is strictly worse.
+- These names are documented compiler implementation details; no attribute or flag stabilizes them.
+
+#### Until it's fixed: validate at load, not at invoke
+
+Correcting an earlier claim in this doc: an unresolvable closure type does **not** degrade to a null callback.
+`SerializableType.Deserialize` does `throw new Exception("Could not deserialize type ...")`. But it throws
+**lazily** — from the `Action` getter, at *invoke* time — so the failure surfaces when the player triggers the
+continuation, long after the load that caused it. If the closure model survives into the port for any length of
+time, validate every callback type at **load** time and reject the save with a clear message there.
 
 ---
 
@@ -251,6 +329,11 @@ whether GUID references are a fix or just a nicety. Do this first — it sizes e
 **Phase 1 — the round-trip test net** *(gate, already in `tasks.md` §2)*. Non-negotiable. Author a story, run
 to a suspend point, save, deserialize, assert state and resume. Without it there is no way to know the new
 serializer is faithful.
+
+**Phase 1b — replace closures with `Continuation`** *(~1–2 evenings, §2B)*. Independent of the serializer, and
+cheapest here: doing it before the port means features #8 and #10 never have to be built. Deletes the
+`SerializableActionHelper` plugin. Skippable if you'd rather port first — but then build #8 and #10, and add
+load-time callback validation.
 
 **Phase 2 — port the engine-agnostic core** *(~2 evenings)*. Json + writer/reader + type resolver, with the
 three modifications from §1. Port v2's tests alongside. No v1 wiring yet — it compiles and tests standalone.
@@ -293,9 +376,10 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
 2. **Build-time reference resolution — baked manifest, or Addressables?** Recommend a baked manifest
    ScriptableObject; Addressables is a dependency this plugin shouldn't take on.
 3. **Namespace** — `Narramancer.Serialization` (suggested) vs matching v2's `Narramancer.Core.Serialization`.
-4. **Named-method conversion — before the launch, or after?** Independent of this port (§2B part 3), ~1–2
-   evenings. The argument for before: it's another "free only while there are no users" change, and editing a
-   node file currently invalidates saves silently.
+4. **`Continuation` record — before the port, or skip it?** Recommend **before** (§2B). ~1–2 evenings, it
+   deletes a vendored plugin, and it removes two features from the serializer being ported rather than adding
+   to it. It's also another "free only while there are no users" change: editing a node file currently
+   invalidates saves silently.
 5. **Does the `Saveable` refactor land before or after this?** They both touch the save format and both are
    free only in the zero-user window. Driver `StateType`s are deliberately simple structs, so the ordering is
    flexible — but doing the serializer first means the `Saveable` work is written against its final format.

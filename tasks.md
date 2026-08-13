@@ -167,6 +167,15 @@ of the section.
   can break every existing save.** The test: save in a build → add a dummy asset → rebuild → load the old save.
   If it breaks, the Odin removal stops being a refactor and becomes a correctness fix, and the GUID-keyed
   reference resolver moves from nice-to-have to required.
+- [ ] **Replace serialized closures with a `Continuation` record** — ~1–2 evenings, **do it before the
+  serializer port**; see [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) §2B. `Promise.doneCallbacks`
+  currently serializes **compiler-generated lambda closures**, and the type name embeds a compiler ordinal:
+  `PrintTextNode` has been saved as `<>c__DisplayClass22_0`, `<>c__DisplayClass1_0` *and* `<>c__DisplayClass19_0`
+  across real saves. **Editing a node's source file silently invalidates saved games**, and nothing warns you.
+  The 14 lambdas are one-liners capturing little more than "which runner", and runners are already keyed by
+  string in `story.NodeRunners` — so `List<SerializableAction>` becomes `List<Continuation>` holding
+  `{kind, runnerKey, flag}`. Deletes the whole `SerializableActionHelper` plugin **and** removes two features
+  (`System.Type` support, closure reflection) from the serializer that follows.
 - [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
   OdinSerializer — a conversion blocker, not cleanup. Port v2's `NarraSerializer` (~1,300 LOC) behind the two
