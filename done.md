@@ -19,6 +19,23 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-08-27
 
+- [x] **Breadth coverage over every node type** — `Tests.Editor` goes from 60 to **359 passing**.
+  `NodeTypeCoverageTests` is data-driven over `AssemblyUtilities.GetAllTypes<Node>()`, so all **149** concrete
+  node types (147 shipped + 2 test doubles) are covered by two tests rather than 149 hand-written ones, and a
+  node added tomorrow is covered the day it's written. Type coverage went 4% → 44%.
+  *What it asserts:* every node type constructs through `graph.AddNode()`, gets its graph assigned, and builds
+  its ports without throwing — the smoke test that catches a broken `Init()`/`UpdatePorts()`, which would
+  otherwise only surface when an author happened to drop that node into a graph. And that a **reference** to
+  every node type survives a save round trip.
+  *Scope corrected while building it:* the task was originally written as "round-trip every node type", which
+  would have proved almost nothing. **A node's own fields never enter a save** — verified against real saves,
+  where node types appear only as `$eref` external references and never as an inlined `$type` (`bare
+  PrintTextNode as $type: 0`). Node data lives in the `.asset` file, serialized by Unity, not Odin. So the test
+  covers the *reference* path instead — which is exactly what the instanceID bug breaks and what the GUID-keyed
+  resolver must preserve, making this the regression net for that swap.
+  *Still not covered:* node **behaviour** (`Run`/`GetValue` logic) remains at zero. That is deliberate — 147
+  behavioural suites is months of evenings for value no buyer perceives.
+
 - [x] **Proved the `instanceID` reference bug (Landmine A).** Ran the editor half of
   `docs/INSTANCEID_EXPERIMENT.md`: saved, fully restarted Unity, saved again from the same story point, and
   compared the external reference lists. **All five instanceIDs differed.**

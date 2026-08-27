@@ -128,7 +128,7 @@ net exists** — each such task carries an explicit *(needs the test net)*. The 
 `InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
 of the section.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **60 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **359 passing**
   EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -163,11 +163,6 @@ of the section.
   index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
   and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
   break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
-- [ ] **Round-trip every node type** — the single highest-leverage test still missing, and it's one test, not
-  156. Enumerate `AssemblyUtilities.GetAllTypes<Node>()` (147 concrete types), instantiate each, serialize and
-  deserialize it, and assert it comes back. Data-driven via `[TestCaseSource]`, so a new node type is covered
-  the day it's written. **Do this before the serializer port** — it turns "the swap didn't break the sample
-  scene" into "the swap didn't break any of the 147 node types", which is the actual risk. ~1 evening.
 - [ ] **Regression tests for the Tier A fixes** — nine real bugs were fixed on 2026-08-12 with **zero tests**,
   so nothing stops them coming back. Worth covering the pure-logic ones: `StatInstance` min+max clamp (a stat
   with both only honored the max), `NounInstancesQuery` null/empty equality *and* hash agreement (it's a
