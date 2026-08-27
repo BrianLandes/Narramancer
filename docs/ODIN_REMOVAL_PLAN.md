@@ -1,7 +1,8 @@
 # Odin removal — implementation plan
 
-> **Status:** plan only, nothing built. Execution is gated on the save→load round-trip test
-> ([`../tasks.md`](../tasks.md) §2), which does not exist yet.
+> **Status:** plan only, nothing built — but the gate is open. The save→load round-trip test net **exists**
+> as of 2026-08-27 (60 EditMode tests, including resume-after-load), so this work is unblocked.
+> **Landmine A is no longer hypothetical — it was proved on 2026-08-27 (§2A).**
 >
 > **Scope:** replace the vendored `Narramancer.OdinSerializer` with a serializer we own, porting v2's
 > `NarraSerializer` (`/home/brian/Projects/Narramancer2/Assets/Narramancer/Core/Serialization`, ~1,300 LOC).
@@ -175,8 +176,19 @@ the noun/verb catalogue, so part of the manifest may fall out of what's there.
 v2 has the right seam on the Core side already: `IReferenceResolver` (`TryResolve(id, type, out asset)` /
 `TryGetId`) plus the `$assetRef` handle. Only the Unity implementation is missing.
 
-> **Worth proving before building anything.** Save in a build; add a dummy asset; rebuild; load the old save.
-> If it breaks, that's the bug demonstrated and this stops being a refactor and becomes a fix. One evening.
+> ### ✅ PROVED 2026-08-27
+>
+> Saved, fully restarted Unity, saved again from the same story point, compared the reference lists: **all five
+> instanceIDs differed** — every one shifted by **exactly 44**, with identical internal spacing. The assets
+> loaded in the same relative order; the block simply started 44 objects later.
+>
+> That confirms the mechanism precisely: instanceIDs come from a **session-global sequential counter**. The
+> save records *"the 46,810th object loaded this session"* and nothing about the asset itself, so any change to
+> how many objects load first invalidates every reference. Shipping a patch does exactly that.
+>
+> **Consequence: the GUID-keyed `UnityReferenceResolver` is required, and this work is a correctness fix rather
+> than a refactor.** Procedure and tooling: [`INSTANCEID_EXPERIMENT.md`](INSTANCEID_EXPERIMENT.md),
+> `tools/inspect-save.py`.
 
 #### One symptom, three causes
 
@@ -323,12 +335,13 @@ inside a `Narramancer.Serialization` namespace, so a future Core extraction is a
 
 Each phase leaves the build green; Odin stays until the last one.
 
-**Phase 0 — prove Landmine A** *(~1 evening)*. Save in a build, add an asset, rebuild, load. Establishes
-whether GUID references are a fix or just a nicety. Do this first — it sizes everything else.
+**Phase 0 — prove Landmine A.** ✅ **Done 2026-08-27.** Confirmed in the editor: instanceIDs come from a
+session-global sequential counter and every reference shifted. GUID-keyed references are required.
 
-**Phase 1 — the round-trip test net** *(gate, already in `tasks.md` §2)*. Non-negotiable. Author a story, run
-to a suspend point, save, deserialize, assert state and resume. Without it there is no way to know the new
-serializer is faithful.
+**Phase 1 — the round-trip test net.** ✅ **Done 2026-08-27.** 60 EditMode tests across `BlackboardTests`,
+`NounInstanceTests`, `SaveLoadRoundTripTests` and `NodeRunnerTests`, including suspend → serialize →
+deserialize → resume. Two real bugs surfaced on the way in (`NounUID` reference equality; v1 types having no
+parameterless constructor) — both now pinned by tests the replacement serializer has to keep passing.
 
 **Phase 1b — replace closures with `Continuation`** *(~1–2 evenings, §2B)*. Independent of the serializer, and
 cheapest here: doing it before the port means features #8 and #10 never have to be built. Deletes the

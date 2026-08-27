@@ -163,13 +163,6 @@ of the section.
   index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
   and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
   break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
-- [ ] **Prove the `instanceID` reference bug** — ~1 evening, **do this before the serializer work**, it sizes
-  everything else. Odin's external Unity refs land in the save as `"objects": [{"instanceID": 4206}, ...]`
-  (confirmed in a real save file). An instanceID is assigned by the running process — it is **not** a
-  persistent asset identity. Same-build restart usually works (which is why Task Z passed); **shipping a patch
-  can break every existing save.** The test: save in a build → add a dummy asset → rebuild → load the old save.
-  If it breaks, the Odin removal stops being a refactor and becomes a correctness fix, and the GUID-keyed
-  reference resolver moves from nice-to-have to required.
 - [ ] **Replace serialized closures with a `Continuation` record** — ~1–2 evenings, **do it before the
   serializer port**; see [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) §2B. `Promise.doneCallbacks`
   currently serializes **compiler-generated lambda closures**, and the type name embeds a compiler ordinal:
@@ -189,7 +182,10 @@ of the section.
     policy first.
   - Three known gaps in the v2 code: the field policy above, `CollectionInfo` matching only exact
     `Dictionary<,>` (v1's `SerializableDictionary` *derives* from it), and no `System.Type` support
-    (`SerializableType._type`).
+    (`SerializableType._type`). A fourth: v2's reader uses `Activator.CreateInstance`, but **no v1 save type
+    has a parameterless constructor** — it must construct without running one, as Odin does.
+  - ✅ **GUID-keyed asset references are REQUIRED, not optional** — the `instanceID` bug was proved on
+    2026-08-27 (see `done.md`). Build the `UnityReferenceResolver` as part of this work, not after it.
   - Free coverage: v2's `dotnet/Narramancer.Core.Tests/Serialization/` tests port straight across.
 - [ ] **Saveable refactor — one component + drivers** — see
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design. Do it adjacent

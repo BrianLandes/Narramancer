@@ -19,6 +19,21 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-08-27
 
+- [x] **Proved the `instanceID` reference bug (Landmine A).** Ran the editor half of
+  `docs/INSTANCEID_EXPERIMENT.md`: saved, fully restarted Unity, saved again from the same story point, and
+  compared the external reference lists. **All five instanceIDs differed.**
+  *The shape of the result is the useful part:* every ID shifted by **exactly 44**, with identical internal
+  spacing (gaps 2,2,4,2 in both saves). The assets loaded in the same relative order; the whole block just
+  started 44 objects later. That is a **session-global sequential counter** — the save records "the 46,810th
+  object loaded this session", never anything about the asset's own identity. So the reference breaks whenever
+  *anything* changes how many objects load first, which is precisely what shipping a patch does.
+  *Decision:* GUID-keyed references are **required**, not a nice-to-have. The Odin removal is a correctness fix,
+  not a refactor.
+  *Deliberately NOT done:* the full build-to-build Test 2. It would cost an hour to re-confirm a mechanism
+  already demonstrated, and the decision it was meant to inform is settled. Supporting it: Unity documents
+  instanceIDs as non-persistent, the 40-save corpus shows ~65 asset references per real save, and the
+  originally-reported symptom ("saves break when the build or scene changed") is exactly this mechanism.
+
 - [x] **`NodeRunner` harness + resume-after-load — the test-net gate is CLOSED.** `Tests.Editor` at **60
   passing** EditMode tests. `NodeRunnerTests` drives the runner by hand (`Update()` is normally pumped by
   `NarramancerSingleton`, but stepping it directly is what makes any of this testable outside play mode).
