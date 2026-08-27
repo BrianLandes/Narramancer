@@ -83,9 +83,9 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **Finish the test net** (§2) — 49 tests green; the data-path round-trip, blackboard and domain ops are
-  done. What's left is the `NodeRunner` suspend/resume harness plus the resume half of the round-trip, which
-  pair up. That closes the gate on the Odin removal and the `Saveable` refactor.
+- [ ] **Pick the next §2 item — the gate is closed.** 60 tests green, including resume-after-load. The
+  recommended order from [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md): prove the `instanceID`
+  bug in a build (~1 evening, sizes everything), then the `Continuation` record, then the serializer port.
 
 ---
 
@@ -128,16 +128,16 @@ net exists** — each such task carries an explicit *(needs the test net)*. The 
 `InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
 of the section.
 
-- [~] **Build the test net** — precondition for everything below it. `Tests.Editor` is at **49 passing** EditMode
-  tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Priority order:
-  - [~] Save → load round-trip *(data path done 2026-08-27; `SaveLoadRoundTripTests`)* — a story with nouns,
-    relationships, blackboards and asset refs round-trips through the payload seam. **Still missing the
-    suspend/resume half:** run a verb to a suspend point, save, reload, assert it resumes. That needs the
-    `NodeRunner` harness below, so do these two together.
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **60 passing**
+  EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
+  said *(needs the test net)* is now unblocked.
+  - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
+    covers the data path; `NodeRunnerTests.SuspendedRunnerResumesAfterARoundTrip` covers the headline feature:
+    suspend mid-verb → serialize → deserialize → resume → the queued node runs.
   - [x] `Blackboard` typed set/get/remove *(done 2026-08-11)*
   - [x] Domain ops: `NounInstance` properties/stats/relationships, relationship integrity by UID
     *(done 2026-08-27; `NounInstanceTests` — found and fixed a real `NounUID` equality bug, see `done.md`)*
-  - [ ] `NodeRunner` suspend/resume — pairs with the round-trip item above
+  - [x] `NodeRunner` suspend/resume *(done 2026-08-27; `NodeRunnerTests`)*
   - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode
     structurally cannot catch — record it as a required pre-release step
 - [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subrunners`;

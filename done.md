@@ -19,6 +19,19 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-08-27
 
+- [x] **`NodeRunner` harness + resume-after-load — the test-net gate is CLOSED.** `Tests.Editor` at **60
+  passing** EditMode tests. `NodeRunnerTests` drives the runner by hand (`Update()` is normally pumped by
+  `NarramancerSingleton`, but stepping it directly is what makes any of this testable outside play mode).
+  *Covers execution* — queue order, going idle on drain, suspend halting before the next node, `Resume()`,
+  `Resume(node)` inserting ahead of the queue, and `StopAndReset` abandoning queued work.
+  *Covers the headline feature* — `SuspendedRunnerResumesAfterARoundTrip`: suspend mid-verb → serialize →
+  deserialize → resume → the node queued behind the suspend point runs. Plus runner blackboards, run history
+  (which drives the play-mode node highlight), and multiple independent runners.
+  *Guarded against passing vacuously:* the flagship asserts the restored runner is a **different object**, and
+  a negative control (`DrainedRunnerHasNothingToResumeIntoAfterARoundTrip`) shows a runner with a legitimately
+  empty queue runs nothing — so the resume test can only pass if `queuedNodes` genuinely survived the boundary.
+  **Everything marked *(needs the test net)* in `tasks.md` §2 is now unblocked.**
+
 - [x] **Test net: save/load round-trip + domain ops** — `Tests.Editor` goes from 24 to **49 passing** EditMode
   tests, across `SaveLoadRoundTripTests` (new), `NounInstanceTests` (new) and `BlackboardTests`.
   *Extracted the serializer seam first:* `SaveLoadUtilities.SerializePayload`/`DeserializePayload` now wrap the
