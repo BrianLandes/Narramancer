@@ -1,6 +1,6 @@
 # Odin removal — implementation plan
 
-> **Status:** phases 0–2 done, phase 3 next. The replacement serializer exists and round-trips the real
+> **Status:** phases 0–3 done, phase 4 (the swap) next. The replacement serializer exists and round-trips the real
 > story graph; **it is not wired up** — Odin is still what writes and reads saves. The save→load round-trip test net **exists**
 > as of 2026-08-27 (60 EditMode tests, including resume-after-load), so this work is unblocked.
 > **Landmine A is no longer hypothetical — it was proved on 2026-08-27 (§2A).**
@@ -397,9 +397,31 @@ Odin's payload **6,533 bytes**, the replacement's **1,266** — 81% smaller, and
 table. Most of the difference is `Dictionary`'s internal comparer and `SerializableDictionary`'s
 `keys`/`values` backing arrays, which Odin writes into every save.
 
-**Phase 3 — type inventory + `UnityReferenceResolver`** *(~2 evenings)*. **Next.** The seam is in place and
-tests drive it with a stand-in resolver that mints an id per object; what is missing is the part that makes an
-id *stable*, which is the whole point of §2A. Until this ships the replacement is no safer than Odin. Enumerate every type reachable from
+**Phase 3 — `UnityReferenceResolver`.** ✅ **Done 2026-08-27.** Saved references are now keyed by the identity
+Unity persists rather than one invented per session. 15 further tests; 426 green overall.
+
+- **The id is `<asset GUID>:<local file id>`.** The GUID alone is not enough: xNode nodes *are* assets, stored
+  as **sub-assets inside their graph**, so "the node this verb is suspended on" points at one object inside a
+  shared file. A GUID names the graph and cannot tell two of its nodes apart. Both halves come from
+  `AssetDatabase.TryGetGUIDAndLocalFileIdentifier` and both are written into the project.
+- **`AssetIds`** does the editor lookup; **`AssetManifest`** is the baked table a build resolves through,
+  since `AssetDatabase` does not exist in a player. `UnityReferenceResolver` prefers the database in the
+  editor and falls back to the manifest.
+- **`AssetManifestBuilder`** bakes it, automatically before every build (`IPreprocessBuildWithReport`) and
+  from `Window/Narramancer/Rebuild Asset Manifest`. It searches by **root type** — `NodeGraph`,
+  `NounScriptableObject`, `AdjectiveScriptableObject`, `Flag` — because `t:` matches subclasses, so a game's
+  own node and noun types are covered without being named. Scanning `t:ScriptableObject` instead would load
+  every ScriptableObject in the project: correct, and minutes of work on a real game for assets a save can
+  never point at. On this repo the bake finds **217 assets** (8 ActionVerbs, 9 ValueVerbs, their nodes, 10
+  nouns, 10 adjectives) and takes under a second.
+- The strongest test reads the asset's **`.meta` file off disk** and asserts the id contains the GUID Unity
+  wrote there — the only way to prove persistence without shipping two builds. Another resolves a whole story
+  through the **manifest alone**, with the asset database taken out of the picture, which is the path that
+  actually ships.
+
+> **Still owed before this is proved end to end:** the patch test in §5.3 — save, add an asset, rebuild, load.
+> Every test here runs in one editor session, so none of them can *observe* an id surviving a renumbering;
+> they establish that the id is made of things that persist. The patch test is what closes that gap. Enumerate every type reachable from
 `StoryInstance` and assert each round-trips. Build the GUID resolver and the baked manifest.
 
 **Phase 4 — the swap** *(~1 evening)*. Replace the two `SerializationUtility` calls. Ship `schemaVersion` in
@@ -434,19 +456,31 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
 
 1. **Continuation model — keep closures, or adopt v2's position deque?** Recommend **keep** (§2B). Changing it
    is execution-model surgery and the on-ramp to the paused rewrite.
-2. **Build-time reference resolution — baked manifest, or Addressables?** Recommend a baked manifest
-   ScriptableObject; Addressables is a dependency this plugin shouldn't take on.
-3. ~~**Namespace**~~ — **decided 2026-08-27:** `Narramancer.Serialization`, with the `Narra*` prefix dropped
+2. ~~**Build-time reference resolution — baked manifest, or Addressables?**~~ — **decided 2026-08-27:** a baked
+   manifest ScriptableObject (`AssetManifest`), rebuilt automatically before every build. Addressables is a
+   dependency this plugin shouldn't take on.
+3. **What should saving do when a reference cannot be given an id?** *(new, from phase 3 — decide in phase 4)*
+   `Blackboard.unityObjects` is serialized and can hold anything, so a game that puts a sprite in a blackboard
+   points the save at an asset the bake never saw. It currently **throws on save**, which is loud and correct
+   in the editor but is the worst possible moment to fail in a shipped game.
+   **Recommend an asymmetry:** on *write*, log an error naming the asset and store null — losing one blackboard
+   entry beats losing the save, and the message tells the author to add it to
+   `AssetManifest.AdditionalAssets`. On *read*, keep failing hard, because a reference that does not resolve
+   cannot be told apart from one that resolves to the *wrong* thing, and that is the silent corruption §2A is
+   about.
+4. ~~**Namespace**~~ — **decided 2026-08-27:** `Narramancer.Serialization`, with the `Narra*` prefix dropped
    from the type names per `CLAUDE.md` (`NarramancerSerializer`, `ObjectWriter`, `ObjectReader`). A future
    `Narramancer.Core` extraction is then a namespace move rather than a rename. The code lives in the existing
    `Narramancer.asmdef` and does touch `UnityEngine` in three places — `[SerializeField]` in the field policy,
    and `UnityEngine.Object` in the resolver seam and the writer's guard. Extracting it later means abstracting
    those three, not untangling the whole thing.
-4. **`Continuation` record — before the port, or skip it?** Recommend **before** (§2B). ~1–2 evenings, it
+5. **`Continuation` record — before the port, or skip it?** ~~Recommend **before**~~ — **superseded:** the
+   port went first, so the serializer does carry `System.Type` and closure support. That is now the argument
+   *for* doing `Continuation` next: it deletes both again, along with the `SerializableActionHelper` plugin. ~1–2 evenings, it
    deletes a vendored plugin, and it removes two features from the serializer being ported rather than adding
    to it. It's also another "free only while there are no users" change: editing a node file currently
    invalidates saves silently.
-5. **Does the `Saveable` refactor land before or after this?** They both touch the save format and both are
+6. **Does the `Saveable` refactor land before or after this?** They both touch the save format and both are
    free only in the zero-user window. Driver `StateType`s are deliberately simple structs, so the ordering is
    flexible — but doing the serializer first means the `Saveable` work is written against its final format.
 

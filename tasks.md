@@ -184,18 +184,20 @@ of the section.
 - [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
   OdinSerializer — a conversion blocker, not cleanup. **Phase 2 is done (2026-08-27): the replacement
-  serializer exists in `Assets/Narramancer/Scripts/Serialization/` and round-trips the real story graph,
-  including resume-after-load and the serialized closures.** Odin is still the one in use — nothing is wired
-  up yet. All four known gaps in the v2 code were fixed on the way in. ~4 evenings left.
+  serializer exists in `Assets/Narramancer/Scripts/Serialization/`, round-trips the real story graph
+  (including resume-after-load and the serialized closures), and keys asset references by GUID.** Odin is
+  still the one in use — nothing is wired up yet. ~2–3 evenings left.
   - [x] Phase 2 — the serializer itself, plus 45 tests. `NarramancerSerializer` + `ObjectWriter`/`ObjectReader`
     + a hand-written JSON layer + `TypeNames`. Ships `schemaVersion` from day one.
-  - [ ] Phase 3 — `UnityReferenceResolver`: the `IReferenceResolver` seam exists and the tests drive it with a
-    stand-in, but nothing yet turns an asset into a **GUID**. `AssetDatabase` in the editor, a baked manifest
-    in builds (populate it from the existing `SingletonBuildPreprocessor` hook).
-    **This is the load-bearing half of the fix** — ✅ the `instanceID` bug was proved on 2026-08-27
-    (see `done.md`), and the serializer alone does not fix it.
+  - [x] Phase 3 — `UnityReferenceResolver`, keyed on `<asset GUID>:<local file id>`. The local file id is not
+    optional: xNode nodes are **sub-assets of their graph**, so a GUID alone cannot tell two nodes apart.
+    `AssetIds` for the editor, a baked `AssetManifest` for builds, `AssetManifestBuilder` to bake it before
+    every build. 217 assets in this project.
   - [ ] Phase 4 — the swap: replace the two `SerializationUtility` calls in `SaveLoadUtilities.cs`, and
-    replace `SaveDataWrapper.objects` (the instanceID list) with GUID handles.
+    replace `SaveDataWrapper.objects` (the instanceID list) with GUID handles. **Decide §6.3 first** — what
+    saving does when a blackboard points at an asset the bake never saw (currently: throws).
+  - [ ] The **patch test** — save, add an asset, rebuild, load. Nothing in the editor can observe an id
+    surviving a renumbering, so this is what actually proves the fix. Do it with phase 4.
   - [ ] Phase 5 — delete the vendored assembly (186 files), drop it from `Third-Party Notices.txt` and
     `LICENSING.md`, and re-run the Task Z build smoke on IL2CPP **and** WebGL.
   - Verification still owed: the golden-file check against the 40-save corpus, the patch test
