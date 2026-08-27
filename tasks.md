@@ -183,19 +183,24 @@ of the section.
   - [ ] The choice-callback path (`VisibleChoice` in both printers), then delete `SerializableActionHelper`
 - [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
-  OdinSerializer — a conversion blocker, not cleanup. Port v2's `NarraSerializer` (~1,300 LOC) behind the two
-  `SerializationUtility` calls in `SaveLoadUtilities.cs`, then delete the vendored assembly. Ship a
-  `schemaVersion` from day one. ~7–9 evenings after the test net. *(needs the test net)*
-  - ⚠️ **The trap:** v2's field policy is "public or `[NarraSerialize]`", but v1 marks private fields
-    `[SerializeField]`. Ported verbatim it **silently skips almost the whole save** and still parses. Fix the
-    policy first.
-  - Three known gaps in the v2 code: the field policy above, `CollectionInfo` matching only exact
-    `Dictionary<,>` (v1's `SerializableDictionary` *derives* from it), and no `System.Type` support
-    (`SerializableType._type`). A fourth: v2's reader uses `Activator.CreateInstance`, but **no v1 save type
-    has a parameterless constructor** — it must construct without running one, as Odin does.
-  - ✅ **GUID-keyed asset references are REQUIRED, not optional** — the `instanceID` bug was proved on
-    2026-08-27 (see `done.md`). Build the `UnityReferenceResolver` as part of this work, not after it.
-  - Free coverage: v2's `dotnet/Narramancer.Core.Tests/Serialization/` tests port straight across.
+  OdinSerializer — a conversion blocker, not cleanup. **Phase 2 is done (2026-08-27): the replacement
+  serializer exists in `Assets/Narramancer/Scripts/Serialization/` and round-trips the real story graph,
+  including resume-after-load and the serialized closures.** Odin is still the one in use — nothing is wired
+  up yet. All four known gaps in the v2 code were fixed on the way in. ~4 evenings left.
+  - [x] Phase 2 — the serializer itself, plus 45 tests. `NarramancerSerializer` + `ObjectWriter`/`ObjectReader`
+    + a hand-written JSON layer + `TypeNames`. Ships `schemaVersion` from day one.
+  - [ ] Phase 3 — `UnityReferenceResolver`: the `IReferenceResolver` seam exists and the tests drive it with a
+    stand-in, but nothing yet turns an asset into a **GUID**. `AssetDatabase` in the editor, a baked manifest
+    in builds (populate it from the existing `SingletonBuildPreprocessor` hook).
+    **This is the load-bearing half of the fix** — ✅ the `instanceID` bug was proved on 2026-08-27
+    (see `done.md`), and the serializer alone does not fix it.
+  - [ ] Phase 4 — the swap: replace the two `SerializationUtility` calls in `SaveLoadUtilities.cs`, and
+    replace `SaveDataWrapper.objects` (the instanceID list) with GUID handles.
+  - [ ] Phase 5 — delete the vendored assembly (186 files), drop it from `Third-Party Notices.txt` and
+    `LICENSING.md`, and re-run the Task Z build smoke on IL2CPP **and** WebGL.
+  - Verification still owed: the golden-file check against the 40-save corpus, the patch test
+    (save → add an asset → rebuild → load), and installing Odin Inspector alongside to confirm the conflict
+    is actually gone — that last one is the commercial goal and worth checking directly.
 - [ ] **Saveable refactor — one component + drivers** — see
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design. Do it adjacent
   to the Odin removal; both touch the save format.

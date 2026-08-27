@@ -1,6 +1,7 @@
 # Odin removal — implementation plan
 
-> **Status:** plan only, nothing built — but the gate is open. The save→load round-trip test net **exists**
+> **Status:** phases 0–2 done, phase 3 next. The replacement serializer exists and round-trips the real
+> story graph; **it is not wired up** — Odin is still what writes and reads saves. The save→load round-trip test net **exists**
 > as of 2026-08-27 (60 EditMode tests, including resume-after-load), so this work is unblocked.
 > **Landmine A is no longer hypothetical — it was proved on 2026-08-27 (§2A).**
 >
@@ -357,10 +358,48 @@ cheapest here: doing it before the port means features #8 and #10 never have to 
 `SerializableActionHelper` plugin. Skippable if you'd rather port first — but then build #8 and #10, and add
 load-time callback validation.
 
-**Phase 2 — port the engine-agnostic core** *(~2 evenings)*. Json + writer/reader + type resolver, with the
-three modifications from §1. Port v2's tests alongside. No v1 wiring yet — it compiles and tests standalone.
+**Phase 2 — port the core.** ✅ **Done 2026-08-27.** Lives in `Assets/Narramancer/Scripts/Serialization/`
+(~1,000 LOC) and is covered by 45 EditMode tests. Odin is untouched and still the serializer in use — nothing
+is wired up, so the build is green either way. What landed, and what it cost:
 
-**Phase 3 — type inventory + `UnityReferenceResolver`** *(~2 evenings)*. Enumerate every type reachable from
+| Piece | Notes |
+|---|---|
+| `Json/JsonValue`, `JsonWriter`, `JsonParser` | ported near-verbatim from v2 |
+| `ObjectWriter` / `ObjectReader` | v2's `NarraWriter`/`NarraReader`, renamed off the `Narra*` prefix |
+| `SerializationFields` | **rewritten** — v1 policy, §1a |
+| `CollectionInfo` | **rewritten** — walks the base chain, §1b |
+| `Scalars` | widened to every numeric type, `char`, `DateTime`, `Guid`, §1c |
+| `TypeNames` | **new**, replacing v2's `TypeResolver`/`TypeVocabulary`/`TypeTokens` — see below |
+| `IReferenceResolver` + `InMemoryReferenceResolver` | the seam; the Unity implementation is phase 3 |
+| `NarramancerSerializer` | the facade, and the `schemaVersion` envelope |
+
+All four known gaps from §1 are closed, plus two that only turned up while writing it:
+
+- **`System.Type` values** (feature #8) are handled with a `$systemType` marker rather than field reflection.
+- **Compiler-generated closures** (feature #10) needed an explicit carve-out. Odin's Unity policy serializes
+  *every* field of a compiler-generated type regardless of visibility, and `Promise.doneCallbacks` depends on
+  it. Missing this would have compiled, passed most tests, and broken every suspended verb. It is pinned by
+  `ASerializedCallbackSurvivesAndStillSeesWhatItCaptured`, which round-trips a real `Promise` and checks the
+  restored callback fires against the *restored* captured object rather than the original.
+- **NaN and the infinities** have no JSON representation; Odin wrote them as bare tokens that are not legal
+  JSON. The replacement refuses them at the point they enter the save, where the message can still name the
+  value.
+
+**v2's `TypeResolver` was not ported.** It brings `TypeVocabulary`, `TypeTokens`, `NarramancerTypeAttribute`
+and `IAssemblyTypeSource` with it — a naming subsystem v1 has no other use for, and one whose curated tokens
+would need populating for 156 node types before it beat the alternative. `TypeNames` (~140 LOC) stores the
+assembly-qualified name with `Version`/`Culture`/`PublicKeyToken` stripped recursively, and resolves it with
+`Type.GetType`'s two-callback overload so a script that moved assemblies still resolves. If the rename-proof
+vocabulary is wanted later it drops in behind the same two methods.
+
+**Measured on a representative story** (blackboard, a noun instance, a suspended runner, 3 asset references):
+Odin's payload **6,533 bytes**, the replacement's **1,266** — 81% smaller, and legible rather than a type
+table. Most of the difference is `Dictionary`'s internal comparer and `SerializableDictionary`'s
+`keys`/`values` backing arrays, which Odin writes into every save.
+
+**Phase 3 — type inventory + `UnityReferenceResolver`** *(~2 evenings)*. **Next.** The seam is in place and
+tests drive it with a stand-in resolver that mints an id per object; what is missing is the part that makes an
+id *stable*, which is the whole point of §2A. Until this ships the replacement is no safer than Odin. Enumerate every type reachable from
 `StoryInstance` and assert each round-trips. Build the GUID resolver and the baked manifest.
 
 **Phase 4 — the swap** *(~1 evening)*. Replace the two `SerializationUtility` calls. Ship `schemaVersion` in
@@ -397,7 +436,12 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
    is execution-model surgery and the on-ramp to the paused rewrite.
 2. **Build-time reference resolution — baked manifest, or Addressables?** Recommend a baked manifest
    ScriptableObject; Addressables is a dependency this plugin shouldn't take on.
-3. **Namespace** — `Narramancer.Serialization` (suggested) vs matching v2's `Narramancer.Core.Serialization`.
+3. ~~**Namespace**~~ — **decided 2026-08-27:** `Narramancer.Serialization`, with the `Narra*` prefix dropped
+   from the type names per `CLAUDE.md` (`NarramancerSerializer`, `ObjectWriter`, `ObjectReader`). A future
+   `Narramancer.Core` extraction is then a namespace move rather than a rename. The code lives in the existing
+   `Narramancer.asmdef` and does touch `UnityEngine` in three places — `[SerializeField]` in the field policy,
+   and `UnityEngine.Object` in the resolver seam and the writer's guard. Extracting it later means abstracting
+   those three, not untangling the whole thing.
 4. **`Continuation` record — before the port, or skip it?** Recommend **before** (§2B). ~1–2 evenings, it
    deletes a vendored plugin, and it removes two features from the serializer being ported rather than adding
    to it. It's also another "free only while there are no users" change: editing a node file currently
