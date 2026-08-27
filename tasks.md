@@ -83,8 +83,9 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **Start the test net** (§2) — it's the precondition for both breaking changes, so it's the real
-  critical path. Run the §1 diagnostics alongside it; they're a different kind of evening.
+- [ ] **Finish the test net** (§2) — 49 tests green; the data-path round-trip, blackboard and domain ops are
+  done. What's left is the `NodeRunner` suspend/resume harness plus the resume half of the round-trip, which
+  pair up. That closes the gate on the Odin removal and the `Saveable` refactor.
 
 ---
 
@@ -127,14 +128,16 @@ net exists** — each such task carries an explicit *(needs the test net)*. The 
 `InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
 of the section.
 
-- [ ] **Build the test net** — precondition for everything below it. `Tests.Editor` is at 24 passing EditMode
+- [~] **Build the test net** — precondition for everything below it. `Tests.Editor` is at **49 passing** EditMode
   tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Priority order:
-  - [ ] Save → load round-trip: author a story, run a verb to a suspend point, `PrepareStoryForSave()` →
-    `SerializeData` → `DeserializeData` → `LoadStory`; assert identical state and that the runner resumes.
-    **The headline feature still has zero coverage — this is the one that actually gates the refactors.**
+  - [~] Save → load round-trip *(data path done 2026-08-27; `SaveLoadRoundTripTests`)* — a story with nouns,
+    relationships, blackboards and asset refs round-trips through the payload seam. **Still missing the
+    suspend/resume half:** run a verb to a suspend point, save, reload, assert it resumes. That needs the
+    `NodeRunner` harness below, so do these two together.
   - [x] `Blackboard` typed set/get/remove *(done 2026-08-11)*
-  - [ ] Domain ops: `NounInstance` properties/stats/relationships, bidirectional relationship integrity by UID
-  - [ ] `NodeRunner` suspend/resume
+  - [x] Domain ops: `NounInstance` properties/stats/relationships, relationship integrity by UID
+    *(done 2026-08-27; `NounInstanceTests` — found and fixed a real `NounUID` equality bug, see `done.md`)*
+  - [ ] `NodeRunner` suspend/resume — pairs with the round-trip item above
   - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode
     structurally cannot catch — record it as a required pre-release step
 - [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subrunners`;

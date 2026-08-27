@@ -49,12 +49,28 @@ namespace Narramancer {
 			return jsonData;
 		}
 
+		/// <summary>
+		/// Serializes <paramref name="data"/> to the payload string, emitting the external
+		/// <see cref="UnityEngine.Object"/> references it points at into <paramref name="objects"/>. The two
+		/// payload methods are the *only* place the serializer is called, so a serializer swap touches nothing
+		/// else — and they let a test round-trip a story without needing a screenshot for the thumbnail.
+		/// </summary>
+		public static string SerializePayload<T>(T data, out List<UnityEngine.Object> objects) {
+			var bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON, out objects);
+			return System.Text.Encoding.UTF8.GetString(bytes);
+		}
+
+		/// <inheritdoc cref="SerializePayload{T}"/>
+		public static T DeserializePayload<T>(string payload, List<UnityEngine.Object> objects) {
+			var bytes = System.Text.Encoding.UTF8.GetBytes(payload);
+			return SerializationUtility.DeserializeValue<T>(bytes, DataFormat.JSON, objects);
+		}
+
 		public static string SerializeData<T>(T data) {
 			var wrapper = new SaveDataWrapper();
 			wrapper.title = DateTime.Now.ToString("dddd MMMM d yyyy, hh:mm tt");
 
-			var bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON, out wrapper.objects);
-			wrapper.data = System.Text.Encoding.UTF8.GetString(bytes);
+			wrapper.data = SerializePayload(data, out wrapper.objects);
 
 			var thumbnailTexture = Screenshot();
 			wrapper.thumbnail = Convert.ToBase64String(thumbnailTexture.EncodeToJPG());
@@ -78,10 +94,7 @@ namespace Narramancer {
 		public static T DeserializeData<T>(string jsonData) {
 			var saveGameWrapper = JsonUtility.FromJson<SaveDataWrapper>(jsonData);
 
-			var bytes = System.Text.Encoding.UTF8.GetBytes(saveGameWrapper.data);
-			var resultData = SerializationUtility.DeserializeValue<T>(bytes, DataFormat.JSON, saveGameWrapper.objects);
-
-			return resultData;
+			return DeserializePayload<T>(saveGameWrapper.data, saveGameWrapper.objects);
 		}
 
 		public static string DeserializeTitle(string jsonData) {

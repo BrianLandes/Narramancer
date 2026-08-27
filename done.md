@@ -17,6 +17,37 @@ Archive of completed tasks and finished phases, moved here from
 
 ---
 
+## Completed 2026-08-27
+
+- [x] **Test net: save/load round-trip + domain ops** — `Tests.Editor` goes from 24 to **49 passing** EditMode
+  tests, across `SaveLoadRoundTripTests` (new), `NounInstanceTests` (new) and `BlackboardTests`.
+  *Extracted the serializer seam first:* `SaveLoadUtilities.SerializePayload`/`DeserializePayload` now wrap the
+  two `SerializationUtility` calls, and `SerializeData`/`DeserializeData` call through them. Tests target the
+  payload pair because `SerializeData` also captures a screenshot for the thumbnail and EditMode has no frame
+  to capture — and it's the exact seam the Odin swap replaces, so the swap now touches one place.
+  *Covered:* story blackboard, scene index, text logs, noun identity and per-noun blackboards, relationship
+  integrity by UID **across the serialize boundary**, shared-reference preservation, asset refs through the
+  external object list, and reconstruction of types that have no parameterless constructor.
+  *Not yet covered:* the suspend/resume half of the round trip — needs a `NodeRunner` harness, tracked in
+  `tasks.md` §2.
+
+- [x] **Fixed `NounUID` comparing by reference instead of value** — found by the new tests, and it was
+  load-bearing.
+  `NounUID` is a class with an implicit `string` conversion but no `operator ==`. A user-defined conversion is
+  not a *standard* implicit conversion, so predefined operator resolution never considers `string ==` and
+  `==` fell back to **reference equality** — two UIDs with identical values compared as different.
+  *Why it appeared to work:* `RelationshipInstance`'s constructor does `this.source = left.UID`, storing the
+  very same object as `NounInstance.uid`. All eight `==` comparison sites therefore matched by accident of
+  object identity — and survived saves only because OdinSerializer preserves shared references (`$iref`).
+  **Relationship integrity silently depended on a serializer implementation detail**, which the Odin
+  replacement would have broken with no test to catch it.
+  *Also fixed by the same change:* `NarramancerSingleton.GetInstance(NounUID)` compares with `==`, so any
+  caller passing a UID *string* got a new object via the implicit conversion, compared reference-unequal, and
+  received **null every time**.
+  Added `operator ==`/`!=` with ordinal value semantics, made `Equals` agree (including against a raw string),
+  null-guarded `GetHashCode` and the implicit string conversion. Strictly more permissive than before — same
+  object still compares equal — so no existing behavior regresses.
+
 ## Completed 2026-08-12
 
 - [x] **Tier A bug-fix batch — 9 of 10 landed** (A10 deferred with reason, see `tasks.md` §1). All from the
