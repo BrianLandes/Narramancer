@@ -26,9 +26,13 @@ public class AssetReferenceTests {
 
 	private const string TestDirectory = "Assets/Temp Asset Reference Tests";
 
+	/// <summary>A Resources folder under the test directory, so the <c>res:</c> id form can be exercised.</summary>
+	private string ResourceDirectory => $"{TestDirectory}/Resources";
+
 	[SetUp]
 	public void SetUp() {
 		RecordingTestNode.Log.Clear();
+		RuntimeAssetRegistry.Clear();
 		if (!AssetDatabase.IsValidFolder(TestDirectory)) {
 			AssetDatabase.CreateFolder("Assets", Path.GetFileName(TestDirectory));
 		}
@@ -36,9 +40,21 @@ public class AssetReferenceTests {
 
 	[TearDown]
 	public void TearDown() {
+		RuntimeAssetRegistry.Clear();
 		if (AssetDatabase.IsValidFolder(TestDirectory)) {
 			AssetDatabase.DeleteAsset(TestDirectory);
 		}
+	}
+
+	/// <summary>Writes an asset inside a Resources folder, so it gets a <c>res:</c> id.</summary>
+	private T CreateResourceAsset<T>(string name) where T : ScriptableObject {
+		if (!AssetDatabase.IsValidFolder(ResourceDirectory)) {
+			AssetDatabase.CreateFolder(TestDirectory, "Resources");
+		}
+		var asset = ScriptableObject.CreateInstance<T>();
+		asset.name = name;
+		AssetDatabase.CreateAsset(asset, $"{ResourceDirectory}/{name}.asset");
+		return asset;
 	}
 
 	/// <summary>Writes a real asset to disk, so it has a GUID and a .meta file.</summary>
@@ -149,6 +165,162 @@ public class AssetReferenceTests {
 		Assert.IsTrue(AssetIds.TryResolve(secondId, out var resolvedSecond));
 		Assert.AreSame(first, resolvedFirst);
 		Assert.AreSame(second, resolvedSecond);
+	}
+
+	#endregion
+
+	#region Resources — the zero-setup path for a game's own assets
+
+	/// <summary>
+	/// An asset under a Resources folder is named by its path, not its GUID, because
+	/// <c>Resources.Load</c> works in a build with no bake and no bookkeeping. That is the whole point: a
+	/// game can drop a sprite in Resources, put it in a blackboard, and saving it works with no setup.
+	/// </summary>
+	[Test]
+	public void AssetsUnderResourcesAreNamedByPath() {
+		var noun = CreateResourceAsset<NounScriptableObject>("Wren");
+
+		Assert.IsTrue(AssetIds.TryGetId(noun, out var id));
+
+		Assert.IsTrue(AssetIds.IsResourceId(id), $"expected a resource id, got '{id}'");
+		Assert.AreEqual($"{AssetIds.ResourcePrefix}Wren", id, "the path is relative to the Resources folder and drops the extension");
+	}
+
+	[Test]
+	public void AResourceIdResolvesBackToTheSameAsset() {
+		var noun = CreateResourceAsset<NounScriptableObject>("Wren");
+		AssetIds.TryGetId(noun, out var id);
+
+		Assert.IsTrue(AssetIds.TryResolve(id, out var resolved));
+
+		Assert.AreSame(noun, resolved);
+	}
+
+	[Test]
+	public void AResourceIdResolvesWithoutTheAssetDatabase() {
+		// The reason this form exists: Resources.Load is available in a player, so no manifest entry and no
+		// AssetDatabase are needed to find the asset again.
+		var noun = CreateResourceAsset<NounScriptableObject>("Wren");
+		AssetIds.TryGetId(noun, out var id);
+
+		Assert.AreSame(noun, Resources.Load(id.Substring(AssetIds.ResourcePrefix.Length)));
+	}
+
+	[Test]
+	public void AResourceIdForSomethingThatIsNoLongerThereDoesNotResolve() {
+		Assert.IsFalse(AssetIds.TryResolve($"{AssetIds.ResourcePrefix}NoSuchAsset", out _));
+	}
+
+	[Test]
+	public void AResourceIdIsNotMistakenForAGuidId() {
+		Assert.IsFalse(AssetIds.TrySplit($"{AssetIds.ResourcePrefix}Some/Path", out _, out _),
+			"both forms contain a colon, so the prefix has to be what tells them apart");
+	}
+
+	[Test]
+	public void AssetsOutsideResourcesStillUseTheGuidForm() {
+		var noun = CreateAsset<NounScriptableObject>("Wren");
+
+		Assert.IsTrue(AssetIds.TryGetId(noun, out var id));
+
+		Assert.IsFalse(AssetIds.IsResourceId(id));
+		Assert.IsTrue(AssetIds.TrySplit(id, out _, out _));
+	}
+
+	[Test]
+	public void TheBakeIncludesEverythingUnderResources() {
+		// Free in build size, since Resources content ships wholesale anyway — and it is what gives a *build*
+		// the reverse lookup it needs to mint a res: id when saving.
+		var noun = CreateResourceAsset<NounScriptableObject>("Wren");
+		var manifest = ScriptableObject.CreateInstance<AssetManifest>();
+
+		try {
+			AssetManifestBuilder.Populate(manifest);
+
+			Assert.IsTrue(manifest.TryGetId(noun, out var id));
+			Assert.IsTrue(AssetIds.IsResourceId(id));
+		}
+		finally {
+			Object.DestroyImmediate(manifest);
+		}
+	}
+
+	#endregion
+
+	#region The runtime registry — the last resort
+
+	/// <summary>
+	/// For an object that reaches a blackboard from game code rather than from a node or a Resources folder.
+	/// The author supplies the name, and it is stored in the save verbatim.
+	/// </summary>
+	[Test]
+	public void RegisteredAssetsAreNamedByTheirKey() {
+		var noun = CreateAsset<NounScriptableObject>("Wren");
+		RuntimeAssetRegistry.Register("hero", noun);
+
+		var resolver = new UnityReferenceResolver(null);
+
+		Assert.IsTrue(resolver.TryGetId(noun, out var id));
+		Assert.AreEqual($"{RuntimeAssetRegistry.Prefix}hero", id);
+		Assert.IsTrue(resolver.TryResolve(id, typeof(NounScriptableObject), out var resolved));
+		Assert.AreSame(noun, resolved);
+	}
+
+	[Test]
+	public void TheRegistryBeatsTheAssetDatabase() {
+		// An explicit registration is the author saying "this asset, under this name", which should win over
+		// anything inferred — otherwise registering something would appear to do nothing.
+		var noun = CreateAsset<NounScriptableObject>("Wren");
+		RuntimeAssetRegistry.Register("hero", noun);
+
+		Assert.IsTrue(new UnityReferenceResolver(null).TryGetId(noun, out var id));
+
+		Assert.IsFalse(AssetIds.TrySplit(id, out _, out _), "the GUID form should not have been chosen");
+	}
+
+	[Test]
+	public void ReRegisteringAKeyPointsItAtTheNewAsset() {
+		// So a game can swap an asset out between sessions without invalidating saves that name it.
+		var first = CreateAsset<NounScriptableObject>("First");
+		var second = CreateAsset<NounScriptableObject>("Second");
+		RuntimeAssetRegistry.Register("hero", first);
+		RuntimeAssetRegistry.Register("hero", second);
+
+		var resolver = new UnityReferenceResolver(null);
+
+		Assert.IsTrue(resolver.TryResolve($"{RuntimeAssetRegistry.Prefix}hero", null, out var resolved));
+		Assert.AreSame(second, resolved);
+		Assert.IsFalse(RuntimeAssetRegistry.TryGetId(first, out _), "the displaced asset must not still claim the key");
+	}
+
+	[Test]
+	public void AnUnregisteredKeyDoesNotResolve() {
+		Assert.IsFalse(new UnityReferenceResolver(null).TryResolve($"{RuntimeAssetRegistry.Prefix}nobody", null, out _));
+	}
+
+	/// <summary>
+	/// The case the registry exists for, end to end: an object with no asset identity at all — created at
+	/// runtime — still survives a save, because the game named it.
+	/// </summary>
+	[Test]
+	public void ARuntimeObjectSurvivesASaveOnceItIsRegistered() {
+		var runtimeOnly = ScriptableObject.CreateInstance<NounScriptableObject>();
+		runtimeOnly.name = "Conjured";
+		try {
+			Assume.That(AssetIds.TryGetId(runtimeOnly, out _), Is.False, "precondition: it has no asset identity");
+			RuntimeAssetRegistry.Register("conjured", runtimeOnly);
+
+			var story = new StoryInstance();
+			story.Blackboard.Set("noun", runtimeOnly);
+
+			var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+			var restored = serializer.Deserialize<StoryInstance>(serializer.Serialize(story));
+
+			Assert.AreSame(runtimeOnly, restored.Blackboard.Get<NounScriptableObject>("noun"));
+		}
+		finally {
+			Object.DestroyImmediate(runtimeOnly);
+		}
 	}
 
 	#endregion

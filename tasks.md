@@ -189,13 +189,14 @@ of the section.
   still the one in use — nothing is wired up yet. ~2–3 evenings left.
   - [x] Phase 2 — the serializer itself, plus 45 tests. `NarramancerSerializer` + `ObjectWriter`/`ObjectReader`
     + a hand-written JSON layer + `TypeNames`. Ships `schemaVersion` from day one.
-  - [x] Phase 3 — `UnityReferenceResolver`, keyed on `<asset GUID>:<local file id>`. The local file id is not
-    optional: xNode nodes are **sub-assets of their graph**, so a GUID alone cannot tell two nodes apart.
-    `AssetIds` for the editor, a baked `AssetManifest` for builds, `AssetManifestBuilder` to bake it before
-    every build. 217 assets in this project.
+  - [x] Phase 3 — `UnityReferenceResolver`, over three id forms: `ref:<key>` (`RuntimeAssetRegistry`),
+    `res:Path/Name` (`Resources.Load`, works in a build with no bake), and `<guid>:<localId>` (the manifest).
+    The local file id is not optional: xNode nodes are **sub-assets of their graph**, and a sprite is a
+    sub-asset of its sheet, so a path or GUID alone cannot tell two of them apart. `AssetManifestBuilder`
+    bakes the table before every build — 217 assets in this project.
   - [ ] Phase 4 — the swap: replace the two `SerializationUtility` calls in `SaveLoadUtilities.cs`, and
     replace `SaveDataWrapper.objects` (the instanceID list) with GUID handles. **Decide §6.3 first** — what
-    saving does when a blackboard points at an asset the bake never saw (currently: throws).
+    saving does when an asset is nameable by none of the three forms (currently: throws).
   - [ ] The **patch test** — save, add an asset, rebuild, load. Nothing in the editor can observe an id
     surviving a renumbering, so this is what actually proves the fix. Do it with phase 4.
   - [ ] Phase 5 — delete the vendored assembly (186 files), drop it from `Third-Party Notices.txt` and

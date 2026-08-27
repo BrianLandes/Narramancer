@@ -405,15 +405,31 @@ Unity persists rather than one invented per session. 15 further tests; 426 green
   shared file. A GUID names the graph and cannot tell two of its nodes apart. Both halves come from
   `AssetDatabase.TryGetGUIDAndLocalFileIdentifier` and both are written into the project.
 - **`AssetIds`** does the editor lookup; **`AssetManifest`** is the baked table a build resolves through,
-  since `AssetDatabase` does not exist in a player. `UnityReferenceResolver` prefers the database in the
-  editor and falls back to the manifest.
+  since `AssetDatabase` does not exist in a player.
+- **There are three id forms**, and `UnityReferenceResolver` tries them in this order — explicit beats
+  inferred, and the thing that can go stale comes last:
+
+  | Form | Resolves via | For |
+  |---|---|---|
+  | `ref:<key>` | `RuntimeAssetRegistry` | an object a game registered by hand — the only path open to something with no asset identity at all |
+  | `res:Path/Name`, `res:Path/Name#Sub` | `Resources.Load` | anything under a `Resources` folder. **Works in a build with no bake at all**, which is what makes it the useful form for a game's own sprites and clips |
+  | `<guid>:<localId>` | `AssetDatabase`, else the manifest | everything else |
+
+  The trade on `res:` is that identity *is* the path, so moving an asset out of `Resources` invalidates saved
+  references to it — the same contract `Resources.Load` already imposes on code that calls it. The GUID form
+  survives moves and renames but needs the bake to resolve in a build.
 - **`AssetManifestBuilder`** bakes it, automatically before every build (`IPreprocessBuildWithReport`) and
   from `Window/Narramancer/Rebuild Asset Manifest`. It searches by **root type** — `NodeGraph`,
   `NounScriptableObject`, `AdjectiveScriptableObject`, `Flag` — because `t:` matches subclasses, so a game's
   own node and noun types are covered without being named. Scanning `t:ScriptableObject` instead would load
   every ScriptableObject in the project: correct, and minutes of work on a real game for assets a save can
-  never point at. On this repo the bake finds **217 assets** (8 ActionVerbs, 9 ValueVerbs, their nodes, 10
-  nouns, 10 adjectives) and takes under a second.
+  never point at. It also sweeps every asset under a non-editor `Resources` folder, which costs nothing in
+  build size (Resources content ships wholesale regardless) and is what gives a **build** the reverse lookup
+  it needs to mint a `res:` id when saving. On this repo the bake finds **217 assets** (8 ActionVerbs,
+  9 ValueVerbs, their nodes, 10 nouns, 10 adjectives) and takes under a second.
+  - A `Resources` folder inside an `Editor` folder is skipped. The first version did not skip them and swept
+    up xNode's editor GUI textures — which would have done the exact opposite of the intent, since the
+    manifest is a runtime asset and referencing them would drag editor-only assets into every build.
 - The strongest test reads the asset's **`.meta` file off disk** and asserts the id contains the GUID Unity
   wrote there — the only way to prove persistence without shipping two builds. Another resolves a whole story
   through the **manifest alone**, with the asset database taken out of the picture, which is the path that
@@ -459,15 +475,16 @@ Roughly **7–9 evenings** after the test net, assuming the closure model is kep
 2. ~~**Build-time reference resolution — baked manifest, or Addressables?**~~ — **decided 2026-08-27:** a baked
    manifest ScriptableObject (`AssetManifest`), rebuilt automatically before every build. Addressables is a
    dependency this plugin shouldn't take on.
-3. **What should saving do when a reference cannot be given an id?** *(new, from phase 3 — decide in phase 4)*
-   `Blackboard.unityObjects` is serialized and can hold anything, so a game that puts a sprite in a blackboard
-   points the save at an asset the bake never saw. It currently **throws on save**, which is loud and correct
-   in the editor but is the worst possible moment to fail in a shipped game.
-   **Recommend an asymmetry:** on *write*, log an error naming the asset and store null — losing one blackboard
-   entry beats losing the save, and the message tells the author to add it to
-   `AssetManifest.AdditionalAssets`. On *read*, keep failing hard, because a reference that does not resolve
-   cannot be told apart from one that resolves to the *wrong* thing, and that is the silent corruption §2A is
-   about.
+3. **What should saving do when a reference cannot be given an id?** *(from phase 3 — decide in phase 4)*
+   Much narrower than it first looked. `Blackboard.unityObjects` can hold anything, but an asset now has three
+   ways to be nameable and only needs one: a `Resources` folder (no setup), `AssetManifest.AdditionalAssets`
+   (one line), or `RuntimeAssetRegistry.Register` (for objects with no asset identity at all). What remains is
+   a genuine authoring mistake rather than the default experience.
+   It currently **throws on save**, which is loud and right in the editor but the worst possible moment to
+   fail in a shipped game. **Recommend an asymmetry:** on *write*, log an error naming the asset and store
+   null — losing one blackboard entry beats losing the save, and the message can name all three fixes. On
+   *read*, keep failing hard, because a reference that does not resolve cannot be told apart from one that
+   resolves to the *wrong* thing, and that is the silent corruption §2A is about.
 4. ~~**Namespace**~~ — **decided 2026-08-27:** `Narramancer.Serialization`, with the `Narra*` prefix dropped
    from the type names per `CLAUDE.md` (`NarramancerSerializer`, `ObjectWriter`, `ObjectReader`). A future
    `Narramancer.Core` extraction is then a namespace move rather than a rename. The code lives in the existing

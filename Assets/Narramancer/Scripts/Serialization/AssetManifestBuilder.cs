@@ -93,11 +93,58 @@ namespace Narramancer.Serialization {
 				}
 			}
 
+			// Everything under a Resources folder, so a save can name a game's own sprites and clips with no
+			// setup at all. This costs nothing in build size — Resources content ships wholesale either way — and
+			// it is what lets a *build* mint a res: id, which needs the reverse lookup these entries provide.
+			foreach (var path in ResourceAssetPaths()) {
+				foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path)) {
+					if (asset == null) {
+						continue;
+					}
+					// A prefab reports every GameObject and Component inside it. Only its root can be named by a
+					// resource path, and the rest would bloat the manifest by orders of magnitude.
+					if (!AssetDatabase.IsMainAsset(asset) && (asset is GameObject || asset is Component)) {
+						continue;
+					}
+					// A table listing itself is noise, and neither singleton is something a save points at.
+					if (asset is AssetManifest || asset is SingletonBase) {
+						continue;
+					}
+					collected.Add(asset);
+				}
+			}
+
 			if (manifest != null) {
 				collected.AddRange(manifest.AdditionalAssets.Where(asset => asset != null));
 			}
 
 			return collected;
+		}
+
+		/// <summary>
+		/// Every asset file sitting under a <c>Resources</c> folder in this project.
+		/// </summary>
+		private static IEnumerable<string> ResourceAssetPaths() {
+			// Located on the filesystem and then searched folder by folder, rather than by filtering
+			// AssetDatabase.GetAllAssetPaths(): that call enumerates every path in the project *and* its
+			// packages, which is tens of thousands of strings to find a handful of folders.
+			var assets = Application.dataPath.Replace('\\', '/');
+			var folders = Directory.GetDirectories(assets, "Resources", SearchOption.AllDirectories)
+				.Select(folder => "Assets" + folder.Replace('\\', '/').Substring(assets.Length))
+				// A Resources folder inside an Editor folder is editor-only and never ships. Including one would
+				// do the opposite of the intent here: the manifest is a runtime asset, so referencing xNode's
+				// editor GUI textures from it would drag them into every build.
+				.Where(folder => folder.IndexOf("/Editor/", System.StringComparison.Ordinal) < 0)
+				.ToArray();
+			if (folders.Length == 0) {
+				return System.Array.Empty<string>();
+			}
+
+			return AssetDatabase.FindAssets(string.Empty, folders)
+				.Select(AssetDatabase.GUIDToAssetPath)
+				.Where(path => !path.IsNullOrEmpty() && !AssetDatabase.IsValidFolder(path))
+				.Distinct()
+				.OrderBy(path => path, System.StringComparer.Ordinal);
 		}
 
 		/// <summary>
