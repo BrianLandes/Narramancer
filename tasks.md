@@ -169,15 +169,18 @@ of the section.
   dictionary key), the `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and
   `InequalityNode`'s comparison semantics once that lands. Skip the editor-UI ones (A6 port style, A8 icon) —
   not worth a harness. ~1 evening.
-- [ ] **Replace serialized closures with a `Continuation` record** — ~1–2 evenings, **do it before the
-  serializer port**; see [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) §2B. `Promise.doneCallbacks`
-  currently serializes **compiler-generated lambda closures**, and the type name embeds a compiler ordinal:
-  `PrintTextNode` has been saved as `<>c__DisplayClass22_0`, `<>c__DisplayClass1_0` *and* `<>c__DisplayClass19_0`
-  across real saves. **Editing a node's source file silently invalidates saved games**, and nothing warns you.
-  The 14 lambdas are one-liners capturing little more than "which runner", and runners are already keyed by
-  string in `story.NodeRunners` — so `List<SerializableAction>` becomes `List<Continuation>` holding
-  `{kind, runnerKey, flag}`. Deletes the whole `SerializableActionHelper` plugin **and** removes two features
-  (`System.Type` support, closure reflection) from the serializer that follows.
+- [ ] **Replace serialized closures with a `Continuation` record** — full design in
+  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). **Sequenced AFTER the serializer port**, not
+  before: the port doesn't need it (`System.Type` support is ~40 lines, closure reflection is free to a
+  reflecting serializer). Real scope is **18 lambda sites across 3 storage mechanisms**, ~4–6 evenings, of
+  which the choice-callback path needs manual playtesting.
+  - [x] Characterization tests pinning the polling nodes *(done 2026-08-27; `PollingNodeCharacterizationTests`)*
+  - [ ] Fix the two unstable-key prerequisites: `Blackboard.UniqueKey` and `ParallelNode`'s sub-runner name both
+    embed `GetHashCode()`, so neither survives a save. **`UniqueKey` is load-bearing for this design**, which
+    moves shared closure state into exactly that mechanism.
+  - [ ] `Continuation` + `RunnableNode.OnContinuation` + the 10 mechanical sites
+  - [ ] The 4 polling nodes, one at a time, each verified against its characterization tests
+  - [ ] The choice-callback path (`VisibleChoice` in both printers), then delete `SerializableActionHelper`
 - [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
   OdinSerializer — a conversion blocker, not cleanup. Port v2's `NarraSerializer` (~1,300 LOC) behind the two

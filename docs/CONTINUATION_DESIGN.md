@@ -106,7 +106,24 @@ whole point, versus `<>c__DisplayClass22_0`.
 - Shared mutable locals move to `runner.Blackboard` under `Blackboard.UniqueKey(this, "…")`, following
   `ChoosePrioritizedBranchNode`. They become inspectable in a save rather than invisible closure state.
 
-### ⚠️ Prerequisite: sub-runner names must be stable
+### ⚠️ Prerequisite: two key-stability bugs must be fixed first
+
+Both were found while designing this, and both are the **same family as the instanceID bug** — an identity
+built from something the process invents at runtime.
+
+**1. `Blackboard.UniqueKey` embeds a hash code.**
+
+```csharp
+public static string UniqueKey(object owner, string key) => key + " " + owner.GetHashCode().ToString();
+```
+
+This is the mechanism the design leans on for moving shared mutable state out of closures — so shipping it
+as-is would *relocate* the instability rather than remove it. `WaitUntilNode` and
+`ChoosePrioritizedBranchNode` already store their poll flags this way, meaning **those flags do not survive a
+save today**. Pinned by `PollingNodeCharacterizationTests.WaitUntil_RunningFlagKeyIsBuiltFromAnUnstableHashCode`.
+Fix: key off the owning node's asset GUID.
+
+**2. Sub-runner names must be stable**
 
 `Continuation` addresses runners by string key, which works because `CreateNodeRunner(name)` registers them in
 `storyInstance.NodeRunners`. **But `ParallelNode.NameKey` builds that name from `GetHashCode()`:**
@@ -115,10 +132,10 @@ whole point, versus `<>c__DisplayClass22_0`.
 $"Name {runner.GetHashCode()} {this.GetHashCode()} {node.GetHashCode()}"
 ```
 
-Object hash codes are **not stable across sessions**, so a sub-runner's key is already unstable across a save —
-a latent bug of the same family as the instanceID one, and a hard blocker for `runnerKey`. Fix first: derive
-sub-runner names from the node's asset GUID plus the parent runner key. *(Worth checking whether this is
-already causing sub-runner leaks after load.)*
+Object hash codes are **not stable across sessions**, so a sub-runner's key is already unstable across a save,
+and it is a hard blocker for `runnerKey`. Fix: derive sub-runner names from the node's asset GUID plus the
+parent runner key. *(Note `RunActionVerbForDurationNode` already does the right thing —
+`$"{name} - {graph.name}"` — so only `ParallelNode` needs changing.)*
 
 ---
 
@@ -135,7 +152,9 @@ already causing sub-runner leaks after load.)*
 
 ## Order of work
 
-1. **Characterization tests for the 4 Tier 2 nodes** — pin current behaviour *before* touching them. Drive with
+1. ~~**Characterization tests for the Tier 2 nodes**~~ ✅ **Done 2026-08-27** —
+   `PollingNodeCharacterizationTests`, 7 tests covering `WaitUntilNode` end to end and
+   `RunActionVerbForDurationNode`'s timeout path. *(Original note preserved:)* pin current behaviour before touching them. Drive with
    `NarramancerSingleton.Instance.OnUpdate()`; use `MakeTimer(0)` so timers fire on the next pump (`Time.time`
    is frozen within an EditMode frame). Cover: polling continues while the condition holds, the correct next
    node is prepended, and — most important — **the double-fire guard**, where the sub-runner completing and the

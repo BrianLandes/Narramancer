@@ -19,6 +19,21 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-08-27
 
+- [x] **`Continuation` design + characterization tests for the polling nodes.** `Tests.Editor` at **366
+  passing**. Design in `docs/CONTINUATION_DESIGN.md`; `PollingNodeCharacterizationTests` pins current behaviour
+  of the nodes the refactor will restructure, so it can be *verified* rather than hoped at.
+  *Corrected a bad estimate first:* "1–2 evenings, one-liners capturing little more than which runner" came
+  from sampling 3 of the sites. The real surface is **18 lambdas across 3 `SerializableAction` fields**, and 4
+  nodes are timer-driven polling loops carrying a self-rescheduling local function plus shared mutable locals —
+  ~4–6 evenings, some of it playtest-only.
+  *Also reversed the sequencing:* this is **not** a port blocker. `System.Type` support is ~40 lines and
+  closure reflection is free to a reflecting serializer, so it was trading ~5 evenings to save ~60 lines. Port
+  first, this after — it stays pre-launch because it's only free while there are ~0 users.
+  *Two more unstable-key bugs found while designing*, both the same family as the instanceID one:
+  `Blackboard.UniqueKey` and `ParallelNode`'s sub-runner name are both built from `GetHashCode()`, so neither
+  survives a save. `UniqueKey` is **load-bearing for this design** — it's where shared closure state would move
+  — so shipping as-is would relocate the instability rather than remove it. Both are now prerequisites.
+
 - [x] **Breadth coverage over every node type** — `Tests.Editor` goes from 60 to **359 passing**.
   `NodeTypeCoverageTests` is data-driven over `AssemblyUtilities.GetAllTypes<Node>()`, so all **149** concrete
   node types (147 shipped + 2 test doubles) are covered by two tests rather than 149 hand-written ones, and a
