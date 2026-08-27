@@ -27,6 +27,10 @@ Archive of completed tasks and finished phases, moved here from
   started 44 objects later. That is a **session-global sequential counter** — the save records "the 46,810th
   object loaded this session", never anything about the asset's own identity. So the reference breaks whenever
   *anything* changes how many objects load first, which is precisely what shipping a patch does.
+  *The failure mode is the worst available:* loading save A in the new session gave **no error, no null, no
+  wrong-typed object** — the story just resumed at the *previous* node. Nodes sit 2 apart in ID space and
+  everything shifted by 44, so stale IDs landed on valid, correctly-typed, adjacent nodes. **Nothing detects
+  this at runtime.** A player would see a save load cleanly and the story be subtly wrong.
   *Decision:* GUID-keyed references are **required**, not a nice-to-have. The Odin removal is a correctness fix,
   not a refactor.
   *Deliberately NOT done:* the full build-to-build Test 2. It would cost an hour to re-confirm a mechanism

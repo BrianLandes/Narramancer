@@ -163,6 +163,17 @@ of the section.
   index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
   and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
   break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
+- [ ] **Round-trip every node type** — the single highest-leverage test still missing, and it's one test, not
+  156. Enumerate `AssemblyUtilities.GetAllTypes<Node>()` (147 concrete types), instantiate each, serialize and
+  deserialize it, and assert it comes back. Data-driven via `[TestCaseSource]`, so a new node type is covered
+  the day it's written. **Do this before the serializer port** — it turns "the swap didn't break the sample
+  scene" into "the swap didn't break any of the 147 node types", which is the actual risk. ~1 evening.
+- [ ] **Regression tests for the Tier A fixes** — nine real bugs were fixed on 2026-08-12 with **zero tests**,
+  so nothing stops them coming back. Worth covering the pure-logic ones: `StatInstance` min+max clamp (a stat
+  with both only honored the max), `NounInstancesQuery` null/empty equality *and* hash agreement (it's a
+  dictionary key), the `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and
+  `InequalityNode`'s comparison semantics once that lands. Skip the editor-UI ones (A6 port style, A8 icon) —
+  not worth a harness. ~1 evening.
 - [ ] **Replace serialized closures with a `Continuation` record** — ~1–2 evenings, **do it before the
   serializer port**; see [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) §2B. `Promise.doneCallbacks`
   currently serializes **compiler-generated lambda closures**, and the type name embeds a compiler ordinal:

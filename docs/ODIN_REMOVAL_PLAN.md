@@ -186,6 +186,15 @@ v2 has the right seam on the Core side already: `IReferenceResolver` (`TryResolv
 > save records *"the 46,810th object loaded this session"* and nothing about the asset itself, so any change to
 > how many objects load first invalidates every reference. Shipping a patch does exactly that.
 >
+> **The failure mode is the worst one available.** Loading save A in the new session produced **no errors, no
+> nulls, and no wrong-typed objects** — the story simply resumed at the *previous* node instead of the correct
+> one. The node assets sit 2 apart in ID space and everything shifted by 44, so the stale IDs landed on valid,
+> correctly-typed, *adjacent* nodes. The save loads clean and the narrative is silently wrong.
+>
+> That rules out relying on a crash or a null check to catch this: **nothing detects it at runtime today.** It
+> also raises the priority of load-time reference validation (§2B) from "nice" to "must ship with the port" —
+> a save that refuses to load beats one that quietly resumes in the wrong place.
+>
 > **Consequence: the GUID-keyed `UnityReferenceResolver` is required, and this work is a correctness fix rather
 > than a refactor.** Procedure and tooling: [`INSTANCEID_EXPERIMENT.md`](INSTANCEID_EXPERIMENT.md),
 > `tools/inspect-save.py`.
