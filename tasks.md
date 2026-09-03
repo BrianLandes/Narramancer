@@ -83,9 +83,10 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **Pick the next §2 item — the gate is closed.** 60 tests green, including resume-after-load. The
-  recommended order from [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md): prove the `instanceID`
-  bug in a build (~1 evening, sizes everything), then the `Continuation` record, then the serializer port.
+- [ ] **M1 — make the swap real.** The replacement serializer is **built, tested, and not wired up**: Odin
+  still writes and reads every save. 438 EditMode tests green. The next step is
+  [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) phase 4, then the build smoke — see §2 M1 below for
+  why that comes before the `Continuation` and `Saveable` work rather than after it.
 
 ---
 
@@ -122,13 +123,27 @@ recorded before anything changes anyway.
 
 ## 2. Breaking changes — land these before anyone can buy
 
-**This is now the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. **No save-format change here is safe to start before the test
-net exists** — each such task carries an explicit *(needs the test net)*. The two ungated groups are the
-`InequalityNode` fix (a graph-enum change, still break-while-free) and the editor/authoring riders at the end
-of the section.
+**This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 438
+EditMode tests, run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
+any more.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **359 passing**
+### Why this order (resequenced 2026-09-03)
+
+The old order ran the `Continuation` record and three smaller items *before* the serializer swap. That was
+written before the serializer existed and is now backwards, for one reason:
+
+**The build smoke is the only check that cannot be automated, and the riskiest unknown sits behind it.** The
+replacement serializer is pure reflection, there is no `link.xml` and no `[Preserve]` anywhere in the project,
+WebGL managed stripping is Low, and deleting Odin also deletes its build-time AOT preprocessor. Whether that
+survives IL2CPP is **completely unmeasured**, and no EditMode test can measure it. Following the old order
+would put 8–11 evenings of `Continuation` and execution-model work on top of that unknown before finding out.
+
+So: **swap first and smoke it immediately**, then batch the remaining format changes behind a second smoke.
+The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
+unknown is concentrated and a failure needs to be isolated.
+
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **438 passing**
   EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -140,53 +155,19 @@ of the section.
   - [x] `NodeRunner` suspend/resume *(done 2026-08-27; `NodeRunnerTests`)*
   - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode
     structurally cannot catch — record it as a required pre-release step
-- [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subrunners`;
-  `StopAndReset()` recurses into them and releases each; the nodes that spawn sub-runners register and
-  deregister them. `RunnableNode.Cancel(NodeRunner)` is already declared virtual and already invoked from
-  `NodeRunner.cs:154` — and overridden by **nothing**, so today stopping a runner mid-flight *leaks* every
-  sub-runner it started, each still ticking against a blackboard nobody owns. A correctness bug in the
-  execution model, not a nicety. Port `WaitNode.Cancel` (cancels its timer) and
-  `RunActionVerbWhileConditionIsTrueNode.Cancel` alongside it.
-  **Do this before the two refactors below** — `subrunners` is a serialized field, so the Saveable work should
-  be designed against the final shape rather than retrofitted. *(needs the test net)*
-  *(from inbox 2026-08-11 — Tier B1)*
-- [ ] **Finish the Promise registry** — `StoryInstance.promises` (`StringPromiseDictionary`) exists with a
-  public accessor and **nothing in the repo reads or writes it**. Add
-  `NarramancerSingleton.MakePromise()/BreakPromise()/UpdatePromises()` driven from `Update()`, plus
-  `Promise.WithUpdate(Action)`, `Promise.removeOnResolve`, and `Promise.DefaultDone`. Worth doing for the
-  dead-code cleanup alone; it also puts live data into a serialized dictionary that currently ships empty, so
-  it belongs here rather than after. Pair it with the sub-runner work above. *(needs the test net)*
-  *(from inbox 2026-08-11 — Tier B2)*
-- [ ] **Fix `InequalityNode` comparison semantics** — `Comparison.GreaterThan` currently evaluates `>=` and
-  `LessThan` evaluates `<=`. Adding `GreaterThanOrEqualTo`/`LessThanOrEqualTo` at indices 1–2 fixes the
-  semantics *and* happens to be migration-safe: old index 1 (`GreaterThan`, behaving as `>=`) maps to new
-  index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
-  and gain correct labels. Rare freebie. Graph-enum change, not save-format — **no test-net gate**, but it's a
-  break-while-free item so it belongs in this section. *(from inbox 2026-08-11 — Tier B3)*
-- [ ] **Regression tests for the Tier A fixes** — nine real bugs were fixed on 2026-08-12 with **zero tests**,
-  so nothing stops them coming back. Worth covering the pure-logic ones: `StatInstance` min+max clamp (a stat
-  with both only honored the max), `NounInstancesQuery` null/empty equality *and* hash agreement (it's a
-  dictionary key), the `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and
-  `InequalityNode`'s comparison semantics once that lands. Skip the editor-UI ones (A6 port style, A8 icon) —
-  not worth a harness. ~1 evening.
-- [ ] **Replace serialized closures with a `Continuation` record** — full design in
-  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). **Sequenced AFTER the serializer port**, not
-  before: the port doesn't need it (`System.Type` support is ~40 lines, closure reflection is free to a
-  reflecting serializer). Real scope is **18 lambda sites across 3 storage mechanisms**, ~4–6 evenings, of
-  which the choice-callback path needs manual playtesting.
-  - [x] Characterization tests pinning the polling nodes *(done 2026-08-27; `PollingNodeCharacterizationTests`)*
-  - [ ] Fix the two unstable-key prerequisites: `Blackboard.UniqueKey` and `ParallelNode`'s sub-runner name both
-    embed `GetHashCode()`, so neither survives a save. **`UniqueKey` is load-bearing for this design**, which
-    moves shared closure state into exactly that mechanism.
-  - [ ] `Continuation` + `RunnableNode.OnContinuation` + the 10 mechanical sites
-  - [ ] The 4 polling nodes, one at a time, each verified against its characterization tests
-  - [ ] The choice-callback path (`VisibleChoice` in both printers), then delete `SerializableActionHelper`
+
+---
+
+### M1 — Make the swap real *(~2 evenings + build cycles)*
+
+**Do this next.** Everything below it is cheaper and safer once the new serializer has survived a real build.
+
 - [ ] **Remove OdinSerializer** — full plan in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md); read it
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
-  OdinSerializer — a conversion blocker, not cleanup. **Phase 2 is done (2026-08-27): the replacement
+  OdinSerializer — a conversion blocker, not cleanup. **Phases 2–3 are done (2026-08-27): the replacement
   serializer exists in `Assets/Narramancer/Scripts/Serialization/`, round-trips the real story graph
   (including resume-after-load and the serialized closures), and keys asset references by GUID.** Odin is
-  still the one in use — nothing is wired up yet. ~2–3 evenings left.
+  still the one in use — nothing is wired up yet.
   - [x] Phase 2 — the serializer itself, plus 45 tests. `NarramancerSerializer` + `ObjectWriter`/`ObjectReader`
     + a hand-written JSON layer + `TypeNames`. Ships `schemaVersion` from day one.
   - [x] Phase 3 — `UnityReferenceResolver`, over three id forms: `ref:<key>` (`RuntimeAssetRegistry`),
@@ -194,25 +175,112 @@ of the section.
     The local file id is not optional: xNode nodes are **sub-assets of their graph**, and a sprite is a
     sub-asset of its sheet, so a path or GUID alone cannot tell two of them apart. `AssetManifestBuilder`
     bakes the table before every build — 217 assets in this project.
-  - [ ] Phase 4 — the swap: replace the two `SerializationUtility` calls in `SaveLoadUtilities.cs`, and
-    replace `SaveDataWrapper.objects` (the instanceID list) with GUID handles. **Decide §6.3 first** — what
-    saving does when an asset is nameable by none of the three forms (currently: throws).
+  - [ ] **Decide plan §6.3 first** (15 minutes) — what saving does when an asset is nameable by none of the
+    three id forms. Currently it throws, which is right in the editor and the worst possible moment to fail in
+    a shipped game. Recommended: on *write* log an error naming the asset and store null; on *read* stay fatal.
+  - [ ] Phase 4 — the swap. The blast radius is small: the only save call sites outside `SaveLoadUtilities`
+    are `SaveMenu.cs:102` and `LoadMenu.cs:76`, both through the wrapper.
+    - [ ] Replace the two `SerializationUtility` calls, and `SaveDataWrapper.objects` (the instanceID list)
+      with GUID handles.
+    - [ ] **Stamp a version on `SaveDataWrapper`.** Both formats use `$id` and `$type`, so an old save fed to
+      the new reader fails on a type name like `"N|Narramancer.StoryInstance, Narramancer"` — a confusing
+      type-resolution error rather than "this save is from an older version." Not silent corruption, just a
+      bad message, and cheap to fix while in there.
+    - [ ] **Capture the before/after comparison against `Assets/Saves/` early — phase 4 destroys the chance.**
+      `SaveSlot_001.json` / `002` (2026-08-27) are the only saves that reference *this* project's assets and
+      so the only real fixture available. Their instanceIDs are already stale, so reference fidelity may be
+      gone; structure will still compare.
   - [ ] The **patch test** — save, add an asset, rebuild, load. Nothing in the editor can observe an id
-    surviving a renumbering, so this is what actually proves the fix. Do it with phase 4.
+    surviving a renumbering, so this is what actually proves the instanceID fix.
+  - [ ] **Build smoke #1 — the new serializer under IL2CPP, with Odin still present but unused.** This is the
+    unknown: no `link.xml`, no `[Preserve]`, stripping Low, and a reflection-based serializer. WebGL at minimum,
+    since it is IL2CPP-only and covers AOT codegen + managed stripping in one shot.
   - [ ] Phase 5 — delete the vendored assembly (186 files), drop it from `Third-Party Notices.txt` and
-    `LICENSING.md`, and re-run the Task Z build smoke on IL2CPP **and** WebGL.
-  - Verification still owed: the golden-file check against the 40-save corpus, the patch test
-    (save → add an asset → rebuild → load), and installing Odin Inspector alongside to confirm the conflict
-    is actually gone — that last one is the commercial goal and worth checking directly.
+    `LICENSING.md`.
+  - [ ] **Build smoke #2 — after deleting Odin.** Costs a second manual build cycle, and buys the ability to
+    tell "the new serializer breaks under IL2CPP" apart from "Odin's build-time AOT preprocessor was doing
+    something load-bearing." Skippable if you would rather gamble on one cycle.
+  - [ ] **Install Odin Inspector alongside in a scratch project** and confirm the duplicate-assembly conflict
+    is gone. This is the actual commercial goal of the whole exercise and worth verifying directly.
+  - ⚠️ **The golden-file check in plan §5.2 is not executable as written.** It says to deserialize the 40-save
+    corpus with the old path and re-serialize with the new one — but those saves come from six *other*
+    projects and their `$eref`s are instanceIDs pointing at assets that do not exist here, so loading them
+    yields meaningless references. The corpus is a **format inventory**, which is how plan §0 correctly used
+    it, not a round-trip fixture. The `Assets/Saves/` item above is the real substitute.
+
+---
+
+### M2 — Execution-model correctness *(~3–4 evenings)*
+
+Independent of the serializer, and worth doing before `Continuation`: it restructures the sub-runner nodes
+once instead of twice.
+
+- [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subrunners`;
+  `StopAndReset()` recurses into them and releases each; the nodes that spawn sub-runners register and
+  deregister them. `RunnableNode.Cancel(NodeRunner)` is already declared virtual and already invoked from
+  `NodeRunner.cs:154` — and overridden by **nothing**, so today stopping a runner mid-flight *leaks* every
+  sub-runner it started, each still ticking against a blackboard nobody owns. A correctness bug in the
+  execution model, not a nicety. Port `WaitNode.Cancel` (cancels its timer) and
+  `RunActionVerbWhileConditionIsTrueNode.Cancel` alongside it.
+  **Do this before `Continuation`** — 3 of the 14 `Promise` sites and **2 of the 4 hard polling nodes** are
+  about sub-runner ownership, so doing it after would restructure them twice. A parent-owned tree may also
+  make the `ReleaseRunner` continuation kind unnecessary.
+  *(from inbox 2026-08-11 — Tier B1)*
+  - [ ] **Fix the two unstable-key bugs while here** *(moved out of `Continuation` 2026-09-03)*.
+    `Blackboard.UniqueKey(object, string)` and `ParallelNode`'s sub-runner name both embed `GetHashCode()`, so
+    neither survives a save — a live save-correctness bug today, independent of `Continuation`. `ParallelNode`'s
+    name is literally what this task rewrites, and `UniqueKey` is **load-bearing for the `Continuation`
+    design**, which moves shared closure state into exactly that mechanism. Pinned by
+    `PollingNodeCharacterizationTests`.
+- [ ] **Finish the Promise registry** — `StoryInstance.promises` (`StringPromiseDictionary`) exists with a
+  public accessor and **nothing in the repo reads or writes it**. Add
+  `NarramancerSingleton.MakePromise()/BreakPromise()/UpdatePromises()` driven from `Update()`, plus
+  `Promise.WithUpdate(Action)`, `Promise.removeOnResolve`, and `Promise.DefaultDone`. Worth doing for the
+  dead-code cleanup alone; it also puts live data into a serialized dictionary that currently ships empty, so
+  it belongs here rather than after. Pair it with the sub-runner work above.
+  *(from inbox 2026-08-11 — Tier B2)*
+
+**Riders — no dependencies, do them whenever there is a gap:**
+
+- [ ] **Fix `InequalityNode` comparison semantics** — `Comparison.GreaterThan` currently evaluates `>=` and
+  `LessThan` evaluates `<=`. Adding `GreaterThanOrEqualTo`/`LessThanOrEqualTo` at indices 1–2 fixes the
+  semantics *and* happens to be migration-safe: old index 1 (`GreaterThan`, behaving as `>=`) maps to new
+  index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
+  and gain correct labels. Rare freebie. Graph-enum change, not save-format. *(from inbox 2026-08-11 — Tier B3)*
+- [ ] **Regression tests for the Tier A fixes** — nine real bugs were fixed on 2026-08-12 with **zero tests**,
+  so nothing stops them coming back. Worth covering the pure-logic ones: `StatInstance` min+max clamp (a stat
+  with both only honored the max), `NounInstancesQuery` null/empty equality *and* hash agreement (it's a
+  dictionary key), the `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and
+  `InequalityNode`'s comparison semantics once that lands. Skip the editor-UI ones (A6 port style, A8 icon) —
+  not worth a harness. ~1 evening.
+
+---
+
+### M3 — Replace the serialized closures *(~4–6 evenings, smaller after M2)*
+
+- [ ] **Replace serialized closures with a `Continuation` record** — full design in
+  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). **Sequenced after the serializer swap**, not
+  before: the swap doesn't need it (`System.Type` support and closure reflection both landed in phase 2, and
+  both are cheap). Real scope is **18 lambda sites across 3 storage mechanisms**, of which the choice-callback
+  path needs manual playtesting. Once it lands the serializer can drop `$systemType` and the
+  compiler-generated-field carve-out.
+  - [x] Characterization tests pinning the polling nodes *(done 2026-08-27; `PollingNodeCharacterizationTests`)*
+  - [ ] `Continuation` + `RunnableNode.OnContinuation` + the 10 mechanical sites
+  - [ ] The 4 polling nodes, one at a time, each verified against its characterization tests
+  - [ ] The choice-callback path (`VisibleChoice` in both printers), then delete `SerializableActionHelper`
+  - Prerequisite moved to M2: the two `GetHashCode()`-based unstable keys.
+
+---
+
+### M4 — Saveable refactor, then one smoke *(~4–6 evenings)*
+
 - [ ] **Saveable refactor — one component + drivers** — see
-  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design. Do it adjacent
-  to the Odin removal; both touch the save format.
+  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design.
   The real reason to do it: the current key is `$"{field} {transform.FullPath()}[{componentIndex}]"`
   (`SerializableMonoBehaviour.cs:22`), so renaming an object, reparenting it, reordering components, or two
   same-named siblings **silently breaks the save** — a latent correctness bug in the headline feature, and the
   single strongest reason this section goes before the launch rather than after.
   Keep driver `StateType`s as simple serializer-friendly structs so they survive the serializer swap.
-  *(needs the test net)*
   - [ ] `Saveable` + stable GUID (mint at author time; duplicate-paste detection — copy Unity's open-source
     `GuidComponent` approach; prefab assets carry no guid)
   - [ ] **Fold in the fork's noun-instance init-order fixes** — `[DefaultExecutionOrder(-100)]` and an
@@ -230,11 +298,13 @@ of the section.
   - [ ] Migrate `RunActionVerbMonoBehaviour` + `NarramancerScene` to the guid model
   - [ ] Spawned-object guid reassignment in `SerializableSpawner`
   - [ ] Update the 4 sample scenes; EditMode tests per driver
-- [ ] **Re-run the Task Z build smoke** — **required, not optional.** Both refactors change serialization
-  fundamentally, and the original Task Z pass no longer covers the new code. Repeat the full round-trip
-  (run → suspend → save → close the app → reopen → load → resume) on a **WebGL build** at minimum, since it's
-  IL2CPP-only and therefore covers AOT codegen + managed stripping in one shot. See `done.md` for why WebGL is
-  the decisive build.
+- [ ] **Re-run the Task Z build smoke** — **required, not optional**, and this is the one that covers M2, M3
+  and M4 together. Repeat the full round-trip (run → suspend → save → close the app → reopen → load → resume)
+  on a **WebGL build** at minimum, since it's IL2CPP-only and therefore covers AOT codegen + managed stripping
+  in one shot. See `done.md` for why WebGL is the decisive build.
+
+---
+
 - [ ] **Multiple xNode editor windows** — non-breaking and independent, so it gates nothing. Room to ride along
   before the launch and give the relaunch a genuinely new feature to tout, but **don't let it delay §3.**
   ~2–3 evenings: four specific pieces of global state to make per-window, plus one known limitation to accept
