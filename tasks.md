@@ -83,10 +83,12 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **M1 — make the swap real.** The replacement serializer is **built, tested, and not wired up**: Odin
-  still writes and reads every save. 438 EditMode tests green. The next step is
-  [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md) phase 4, then the build smoke — see §2 M1 below for
-  why that comes before the `Continuation` and `Saveable` work rather than after it.
+- [ ] **M1 — the swap has landed; the build smoke is next and needs you.** As of 2026-09-03 the replacement
+  serializer *is* the serializer: `SaveLoadUtilities` goes through it, `SaveDataWrapper.objects` is gone, and
+  no first-party code references Odin. 441 EditMode tests green.
+  **The next step is a manual WebGL build** — see [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md) §1.
+  Nothing in the editor can test AOT, managed stripping, or identity across processes, and the project has no
+  `link.xml`. Odin stays in the tree until that passes, so a failure can be diagnosed against both paths.
 
 ---
 
@@ -153,8 +155,8 @@ unknown is concentrated and a failure needs to be isolated.
   - [x] Domain ops: `NounInstance` properties/stats/relationships, relationship integrity by UID
     *(done 2026-08-27; `NounInstanceTests` — found and fixed a real `NounUID` equality bug, see `done.md`)*
   - [x] `NodeRunner` suspend/resume *(done 2026-08-27; `NodeRunnerTests`)*
-  - [ ] Write the release runbook: the Task Z build smoke (IL2CPP/WebGL round-trip) is the one check EditMode
-    structurally cannot catch — record it as a required pre-release step
+  - [x] Write the release runbook *(done 2026-09-03)* — [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md):
+    the build smoke, the patch test, the Odin Inspector coexistence check, and which change triggers which.
 
 ---
 
@@ -166,8 +168,9 @@ unknown is concentrated and a failure needs to be isolated.
   before starting. A buyer who owns Odin Inspector hits a duplicate-assembly conflict because both ship
   OdinSerializer — a conversion blocker, not cleanup. **Phases 2–3 are done (2026-08-27): the replacement
   serializer exists in `Assets/Narramancer/Scripts/Serialization/`, round-trips the real story graph
-  (including resume-after-load and the serialized closures), and keys asset references by GUID.** Odin is
-  still the one in use — nothing is wired up yet.
+  (including resume-after-load and the serialized closures), and keys asset references by GUID. Phase 4 landed
+  2026-09-03: it is now the serializer in use.** Odin remains in the tree, referenced by nothing, until the
+  build smoke passes.
   - [x] Phase 2 — the serializer itself, plus 45 tests. `NarramancerSerializer` + `ObjectWriter`/`ObjectReader`
     + a hand-written JSON layer + `TypeNames`. Ships `schemaVersion` from day one.
   - [x] Phase 3 — `UnityReferenceResolver`, over three id forms: `ref:<key>` (`RuntimeAssetRegistry`),
@@ -175,28 +178,34 @@ unknown is concentrated and a failure needs to be isolated.
     The local file id is not optional: xNode nodes are **sub-assets of their graph**, and a sprite is a
     sub-asset of its sheet, so a path or GUID alone cannot tell two of them apart. `AssetManifestBuilder`
     bakes the table before every build — 217 assets in this project.
-  - [ ] **Decide plan §6.3 first** (15 minutes) — what saving does when an asset is nameable by none of the
-    three id forms. Currently it throws, which is right in the editor and the worst possible moment to fail in
-    a shipped game. Recommended: on *write* log an error naming the asset and store null; on *read* stay fatal.
-  - [ ] Phase 4 — the swap. The blast radius is small: the only save call sites outside `SaveLoadUtilities`
-    are `SaveMenu.cs:102` and `LoadMenu.cs:76`, both through the wrapper.
-    - [ ] Replace the two `SerializationUtility` calls, and `SaveDataWrapper.objects` (the instanceID list)
-      with GUID handles.
-    - [ ] **Stamp a version on `SaveDataWrapper`.** Both formats use `$id` and `$type`, so an old save fed to
-      the new reader fails on a type name like `"N|Narramancer.StoryInstance, Narramancer"` — a confusing
-      type-resolution error rather than "this save is from an older version." Not silent corruption, just a
-      bad message, and cheap to fix while in there.
-    - [ ] **Capture the before/after comparison against `Assets/Saves/` early — phase 4 destroys the chance.**
-      `SaveSlot_001.json` / `002` (2026-08-27) are the only saves that reference *this* project's assets and
-      so the only real fixture available. Their instanceIDs are already stale, so reference fidelity may be
-      gone; structure will still compare.
+  - [x] **Decided plan §6.3** *(2026-09-03)* — asymmetric, as recommended. On **write** an asset the resolver
+    cannot name is dropped with a `Debug.LogError` naming it and all three fixes; on **read** an unresolvable
+    id stays fatal, because there it cannot be told apart from an id resolving to the *wrong* thing.
+  - [x] Phase 4 — **the swap is done** *(2026-09-03)*. `SaveLoadUtilities` now goes through
+    `NarramancerSerializer` + `UnityReferenceResolver`; `SaveDataWrapper.objects` (the instanceID list) is
+    gone, replaced by inline `$asset` handles; the wrapper carries a `version` and rejects a pre-1.0 save by
+    name. Odin is no longer referenced by any first-party code. 441 tests green.
+    - [x] **Captured the before/after against `Assets/Saves/` before it was destroyed.** Both real saves
+      (2026-08-27, from a live play session) were loaded with Odin and re-serialized with the replacement:
+      8,891 → 3,067 bytes and 8,889 → 3,189 bytes, and both are **byte-identical under
+      `Serialize(Deserialize(Serialize(x)))`** — the round trip is lossless on a real graph, not just a
+      synthetic one. Neither save carried a suspended runner, so the closure path is covered by
+      `SerializerStoryGraphTests` instead.
+    - ⚠️ **The test suite was quietly depending on `instanceID` identity.** Tests build their nodes and nouns
+      with `CreateInstance`, which produces objects that are not assets and have no persistent id — Odin
+      papered over that by storing an `instanceID`. They now register with `RuntimeAssetRegistry`, which is
+      both honest and a real exercise of that path.
   - [ ] The **patch test** — save, add an asset, rebuild, load. Nothing in the editor can observe an id
     surviving a renumbering, so this is what actually proves the instanceID fix.
-  - [ ] **Build smoke #1 — the new serializer under IL2CPP, with Odin still present but unused.** This is the
-    unknown: no `link.xml`, no `[Preserve]`, stripping Low, and a reflection-based serializer. WebGL at minimum,
-    since it is IL2CPP-only and covers AOT codegen + managed stripping in one shot.
+    Procedure: [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md) §2.
+  - [ ] **Build smoke #1 — the new serializer under IL2CPP, with Odin still present but unused. ← NEXT, and
+    it needs you: it is a manual build.** This is the unknown: no `link.xml`, no `[Preserve]`, stripping Low,
+    and a reflection-based serializer. WebGL at minimum, since it is IL2CPP-only and covers AOT codegen +
+    managed stripping in one shot. Procedure: [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md) §1.
   - [ ] Phase 5 — delete the vendored assembly (186 files), drop it from `Third-Party Notices.txt` and
-    `LICENSING.md`.
+    `LICENSING.md`. Also drop the reference from `Narramancer.asmdef`, where the Odin assembly is currently
+    the **only** entry. Blocked on smoke #1 passing, so a failure there can be diagnosed with both paths
+    still present.
   - [ ] **Build smoke #2 — after deleting Odin.** Costs a second manual build cycle, and buys the ability to
     tell "the new serializer breaks under IL2CPP" apart from "Odin's build-time AOT preprocessor was doing
     something load-bearing." Skippable if you would rather gamble on one cycle.

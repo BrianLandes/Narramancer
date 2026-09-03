@@ -249,35 +249,32 @@ public class SerializerStoryGraphTests {
 		Assert.IsFalse(captured.ContainsKey("ran"), "the restored callback must not still be pointing at the original object");
 	}
 
-	#region Against the serializer being replaced
+	#region Every reference is accounted for
 
+	/// <summary>
+	/// Nothing in the graph is silently lost. Since the swap, a Unity object the resolver cannot name is
+	/// dropped with a logged error rather than throwing — the right call at save time, but it means a
+	/// regression could quietly shrink a save instead of failing it. This is the test that would catch that.
+	/// <para>
+	/// The two tests that used to live here compared reference counts and payload size against the Odin path.
+	/// Both became tautological when Odin stopped being the serializer, so they were replaced by this.
+	/// </para>
+	/// </summary>
 	[Test]
-	public void TheStoryGraphCarriesTheSameNodeAssetsAsTheOdinPathDoes() {
-		// Odin reports the external references it found in its object list. Anything it points at, the
-		// replacement must point at too — a reference the new writer failed to notice would be silently
-		// inlined or silently dropped.
+	public void EveryAssetInTheGraphIsWrittenAsAHandleAndNoneAreDropped() {
 		var story = StoryWithSomeOfEverything();
 
-		SaveLoadUtilities.SerializePayload(story, out var odinObjects);
-		serializer.Serialize(story);
+		var json = serializer.Serialize(story);
 
-		Assert.AreEqual(odinObjects.Count, references.Count,
-			"the replacement found a different number of asset references than Odin did");
+		Assert.AreEqual(3, references.Count, "the graph points at a noun and two nodes");
+		var handles = json.Split(new[] { NarramancerSerializer.AssetKey }, StringSplitOptions.None).Length - 1;
+		Assert.AreEqual(references.Count, handles,
+			"every reference the resolver named should appear in the payload as a handle");
 	}
 
-	[Test]
-	public void TheReplacementPayloadIsNotLargerThanOdins() {
-		// Not a performance claim so much as a shape check: the new writer drops Dictionary's internal
-		// comparer and SerializableDictionary's keys/values backing arrays, both of which Odin writes into
-		// every save. If the new payload came out bigger, something is being written twice.
-		var story = StoryWithSomeOfEverything();
+	#endregion
 
-		var odin = SaveLoadUtilities.SerializePayload(story, out _);
-		var replacement = serializer.Serialize(story);
-
-		Assert.LessOrEqual(replacement.Length, odin.Length,
-			$"replacement payload {replacement.Length} bytes vs Odin's {odin.Length}");
-	}
+	#region Fixtures
 
 	private StoryInstance StoryWithSomeOfEverything() {
 		var story = new StoryInstance();

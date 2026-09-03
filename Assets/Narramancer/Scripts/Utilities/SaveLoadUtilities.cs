@@ -1,4 +1,4 @@
-using Narramancer.OdinSerializer;
+using Narramancer.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,10 +9,21 @@ namespace Narramancer {
 
 	[Serializable]
 	public class SaveDataWrapper {
+
+		/// <summary>
+		/// The format <see cref="data"/> is written in. Absent from a save file means <c>0</c>, which is the
+		/// OdinSerializer format this plugin used before 1.0 — worth naming, because both formats use <c>$id</c>
+		/// and <c>$type</c>, so an old payload handed to the current reader fails on a type name rather than on
+		/// anything that says "old save".
+		/// </summary>
+		public int version;
+
 		public string title;
 		public string data;
 		public string thumbnail;
-		public List<UnityEngine.Object> objects;
+
+		/// <summary>The format written before 1.0, by OdinSerializer. No longer readable.</summary>
+		public const int OdinVersion = 0;
 	}
 
 	public static class SaveLoadUtilities {
@@ -49,28 +60,50 @@ namespace Narramancer {
 			return jsonData;
 		}
 
+		private static NarramancerSerializer serializer = null;
+
 		/// <summary>
-		/// Serializes <paramref name="data"/> to the payload string, emitting the external
-		/// <see cref="UnityEngine.Object"/> references it points at into <paramref name="objects"/>. The two
-		/// payload methods are the *only* place the serializer is called, so a serializer swap touches nothing
-		/// else — and they let a test round-trip a story without needing a screenshot for the thumbnail.
+		/// The serializer every save goes through. References are keyed by asset GUID, Resources path, or a
+		/// runtime registry key — never by <c>instanceID</c>, which is handed out per session and so broke every
+		/// saved reference whenever a game shipped a patch.
 		/// </summary>
-		public static string SerializePayload<T>(T data, out List<UnityEngine.Object> objects) {
-			var bytes = SerializationUtility.SerializeValue(data, DataFormat.JSON, out objects);
-			return System.Text.Encoding.UTF8.GetString(bytes);
+		public static NarramancerSerializer Serializer {
+			get {
+				if (serializer == null) {
+					serializer = new NarramancerSerializer(new UnityReferenceResolver());
+				}
+				return serializer;
+			}
+		}
+
+		/// <summary>
+		/// Drops the cached serializer, so the next save picks up a freshly baked asset manifest. Only needed
+		/// after rebuilding the manifest in the editor.
+		/// </summary>
+		public static void ResetSerializer() {
+			serializer = null;
+		}
+
+		/// <summary>
+		/// Serializes <paramref name="data"/> to the payload string. This and its counterpart are the *only*
+		/// place the serializer is called, so a serializer change touches nothing else — and they let a test
+		/// round-trip a story without needing a screenshot for the thumbnail.
+		/// </summary>
+		public static string SerializePayload<T>(T data) {
+			return Serializer.Serialize(data);
 		}
 
 		/// <inheritdoc cref="SerializePayload{T}"/>
-		public static T DeserializePayload<T>(string payload, List<UnityEngine.Object> objects) {
-			var bytes = System.Text.Encoding.UTF8.GetBytes(payload);
-			return SerializationUtility.DeserializeValue<T>(bytes, DataFormat.JSON, objects);
+		public static T DeserializePayload<T>(string payload) {
+			return Serializer.Deserialize<T>(payload);
 		}
 
 		public static string SerializeData<T>(T data) {
 			var wrapper = new SaveDataWrapper();
+			wrapper.version = NarramancerSerializer.CurrentSchemaVersion;
 			wrapper.title = DateTime.Now.ToString("dddd MMMM d yyyy, hh:mm tt");
 
-			wrapper.data = SerializePayload(data, out wrapper.objects);
+			wrapper.data = SerializePayload(data);
 
 			var thumbnailTexture = Screenshot();
 			wrapper.thumbnail = Convert.ToBase64String(thumbnailTexture.EncodeToJPG());
@@ -93,8 +126,27 @@ namespace Narramancer {
 
 		public static T DeserializeData<T>(string jsonData) {
 			var saveGameWrapper = JsonUtility.FromJson<SaveDataWrapper>(jsonData);
+			RequireReadableVersion(saveGameWrapper);
+			return DeserializePayload<T>(saveGameWrapper.data);
+		}
 
-			return DeserializePayload<T>(saveGameWrapper.data, saveGameWrapper.objects);
+		/// <summary>
+		/// Rejects a save this build cannot read, with a message that says so. Without the check an old
+		/// OdinSerializer payload would surface as a type-resolution failure deep in the reader — true, but no
+		/// help to anyone reading the log.
+		/// </summary>
+		private static void RequireReadableVersion(SaveDataWrapper wrapper) {
+			if (wrapper == null) {
+				throw new Serialization.SerializationException("The save file could not be read at all — it is not a Narramancer save.");
+			}
+			if (wrapper.version == SaveDataWrapper.OdinVersion) {
+				throw new Serialization.SerializationException(
+					$"'{wrapper.title}' was written by a pre-1.0 version of Narramancer, which used a different save format. It cannot be loaded by this build.");
+			}
+			if (wrapper.version > NarramancerSerializer.CurrentSchemaVersion) {
+				throw new Serialization.SerializationException(
+					$"'{wrapper.title}' was written by a newer version of the game (save format {wrapper.version}, this build reads {NarramancerSerializer.CurrentSchemaVersion}).");
+			}
 		}
 
 		public static string DeserializeTitle(string jsonData) {

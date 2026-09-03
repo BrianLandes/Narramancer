@@ -379,6 +379,35 @@ public class SerializerTests {
 		Assert.AreSame(noun, withReferences.Deserialize<WithAsset>(json).Noun);
 	}
 
+	/// <summary>
+	/// The §6.3 policy, write half: an asset the resolver cannot name is dropped with a logged error rather
+	/// than throwing. Throwing would fail at the worst possible moment in a shipped game — the moment the
+	/// player pressed Save — and losing one blackboard entry beats losing the whole save. The read half stays
+	/// fatal, because there an unresolvable id is indistinguishable from one resolving to the wrong thing.
+	/// </summary>
+	[Test]
+	public void AnAssetTheResolverCannotNameIsDroppedWithAnError() {
+		var noun = Asset<NounScriptableObject>("Hero");
+		var withEmptyResolver = new NarramancerSerializer(new InMemoryReferenceResolver());
+
+		UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error, new System.Text.RegularExpressions.Regex("Hero"));
+		var json = withEmptyResolver.Serialize(new WithAsset { Noun = noun });
+
+		Assert.IsNull(withEmptyResolver.Deserialize<WithAsset>(json).Noun);
+		StringAssert.DoesNotContain(NarramancerSerializer.AssetKey, json, "the reference should be dropped, not written as a dangling handle");
+	}
+
+	/// <summary>The error has to name all three fixes, or it tells the author nothing actionable.</summary>
+	[Test]
+	public void TheDroppedReferenceErrorNamesTheWaysToFixIt() {
+		var noun = Asset<NounScriptableObject>("Hero");
+
+		UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
+			new System.Text.RegularExpressions.Regex("Resources.*Additional Assets.*RuntimeAssetRegistry"));
+
+		new NarramancerSerializer(new InMemoryReferenceResolver()).Serialize(new WithAsset { Noun = noun });
+	}
+
 	[Test]
 	public void SerializingAUnityObjectWithoutAResolverFailsLoudly() {
 		// Inlining it would bake a stale copy of authored content into the save.

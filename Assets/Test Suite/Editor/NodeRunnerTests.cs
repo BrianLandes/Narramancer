@@ -51,12 +51,18 @@ public class NodeRunnerTests {
 		}
 		created.Clear();
 		RecordingTestNode.Log.Clear();
+		Narramancer.Serialization.RuntimeAssetRegistry.Clear();
 	}
 
+	/// <summary>
+	/// Creates a node and registers it, so a save can name it. A node made with <c>CreateInstance</c> is not
+	/// an asset and has no persistent identity — see the note in <see cref="SaveLoadRoundTripTests"/>.
+	/// </summary>
 	private T Node<T>(string name) where T : RunnableNode {
 		var node = ScriptableObject.CreateInstance<T>();
 		node.name = name;
 		created.Add(node);
+		Narramancer.Serialization.RuntimeAssetRegistry.Register($"test-{created.Count}-{name}", node);
 		return node;
 	}
 
@@ -167,8 +173,8 @@ public class NodeRunnerTests {
 	#region Surviving a save
 
 	private static StoryInstance RoundTrip(StoryInstance story) {
-		var payload = SaveLoadUtilities.SerializePayload(story, out var objects);
-		return SaveLoadUtilities.DeserializePayload<StoryInstance>(payload, objects);
+		var payload = SaveLoadUtilities.SerializePayload(story);
+		return SaveLoadUtilities.DeserializePayload<StoryInstance>(payload);
 	}
 
 	/// <summary>

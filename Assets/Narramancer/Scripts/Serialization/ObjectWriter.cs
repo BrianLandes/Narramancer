@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Narramancer.Serialization.Json;
+using UnityEngine;
 
 namespace Narramancer.Serialization {
 
@@ -103,10 +104,20 @@ namespace Narramancer.Serialization {
 					"Construct it with one, or the reference cannot be given a stable id.");
 			}
 
+			// Deliberately not fatal, and deliberately asymmetric with the reader.
+			//
+			// Here we know exactly what is missing and can name it, and the author has three ways to fix it. On
+			// read we know only that an id did not resolve, which is indistinguishable from an id that resolves
+			// to the *wrong* thing — the silent corruption the GUID work exists to remove — so that stays fatal.
+			// Losing one blackboard entry also beats losing the save: throwing here would fail at the worst
+			// possible moment in a shipped game, when the player pressed Save.
 			if (!references.TryGetId(unityObject, out var id)) {
-				throw new SerializationException(
-					$"The graph points at the Unity object '{unityObject.name}' ({unityObject.GetType()}), but the reference resolver has no stable id for it. " +
-					"Saved references must be resolvable, or they cannot be loaded back.");
+				Debug.LogError(
+					$"Narramancer cannot save a reference to '{unityObject.name}' ({unityObject.GetType().Name}) — it has no stable id, so the reference is being dropped. " +
+					"Fix it in one of three ways: move the asset under a Resources folder, add it to the Narramancer asset manifest's Additional Assets, " +
+					$"or call {nameof(RuntimeAssetRegistry)}.{nameof(RuntimeAssetRegistry.Register)} for it at runtime.",
+					unityObject);
+				return JsonValue.Null;
 			}
 
 			var node = JsonValue.NewObject();

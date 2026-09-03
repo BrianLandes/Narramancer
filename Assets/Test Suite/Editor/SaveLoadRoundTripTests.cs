@@ -19,6 +19,7 @@ public class SaveLoadRoundTripTests {
 
 	[TearDown]
 	public void TearDown() {
+		Narramancer.Serialization.RuntimeAssetRegistry.Clear();
 		foreach (var asset in createdAssets) {
 			if (asset != null) {
 				Object.DestroyImmediate(asset);
@@ -27,21 +28,30 @@ public class SaveLoadRoundTripTests {
 		createdAssets.Clear();
 	}
 
-	/// <summary>Creates a ScriptableObject that is cleaned up after the test.</summary>
+	/// <summary>
+	/// Creates a ScriptableObject that is cleaned up after the test, and registers it so a save can name it.
+	/// <para>
+	/// The registration is not ceremony. An object created with <c>CreateInstance</c> is not an asset and has
+	/// no persistent identity, so the save system correctly refuses to write a reference to one. Odin papered
+	/// over that by storing an <c>instanceID</c>, which is exactly the bug the GUID work removed — these tests
+	/// were quietly relying on identity that never survived a rebuild.
+	/// </para>
+	/// </summary>
 	private T Asset<T>(string name) where T : ScriptableObject {
 		var asset = ScriptableObject.CreateInstance<T>();
 		asset.name = name;
 		createdAssets.Add(asset);
+		Narramancer.Serialization.RuntimeAssetRegistry.Register($"test-{createdAssets.Count}-{name}", asset);
 		return asset;
 	}
 
 	/// <summary>Round-trips through the payload seam, carrying the external object list across as the save
 	/// file does.</summary>
 	private static StoryInstance RoundTrip(StoryInstance story) {
-		var payload = SaveLoadUtilities.SerializePayload(story, out var objects);
+		var payload = SaveLoadUtilities.SerializePayload(story);
 		Assert.IsNotNull(payload, "serializing produced no payload");
 		Assert.IsNotEmpty(payload, "serializing produced an empty payload");
-		return SaveLoadUtilities.DeserializePayload<StoryInstance>(payload, objects);
+		return SaveLoadUtilities.DeserializePayload<StoryInstance>(payload);
 	}
 
 	#region The graph survives at all
@@ -201,23 +211,61 @@ public class SaveLoadRoundTripTests {
 
 	#endregion
 
+	#region The save-file envelope
+
+	/// <summary>
+	/// A pre-1.0 save was written by OdinSerializer. Both formats use <c>$id</c> and <c>$type</c>, so without
+	/// the version stamp an old payload fails somewhere deep in the reader on a type name — true, but no help
+	/// to anyone reading the log.
+	/// </summary>
+	[Test]
+	public void APreOneDotZeroSaveIsRejectedByName() {
+		var oldSave = "{\"title\":\"Tuesday\",\"data\":\"{}\",\"thumbnail\":\"\"}";
+
+		var exception = Assert.Throws<Narramancer.Serialization.SerializationException>(
+			() => SaveLoadUtilities.DeserializeData<StoryInstance>(oldSave));
+
+		StringAssert.Contains("pre-1.0", exception.Message);
+		StringAssert.Contains("Tuesday", exception.Message, "the message should name the save it refused");
+	}
+
+	[Test]
+	public void ASaveFromANewerBuildIsRejected() {
+		var futureSave = $"{{\"version\":{Narramancer.Serialization.NarramancerSerializer.CurrentSchemaVersion + 1},\"title\":\"Later\",\"data\":\"{{}}\",\"thumbnail\":\"\"}}";
+
+		var exception = Assert.Throws<Narramancer.Serialization.SerializationException>(
+			() => SaveLoadUtilities.DeserializeData<StoryInstance>(futureSave));
+
+		StringAssert.Contains("newer version", exception.Message);
+	}
+
+	#endregion
+
 	#region Unity asset references
 
 	/// <summary>
-	/// Asset references leave the payload through the external object list. This passes in-process because the
-	/// same list is handed back; it does NOT prove references survive a rebuild — see the instanceID issue in
-	/// docs/ODIN_REMOVAL_PLAN.md, which needs a real build to demonstrate.
+	/// An asset reference leaves the payload as an id handle rather than being inlined, and comes back as the
+	/// same object. Rewritten at the serializer swap: this used to assert the reference appeared in the
+	/// wrapper's external object list, which stored <c>instanceID</c>s — the thing the swap removed.
+	/// <para>
+	/// Passing here does not prove references survive a rebuild; only the patch test in a real build does.
+	/// What it does prove is that the id in the payload is not session-local.
+	/// </para>
 	/// </summary>
 	[Test]
-	public void AssetReferencesResolveThroughTheExternalObjectList() {
+	public void AssetReferencesAreWrittenAsHandlesAndResolveBack() {
 		var noun = Asset<NounScriptableObject>("Wren");
 		var story = new StoryInstance();
 		story.CreateInstance(noun);
 
-		var payload = SaveLoadUtilities.SerializePayload(story, out var objects);
-		CollectionAssert.Contains(objects, noun, "the noun asset should be handed out as an external reference");
+		var payload = SaveLoadUtilities.SerializePayload(story);
 
-		var restored = SaveLoadUtilities.DeserializePayload<StoryInstance>(payload, objects);
+		StringAssert.Contains(Narramancer.Serialization.NarramancerSerializer.AssetKey, payload,
+			"the noun should be referenced by handle, not inlined into the save");
+		StringAssert.DoesNotContain(noun.GetInstanceID().ToString(), payload,
+			"a session-local instanceID must never reach a save file");
+
+		var restored = SaveLoadUtilities.DeserializePayload<StoryInstance>(payload);
 		Assert.AreSame(noun, restored.Instances[0].Noun);
 	}
 

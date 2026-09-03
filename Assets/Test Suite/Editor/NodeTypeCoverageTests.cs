@@ -36,6 +36,7 @@ public class NodeTypeCoverageTests {
 
 	[TearDown]
 	public void TearDown() {
+		Narramancer.Serialization.RuntimeAssetRegistry.Clear();
 		if (graph == null) {
 			return;
 		}
@@ -85,6 +86,10 @@ public class NodeTypeCoverageTests {
 		var node = graph.AddNode(nodeType);
 		Assume.That(node, Is.Not.Null, $"{nodeType.Name} could not be constructed");
 
+		// A node built with AddNode is not an asset and so has no persistent id. Registering it is what lets
+		// a save name it — see the note in SaveLoadRoundTripTests.
+		Narramancer.Serialization.RuntimeAssetRegistry.Register($"test-node-{nodeType.Name}", node);
+
 		var story = new StoryInstance();
 		var runner = new NodeRunner { name = "main" };
 		story.NodeRunners["main"] = runner;
@@ -99,16 +104,16 @@ public class NodeTypeCoverageTests {
 			runner.Blackboard.Set("node", node);
 		}
 
-		var payload = SaveLoadUtilities.SerializePayload(story, out var objects);
-		var restored = SaveLoadUtilities.DeserializePayload<StoryInstance>(payload, objects);
+		var payload = SaveLoadUtilities.SerializePayload(story);
+		var restored = SaveLoadUtilities.DeserializePayload<StoryInstance>(payload);
 		var restoredRunner = restored.NodeRunners["main"];
 
 		Assert.AreEqual(nodeType.Name, restoredRunner.Blackboard.Get<string>("marker"),
 			$"the runner carrying a {nodeType.Name} reference did not survive");
 
 		if (node is RunnableNode) {
-			CollectionAssert.Contains(objects, node,
-				$"a reference to {nodeType.Name} should leave the payload as an external object reference");
+			StringAssert.Contains(Narramancer.Serialization.NarramancerSerializer.AssetKey, payload,
+				$"a reference to {nodeType.Name} should leave the payload as an asset handle, not be inlined");
 		}
 		else {
 			Assert.AreSame(node, restoredRunner.Blackboard.Get<UnityEngine.Object>("node"),
