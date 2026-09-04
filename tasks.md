@@ -254,15 +254,20 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   A scene object's save key is `$"{field} {transform.FullPath()}[{componentIndex}]"`
   (`SerializableMonoBehaviour.cs:22`), so renaming an object, reparenting it, reordering its components, or two
   same-named siblings **silently break the save**. Same family as every other identity bug this quarter.
-  - [ ] `Saveable` component holding a minted guid — `Reset()`/`OnValidate()` at author time, `Awake()` for
-    runtime spawns, with duplicate-paste detection (copy Unity's open-source `GuidComponent` approach). No guid
-    on the prefab asset; instances mint their own.
-  - [ ] `SerializableMonoBehaviour.Key` becomes `$"{guid}:{key}"` for **all 16 subclasses**, not the 9 in the
-    driver table. ⚠️ The four the plan never named all carry live state: `TextPrinter`, `ChoicePrinter`,
+  - [x] `Saveable` component holding a minted guid *(2026-09-04)*, with duplicate-paste detection.
+    ⚠️ **Minting is a public `EnsureGuid()`, not just lifecycle callbacks.** `Reset`/`OnValidate`/`Awake` are
+    Unity's to call: none run for an object built in an EditMode test, and `Instantiate` does not run `Awake`
+    outside play mode. Identity that only exists if a callback happened to fire cannot be tested and can be
+    missed — the callbacks now just make it happen *early*, so the guid is serialized at author time.
+  - [x] `SerializableMonoBehaviour.Key` is now `$"{guid}:{componentType}:{key}"` *(2026-09-04)* — one change
+    covering **all 16 subclasses**, since `Key` was the single identity source and nothing overrides it. ⚠️ The four the plan never named all carry live state: `TextPrinter`, `ChoicePrinter`,
     `CreateNounForGameObject`, `SetGlobalVariablesMonoBehaviour`. The first two are the text/choice UI that
     resumes a story after a load — leaving them path-keyed while everything else moves is worse than not
     starting.
-  - [ ] **`SerializableSpawner` reassigns the guid on re-spawn — in this step, not later.** It currently
+  - [x] **`SerializableSpawner` reassigns guids on re-spawn** *(2026-09-04)* — records every `Saveable` in
+    each spawn's hierarchy and puts the ids back before reading state, and warns if the prefab's shape changed
+    since the save. Was filed as deferrable step 5; doing the key switch without it would have silently broken
+    every spawned object. It currently
     restores identity with `newSpawn.name = name`, which works *only* because keys contain `FullPath()`. Switch
     to guids without this and every spawned object's state silently stops loading. The plan files it as
     deferrable step 5; it is not.
@@ -273,8 +278,14 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     idempotence guard on `CreateNounForGameObject.Start()`, plus lazy creation in
     `SerializeNounInstanceReference.GetInstance()`. Fixes a real race, and overlaps this task's identity work.
     *(from inbox 2026-08-11 — Tier B8)*
-  - [ ] Update the 4 sample scenes; EditMode tests for guid stability across rename/reparent/reorder, duplicate
-    paste, prefab instances, and the spawner round-trip.
+  - [x] EditMode tests *(2026-09-04)* — 10 in `SaveableIdentityTests`, verified against the old key: rename,
+    reparent and same-named siblings all fail without the fix, and two siblings genuinely produced the
+    *identical* key `"position /Parent/Item[2]"`, which is the silent-overwrite case.
+    - ⚠️ The reorder test was **vacuous at first** — adding a component leaves existing indices alone, so it
+      passed under the old key too. It now uses `ComponentUtility.MoveComponentUp`.
+  - [ ] Update the 4 sample scenes: every object with a `Serialize*` component needs a `Saveable`. Worth an
+    editor helper ("add missing Saveables in open scenes") since it also serves anyone upgrading.
+  - [ ] Round-trip test: `Serialize` → reload → `Deserialize` restores state under the new keys.
   - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of

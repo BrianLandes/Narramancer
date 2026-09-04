@@ -194,13 +194,35 @@ namespace Narramancer {
 			return spawns;
 		}
 
+		/// <summary>
+		/// What was recorded about one spawned object, so the replacement can be given the same identity.
+		/// <para>
+		/// The guids are the important part. This used to save only the name, and restore identity with
+		/// <c>newSpawn.name = name</c> — which worked because save keys contained
+		/// <c>transform.FullPath()</c>, and the path contains the name. Once identity became a guid, restoring
+		/// the name restored nothing: every re-spawned object would have minted a fresh guid and silently
+		/// failed to find any of its saved state.
+		/// </para>
+		/// </summary>
+		[Serializable]
+		public class SpawnRecord {
+			public string name;
+
+			/// <summary>Every <see cref="Saveable"/> in the spawn's hierarchy, in a fixed order.</summary>
+			public List<string> guids = new List<string>();
+		}
+
 		public override void Serialize(StoryInstance story) {
 			base.Serialize(story);
 
 			spawns = spawns.Where(x => x != null).ToList();
 
-			var spawnNames = spawns.Select(x => x.name).ToList();
-			story.SaveTable.Set(Key("spawnNames"), spawnNames);
+			var records = spawns.Select(spawn => new SpawnRecord() {
+				name = spawn.name,
+				guids = spawn.GetComponentsInChildren<Saveable>(true).Select(saveable => saveable.Guid).ToList()
+			}).ToList();
+
+			story.SaveTable.Set(Key("spawns"), records);
 		}
 
 		public override void Deserialize(StoryInstance story) {
@@ -209,14 +231,28 @@ namespace Narramancer {
 
 			base.Deserialize(story);
 
-			var spawnNames = story.SaveTable.GetAndRemove<List<string>>(Key("spawnNames"));
+			var records = story.SaveTable.GetAndRemove<List<SpawnRecord>>(Key("spawns"));
+			if (records == null) {
+				return;
+			}
 
-			foreach (var name in spawnNames) {
+			foreach (var record in records) {
 				var newSpawn = Spawn();
-				newSpawn.name = name;
-				var serializableMonoBehaviours = newSpawn.GetComponentsInChildren<ISerializableMonoBehaviour>();
+				newSpawn.name = record.name;
 
-				foreach (var monoBehaviour in serializableMonoBehaviours) {
+				// Identity before state: the components below key their saved values off these guids, so the
+				// replacement has to be answering to the right ones before anything is read back.
+				var saveables = newSpawn.GetComponentsInChildren<Saveable>(true);
+				for (var i = 0; i < saveables.Length && i < record.guids.Count; i++) {
+					saveables[i].AssignGuid(record.guids[i]);
+				}
+				if (saveables.Length != record.guids.Count) {
+					Debug.LogWarning(
+						$"'{record.name}' was saved with {record.guids.Count} saveable object(s) but its prefab now has {saveables.Length}. " +
+						"The prefab changed since the save was written, so some of its state will not be restored.", this);
+				}
+
+				foreach (var monoBehaviour in newSpawn.GetComponentsInChildren<ISerializableMonoBehaviour>()) {
 					monoBehaviour.Deserialize(story);
 				}
 			}
