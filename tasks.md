@@ -283,8 +283,19 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     *identical* key `"position /Parent/Item[2]"`, which is the silent-overwrite case.
     - ⚠️ The reorder test was **vacuous at first** — adding a component leaves existing indices alone, so it
       passed under the old key too. It now uses `ComponentUtility.MoveComponentUp`.
-  - [ ] Update the 4 sample scenes: every object with a `Serialize*` component needs a `Saveable`. Worth an
-    editor helper ("add missing Saveables in open scenes") since it also serves anyone upgrading.
+  - [x] Migration helper *(2026-09-04)* — `Window/Narramancer/Add Missing Saveables`, separate passes for open
+    scenes and for prefabs. Also the upgrade path for anyone with an existing project, which is why it reports
+    what it changed rather than fixing silently.
+    - ⚠️ It mints on objects that **already had** a `Saveable`, not only ones it adds. A scene instance of a
+      prefab inherits the component but not an id — the asset deliberately has none — so "already has a
+      Saveable" does not mean "already has an identity". The first version missed this.
+  - [x] Prefabs migrated *(2026-09-04)* — the three printer canvases (`ChoicePrinter`, `TextAndChoicePrinter`,
+    `TextPrinter`) now carry a `Saveable` with **no id**, verified in the asset files. Those are the text and
+    choice UI whose state resumes a story after a load.
+  - [ ] **Migrate the 4 sample scenes — needs you to run it.** `NarramancerScene` in scenes 1–3, and scene 4
+    has 10 savers (`NarramancerScene`, 6× `RunActionVerbMonoBehaviour`, 3× `SerializeImage`). Not done here
+    because scene 1 was open with unsaved smoke-test changes; saving it would have baked those in. Open each
+    scene, run `Window/Narramancer/Add Missing Saveables (open scenes)`, save.
   - [ ] Round-trip test: `Serialize` → reload → `Deserialize` restores state under the new keys.
   - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).

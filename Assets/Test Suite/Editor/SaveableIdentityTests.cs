@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Narramancer;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -16,11 +17,16 @@ using UnityEngine;
 /// </summary>
 public class SaveableIdentityTests {
 
+	private const string TestFolder = "Assets/Temp Saveable Tests";
+
 	private readonly List<GameObject> created = new List<GameObject>();
 
 	[SetUp]
 	public void SetUp() {
 		Saveable.ClearClaims();
+		if (!AssetDatabase.IsValidFolder(TestFolder)) {
+			AssetDatabase.CreateFolder("Assets", System.IO.Path.GetFileName(TestFolder));
+		}
 	}
 
 	[TearDown]
@@ -32,6 +38,9 @@ public class SaveableIdentityTests {
 		}
 		created.Clear();
 		Saveable.ClearClaims();
+		if (AssetDatabase.IsValidFolder(TestFolder)) {
+			AssetDatabase.DeleteAsset(TestFolder);
+		}
 	}
 
 	/// <summary>
@@ -167,6 +176,49 @@ public class SaveableIdentityTests {
 		var activeSaver = saveable.gameObject.AddComponent<SerializeActive>();
 
 		Assert.AreNotEqual(KeyOf(transformSaver, "state"), KeyOf(activeSaver, "state"));
+	}
+
+	#endregion
+
+	#region Prefabs
+
+	/// <summary>
+	/// A prefab <b>asset</b> must never carry an id, or every instance made from it answers to the same one
+	/// and they all overwrite each other's saved state.
+	/// <para>
+	/// It can pick one up by accident: saving a scene object as a prefab copies whatever guid it had. So the
+	/// asset is actively cleared rather than merely skipped.
+	/// </para>
+	/// </summary>
+	[Test]
+	public void APrefabAssetCarriesNoGuid() {
+		var source = Object_("Hero");
+		Assume.That(source.HasGuid, "precondition: the scene object has an id to accidentally copy");
+
+		var path = AssetDatabase.GenerateUniqueAssetPath($"{TestFolder}/Hero.prefab");
+		var prefab = PrefabUtility.SaveAsPrefabAsset(source.gameObject, path);
+		var asset = prefab.GetComponent<Saveable>();
+
+		Assert.IsEmpty(asset.EnsureGuid(), "a prefab asset is a template, not a thing in the world");
+		Assert.IsFalse(asset.HasGuid);
+	}
+
+	[Test]
+	public void TwoInstancesOfOnePrefabGetDifferentGuids() {
+		var source = Object_("Hero");
+		var path = AssetDatabase.GenerateUniqueAssetPath($"{TestFolder}/Hero.prefab");
+		var prefab = PrefabUtility.SaveAsPrefabAsset(source.gameObject, path);
+		prefab.GetComponent<Saveable>().EnsureGuid();
+
+		var first = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+		var second = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+		created.Add(first);
+		created.Add(second);
+		var firstGuid = first.GetComponent<Saveable>().EnsureGuid();
+		var secondGuid = second.GetComponent<Saveable>().EnsureGuid();
+
+		Assert.IsNotEmpty(firstGuid);
+		Assert.AreNotEqual(firstGuid, secondGuid, "two instances of one prefab are two different objects");
 	}
 
 	#endregion

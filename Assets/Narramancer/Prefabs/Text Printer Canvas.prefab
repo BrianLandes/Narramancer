@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1737774676835067653}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -96,6 +95,7 @@ GameObject:
   - component: {fileID: 1737774676835067655}
   - component: {fileID: 1737774676835067654}
   - component: {fileID: 140104159552999248}
+  - component: {fileID: 3820238702757487551}
   m_Layer: 5
   m_Name: Text Printer
   m_TagString: Untagged
@@ -117,7 +117,6 @@ RectTransform:
   m_Children:
   - {fileID: 1737774676794368937}
   m_Father: {fileID: 1737774677007763331}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.6, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -174,12 +173,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00d34fc9c6f05ea43bebe8fb3f1c63ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveable: {fileID: 0}
   isMainTextPrinter: 1
   textField: {fileID: 1737774676794368938}
   revealSpeed: 80
   continueIndicator: {fileID: 1737774678832181001}
   parentCanvasGroup: {fileID: 1737774677007763340}
   fadeParentSpeed: 10
+--- !u!114 &3820238702757487551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737774676835067652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28ef7fa2ae2082998b68f0cca247b36d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
+  guid: 
 --- !u!1 &1737774677007763335
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,7 +229,6 @@ RectTransform:
   - {fileID: 1737774678832181002}
   - {fileID: 1737774678156018547}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -240,7 +252,10 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -328,7 +343,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1737774677007763331}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -461,7 +475,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1737774677007763331}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}

@@ -50,6 +50,20 @@ namespace Narramancer {
 		/// </para>
 		/// </summary>
 		public string EnsureGuid() {
+
+			// A prefab *asset* must never carry an id — every instance made from it would answer to the same one.
+			// It can acquire one by accident: saving a scene object as a prefab copies whatever guid it had. So
+			// this clears it rather than merely declining to mint, and each instance takes its own.
+			if (IsPrefabAsset()) {
+				if (HasGuid) {
+					guid = string.Empty;
+#if UNITY_EDITOR
+					UnityEditor.EditorUtility.SetDirty(this);
+#endif
+				}
+				return string.Empty;
+			}
+
 			var minted = false;
 
 			if (!HasGuid) {
@@ -92,6 +106,23 @@ namespace Narramancer {
 			if (HasGuid && claimed.TryGetValue(guid, out var holder) && holder == this) {
 				claimed.Remove(guid);
 			}
+		}
+
+		/// <summary>
+		/// True when this lives in an asset rather than a scene — a prefab on disk, or one open in Prefab Mode.
+		/// Such an object is a template, not a thing in the world, so it has no identity of its own.
+		/// </summary>
+		private bool IsPrefabAsset() {
+#if UNITY_EDITOR
+			if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(this)) {
+				return true;
+			}
+			if (UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(gameObject) != null) {
+				return true;
+			}
+#endif
+			// Also covers a prefab loaded at runtime: it is not in a scene until something instantiates it.
+			return !gameObject.scene.IsValid();
 		}
 
 		private void Claim() {
