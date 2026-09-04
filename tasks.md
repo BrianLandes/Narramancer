@@ -296,7 +296,16 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     has 10 savers (`NarramancerScene`, 6× `RunActionVerbMonoBehaviour`, 3× `SerializeImage`). Not done here
     because scene 1 was open with unsaved smoke-test changes; saving it would have baked those in. Open each
     scene, run `Window/Narramancer/Add Missing Saveables (open scenes)`, save.
-  - [ ] Round-trip test: `Serialize` → reload → `Deserialize` restores state under the new keys.
+  - [x] Round-trip test *(2026-09-04)*, and the build smoke passed on a real player.
+  - [x] **A save can now point at a scene object** *(2026-09-04)* — pulled forward from Future because a bug
+    report demanded it. `SceneObjectIds` adds a fourth id form, `scene:<guid>` (plus the component type, since
+    one object can hold several), resolving through `Saveable`'s claim table. `Blackboard.gameObjects` and
+    `.components` are **no longer `[NonSerialized]`** — they had been since the first commit in 2023, because
+    a scene object had no identity to name.
+    - This is what fixed the Character Equipment sample's text: the scene keeps its UI `Text` objects in a
+      blackboard, those references were dropped on save, and `SetTextNode` then found null and did nothing —
+      labels at their scene defaults, nothing in the log. A scene object that still has no `Saveable` is now
+      reported rather than dropped.
   - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
@@ -429,13 +438,8 @@ Larger builds that each have their own design doc — read the linked handoff be
 
 ## Future / Nice to Have
 
-- [ ] **Let a save point at a scene object** *(unlocked by M4a — record now, build later)*. Scene objects have
-  never had a durable identity, which is why `Blackboard.gameObjects` and `.components` are `[NonSerialized]`:
-  a save simply cannot refer to one. `Saveable`'s guid is the first durable scene identity in the project, so
-  a fourth `IReferenceResolver` id form — `scene:<guid>` alongside `ref:`, `res:` and `<guid>:<localId>` —
-  becomes possible, and those two blackboards could start saving. Also unblocks the parked `Continuation`
-  extensibility idea (a continuation naming a `Saveable` guid plus a method) from
-  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). Judge on demand — nothing needs it today.
+- [x] ~~**Let a save point at a scene object**~~ — **done 2026-09-04**, pulled forward into M4a because the
+  Character Equipment sample needed it. See §2 M4a.
 - [ ] **Extract `Narramancer.Core`** — a `noEngineReferences` netstandard2.1 assembly for the serializer,
   domain model, and utilities, with a `dotnet/` mirror for fast Unity-free CI. **Stops at the xNode boundary**
   — nodes derive from xNode's `Node : ScriptableObject` and cannot move; pushing past that boundary *is* the v2

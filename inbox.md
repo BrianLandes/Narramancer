@@ -55,3 +55,8 @@ history clearly shows the inbox being drained.
   authored asset, so anything comparing sprites by reference breaks, and the rebuilt sprite loses border,
   pixelsPerUnit and any atlas packing. Now that asset references are GUID-keyed it could just save the sprite
   itself. Same shape in `SerializeSpriteRenderer`. (found 2026-09-04 while fixing the Rect bug)
+
+- [ ] **`Blackboard.Set(key, null)` throws a `NullReferenceException`** — the two-argument overload derives the
+  type from the value, so a null has nothing to derive from and NREs at `Blackboard.cs:442`. The three-argument
+  `Set(key, value, type)` is the one that handles null. Either guard it with a clear message or route it to the
+  typed overload. Pre-existing; found while testing scene references. (found 2026-09-04)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Narramancer;
+using Narramancer.Serialization;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -219,6 +220,92 @@ public class SaveableIdentityTests {
 
 		Assert.IsNotEmpty(firstGuid);
 		Assert.AreNotEqual(firstGuid, secondGuid, "two instances of one prefab are two different objects");
+	}
+
+	#endregion
+
+	#region Scene objects as saved references
+
+	/// <summary>
+	/// The bug this closes, in the shape it was reported. The Character Equipment sample keeps its UI
+	/// <c>Text</c> objects in a blackboard; those references were dropped on save because a scene object had
+	/// no id, so after a load <c>SetTextNode</c> found null and did nothing — labels at their scene defaults,
+	/// nothing in the log.
+	/// </summary>
+	[Test]
+	public void AComponentInABlackboardSurvivesASave() {
+		var saveable = Object_("Equipment Label");
+		var label = saveable.gameObject.AddComponent<UnityEngine.UI.Text>();
+		var story = new StoryInstance();
+		story.Blackboard.Set("label", label);
+
+		var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+		var restored = serializer.Deserialize<StoryInstance>(serializer.Serialize(story));
+
+		Assert.AreSame(label, restored.Blackboard.Get<UnityEngine.UI.Text>("label"),
+			"a scene component in a blackboard must come back as the same component");
+	}
+
+	[Test]
+	public void AGameObjectInABlackboardSurvivesASave() {
+		var saveable = Object_("Hero");
+		var story = new StoryInstance();
+		story.Blackboard.Set("hero", saveable.gameObject);
+
+		var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+		var restored = serializer.Deserialize<StoryInstance>(serializer.Serialize(story));
+
+		Assert.AreSame(saveable.gameObject, restored.Blackboard.Get<GameObject>("hero"));
+	}
+
+	[Test]
+	public void ASceneReferenceIsWrittenAsASceneId() {
+		var saveable = Object_("Hero");
+		var story = new StoryInstance();
+		story.Blackboard.Set("hero", saveable.gameObject);
+
+		var json = new NarramancerSerializer(new UnityReferenceResolver(null)).Serialize(story);
+
+		StringAssert.Contains(SceneObjectIds.Prefix + saveable.Guid, json);
+	}
+
+	/// <summary>
+	/// One object can hold several components, so the id carries the type too — otherwise restoring a
+	/// reference to the Text would be as likely to hand back the Image.
+	/// </summary>
+	[Test]
+	public void TwoComponentsOnOneObjectResolveSeparately() {
+		// Text and CanvasGroup, not Text and Image: both of those derive from Graphic, which is
+		// [DisallowMultipleComponent], so the second AddComponent returns null.
+		var saveable = Object_("Panel");
+		var text = saveable.gameObject.AddComponent<UnityEngine.UI.Text>();
+		var group = saveable.gameObject.AddComponent<CanvasGroup>();
+		var story = new StoryInstance();
+		story.Blackboard.Set("text", text);
+		story.Blackboard.Set("group", group);
+
+		var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+		var restored = serializer.Deserialize<StoryInstance>(serializer.Serialize(story));
+
+		Assert.AreSame(text, restored.Blackboard.Get<UnityEngine.UI.Text>("text"));
+		Assert.AreSame(group, restored.Blackboard.Get<CanvasGroup>("group"));
+	}
+
+	/// <summary>
+	/// A scene object with no <see cref="Saveable"/> still cannot be named — and now says so, instead of the
+	/// reference quietly disappearing.
+	/// </summary>
+	[Test]
+	public void ASceneObjectWithNoSaveableIsReportedNotDroppedSilently() {
+		var orphan = new GameObject("Orphan");
+		created.Add(orphan);
+		var story = new StoryInstance();
+		story.Blackboard.Set("orphan", orphan);
+
+		UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
+			new System.Text.RegularExpressions.Regex("Orphan"));
+
+		new NarramancerSerializer(new UnityReferenceResolver(null)).Serialize(story);
 	}
 
 	#endregion

@@ -147,6 +147,18 @@ namespace Narramancer {
 			Claim();
 		}
 
+		/// <summary>
+		/// The live object answering to <paramref name="guid"/>, if one is loaded. This is how a save points at a
+		/// scene object: the id names the guid, and the object that currently holds it is found here.
+		/// </summary>
+		public static bool TryFind(string guid, out Saveable saveable) {
+			if (!guid.IsNullOrEmpty() && claimed.TryGetValue(guid, out saveable) && saveable != null) {
+				return true;
+			}
+			saveable = null;
+			return false;
+		}
+
 		/// <summary>The <see cref="Saveable"/> on this object, or null with an error naming what is missing.</summary>
 		public static Saveable Of(Component component) {
 			var saveable = component.GetComponent<Saveable>();

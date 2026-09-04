@@ -22,10 +22,17 @@ namespace Narramancer {
 		[SerializeField]
 		private StringStringDictionary strings = default;
 
-		[NonSerialized] // NOT SERIALIZED
+		// Saved since 2026-09-04. These were [NonSerialized] from the first commit because a scene object had
+		// no durable identity — there was no way to name one in a save file. Saveable's guid is that identity,
+		// and SceneObjectIds turns it into a reference the serializer can write.
+		//
+		// The cost of not saving them was silent: the Character Equipment sample keeps its UI Text objects in a
+		// blackboard, so after a load SetTextNode found null and did nothing, and the labels sat at their scene
+		// defaults with nothing in the log to say why.
+		[SerializeField]
 		private StringGameObjectDictionary gameObjects = default;
 
-		[NonSerialized] // NOT SERIALIZED
+		[SerializeField]
 		private StringComponentDictionary components = default;
 
 		[SerializeField]

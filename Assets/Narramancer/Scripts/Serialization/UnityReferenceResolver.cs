@@ -7,9 +7,9 @@ namespace Narramancer.Serialization {
 	/// The production <see cref="IReferenceResolver"/>: saved references are keyed by the asset's GUID and
 	/// local file id, both of which live in the project and survive a rebuild.
 	/// <para>
-	/// Three sources answer, in order: <see cref="RuntimeAssetRegistry"/> for assets a game registered by
-	/// hand, <see cref="AssetIds"/> for anything with an asset identity, and the baked
-	/// <see cref="AssetManifest"/> last. In the editor <c>AssetIds</c> reads the asset database directly, so
+	/// Four sources answer, in order: <see cref="RuntimeAssetRegistry"/> for assets a game registered by hand,
+	/// <see cref="SceneObjectIds"/> for objects living in a scene, <see cref="AssetIds"/> for anything with an
+	/// asset identity, and the baked <see cref="AssetManifest"/> last. In the editor <c>AssetIds</c> reads the asset database directly, so
 	/// it is always current; in a build only its <c>res:</c> form still works and everything else falls to the
 	/// manifest.
 	/// </para>
@@ -44,6 +44,10 @@ namespace Narramancer.Serialization {
 			if (RuntimeAssetRegistry.TryGetId(asset, out id)) {
 				return true;
 			}
+			// Before the asset lookup, because a scene object is never an asset and this is the cheaper test.
+			if (SceneObjectIds.TryGetId(asset, out id)) {
+				return true;
+			}
 			if (AssetIds.TryGetId(asset, out id)) {
 				return true;
 			}
@@ -52,6 +56,9 @@ namespace Narramancer.Serialization {
 
 		public bool TryResolve(string id, Type type, out UnityEngine.Object asset) {
 			if (RuntimeAssetRegistry.TryResolve(id, type, out asset)) {
+				return true;
+			}
+			if (SceneObjectIds.TryResolve(id, type, out asset)) {
 				return true;
 			}
 			if (AssetIds.TryResolve(id, out asset) && (type == null || type.IsInstanceOfType(asset))) {
