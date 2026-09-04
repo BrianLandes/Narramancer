@@ -83,14 +83,15 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **M3 — replace the serialized closures with a `Continuation` record.** M1 and M2 are both done as of
-  2026-09-04. M3 is the last of the breaking work before §3, at ~4–6 evenings the largest remaining piece, and
-  it now also inherits timer cancellation from the sub-runner work. Design is written:
-  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md).
-  ⚠️ **Read the code before trusting the task notes.** Three premises in M2 turned out to be stale — `Cancel`
-  "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), and the Promise registry
-  being dead code (it is load-bearing). All three came from the same 2026-08-11 inbox pass. Treat the
-  remaining Tier B notes as leads, not specs.
+- [ ] **M4 — the `Saveable` refactor.** M1, M2 and M3 are all done as of 2026-09-04, each verified on a real
+  WebGL player. M4 is the **last** of the breaking work before §3 launch, and its headline is the same bug one
+  more time: a scene object's save key is `path + component index`, so renaming an object, reparenting it, or
+  reordering components silently breaks a save. Design:
+  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
+  ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
+  "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
+  dead code (it is load-bearing), and timer cancellation being cosmetic (it was not). Treat the remaining
+  Tier B notes as leads, not specs.
 
 ---
 
@@ -234,53 +235,10 @@ M3 touches them once rather than twice.
 
 ---
 
-### M3 — Replace the serialized closures *(~4–6 evenings, smaller after M2)*
+### M3 — Replace the serialized closures ✅ *(done 2026-09-04)*
 
-- [ ] **Replace serialized closures with a `Continuation` record** — full design in
-  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). **Sequenced after the serializer swap**, not
-  before: the swap doesn't need it (`System.Type` support and closure reflection both landed in phase 2, and
-  both are cheap). Real scope is **18 lambda sites across 3 storage mechanisms**, of which the choice-callback
-  path needs manual playtesting. Once it lands the serializer can drop `$systemType` and the
-  compiler-generated-field carve-out.
-  - [x] Characterization tests pinning the polling nodes *(done 2026-08-27; `PollingNodeCharacterizationTests`)*
-  - [x] `Continuation` + `Promise` + `RunnableNode.OnContinuation` *(2026-09-04)*. `Promise` now takes a
-    `Continuation` (saved) or a transient `Action` (not saved) — **deliberately different names, not an
-    overload**: a lambda binds to an `Action` parameter silently, so an overload let all 18 call sites keep
-    compiling while quietly losing the ability to survive a save. Renaming turned that into 14 compile errors,
-    which is the checklist.
-  - [x] The mechanical sites *(2026-09-04)* — five "resume this runner", `ParallelNode`'s release, and the
-    printer path. `PrintTextNode`'s `waitForContinue` bool leaves the save format entirely: it passes **no
-    continuation** when false rather than encoding a flag to check.
-  - [x] The 4 polling nodes *(2026-09-04)* — `WaitUntilNode`, `ChoosePrioritizedBranchNode`,
-    `RunActionVerbForDurationNode`, `RunActionVerbWhileConditionIsTrueNode`. Each self-rescheduling local
-    function became a real method reached through `OnContinuation`, and every shared mutable local moved to
-    the runner's blackboard. **All 7 characterization tests still pass** — which is what they were written for.
-  - [x] The choice-callback path *(2026-09-04)* — `VisibleChoice.callback` is a `Continuation` in both
-    printers. `OfferChoicesNode` resolves its next node eagerly; `OfferObjectsAsChoicesNode` was the one site
-    holding real captured state, so each offered element is parked on the blackboard under its own key and the
-    continuation carries only the index. ✅ **Playtested 2026-09-04** in play mode *and* in a build: saved at
-    the offer-choices point, reloaded, and took various branches — all correct. That save-mid-choice case is
-    the one this whole refactor exists for.
-  - [x] `SerializableActionHelper` deleted *(2026-09-04)*, and dropped from `Third-Party Notices.txt` and
-    `LICENSING.md`. Nothing referenced it.
-  - [x] Serializer follow-up *(2026-09-04)* — the compiler-generated-field carve-out is gone, and a closure is
-    now **refused** rather than merely unsupported. Without a carve-out a closure's fields are neither public
-    nor `[SerializeField]`, so it would have serialized as an empty object and lost its captured state
-    silently, which is exactly how this bug class comes back. `$systemType` support was **kept**: nothing
-    needs it today, but it is written, tested, costs nothing, and a blackboard can legitimately hold a `Type`.
-  - [x] Timer cancellation *(2026-09-04)* — `SerializableTimer` carries an `ownerKey`, and the default
-    `RunnableNode.Cancel` drops the timers that node started for that runner.
-    ⚠️ **Not the tidy-up it was filed as.** A continuation names its runner **by key**, and a released
-    runner's name becomes available again — `CreateNodeRunner` only disambiguates against names *currently*
-    in use. So a cancelled node's surviving timer held a continuation that would resume whichever runner was
-    next given that name: an unrelated part of the story resumed out of nowhere, with nothing in the log to
-    explain it. Proved by disabling the fix and watching
-    `AStaleTimerCannotResumeAnUnrelatedRunnerThatReusedTheName` fail (expected 0, got 1) while its control
-    still passed.
-  - [ ] **Re-run the build smoke** — serialization changed again, so it is owed before M4 counts as safe.
-    The choice path is already playtested in a build; this is the full runbook §1 pass.
-    [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
-  - Prerequisite moved to M2: the two `GetHashCode()`-based unstable keys.
+- [x] **Replace serialized closures with a `Continuation` record — done, archived to [`done.md`](done.md).**
+  All 18 sites converted, `SerializableActionHelper` deleted, and the WebGL build smoke passed on 2026-09-04.
 
 ---
 

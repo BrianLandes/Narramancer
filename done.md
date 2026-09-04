@@ -19,6 +19,59 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-09-04
 
+- [x] **Serialized closures replaced with a `Continuation` record (M3).** A suspended verb's continuation was a
+  C# closure, serialized by reflecting the compiler-generated class. The ordinal in `<>c__DisplayClass22_0` is
+  assigned by the compiler and **moves when the source file is edited** — `PrintTextNode` had been saved under
+  three different ordinals across real saves — so editing a node could silently invalidate saved games.
+  All **18 sites across 3 storage mechanisms** converted; `SerializableActionHelper` deleted.
+  Design: [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md).
+
+  **Verified on a real WebGL player, not just in the editor:** saved mid-choice, mid-`Wait` and mid-`WaitUntil`,
+  closed the tab, reloaded, and resumed correctly each time; a sub-verb given 4 seconds of a 12-second job was
+  cancelled cleanly. All 7 polling-node characterization tests written on 2026-08-27 still pass, which is what
+  they existed for.
+
+  *Decisions worth keeping:*
+  - **`WhenDone(Continuation)` and `WhenDoneThisSession(Action)` are different names, not overloads.** A lambda
+    binds to an `Action` parameter silently, so an overload let all 18 call sites keep compiling while quietly
+    losing the ability to survive a save — a green build and a broken save system. Renaming turned it into 14
+    compile errors, which became the checklist.
+  - **A closure is now refused, not merely unsupported.** Without the old carve-out its fields are neither
+    public nor `[SerializeField]`, so it would serialize as an *empty object* and lose captured state
+    silently. That is how this bug class returns, so the writer throws and names what to use instead.
+  - **`$systemType` support was kept**, against the plan. Nothing needs it, but it is written, tested, free at
+    runtime, and a blackboard can legitimately hold a `Type`.
+  - `PrintTextNode`'s `waitForContinue` left the save format entirely — it passes *no* continuation when
+    false rather than encoding a flag to check.
+
+- [x] **Two bugs the M3 smoke build found that no editor test could.**
+  - **Saved timers were anchored to the previous session's clock.** `SerializableTimer` stored
+    `Time.time + duration`, and `Time.time` resets on relaunch with nothing rebasing it, so every saved wait
+    was delayed by however long the *previous* session had been running. A 4-second cancellation took twelve.
+    Now stores `secondsRemaining` and counts down. **`Time.time` is 0 in EditMode, so no editor test can tell
+    the two forms apart** — this was only ever visible in a player. Predates M3.
+  - **Timers had no owner, so cancelling a node did not stop them.** Filed as cosmetic; it was not. A
+    `Continuation` names its runner *by key*, and a released runner's name becomes available again, so a
+    stale timer could resume a completely unrelated runner that happened to reuse the name. Proved by
+    disabling the fix and watching the test fail.
+
+- [x] **Execution-model correctness (M2).** A runner now records the runners it starts and `StopAndReset`
+  stops them depth-first — stopping a runner mid-flight used to abandon everything below it, still ticking
+  against a blackboard nobody owned. Ownership is *recorded, never recomputed*: both existing `Cancel`
+  overrides had rebuilt a sub-runner's name from hash codes, which after a reload made
+  `ChoosePrioritizedBranchNode` silently fail to cancel and `ParallelNode` throw.
+  Also: **`Blackboard.UniqueKey` was the instanceID bug in a second place** — `UnityEngine.Object.GetHashCode()`
+  *is* `GetInstanceID()`, across **13 call sites in 9 node types** (loop indices, spawned objects, timers,
+  chosen elements), all silently lost when the build changed. Plus `InequalityNode`'s operators (`GreaterThan`
+  evaluated `>=`) and 18 regression tests for the Tier A fixes.
+
+  *Four task premises turned out to be stale*, all from the 2026-08-11 inbox pass: `Cancel` "overridden by
+  nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being dead code (it
+  is load-bearing for `SerializeAnimation`), and timer cancellation being cosmetic. **Read the code before
+  trusting a task note.**
+
+## Completed 2026-09-04 (earlier)
+
 - [x] **OdinSerializer removed — replaced by a serializer we own.** The headline feature's engine, rebuilt and
   proven on a real player build. `Assets/Narramancer/Scripts/Serialization/`, ~1,000 LOC, 441 EditMode tests.
   Plan and full detail in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md).
