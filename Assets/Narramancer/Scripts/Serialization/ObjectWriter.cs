@@ -137,10 +137,17 @@ namespace Narramancer.Serialization {
 			// Losing one blackboard entry also beats losing the save: throwing here would fail at the worst
 			// possible moment in a shipped game, when the player pressed Save.
 			if (!references.TryGetId(unityObject, out var id)) {
+
+				// Scene objects and assets are named in completely different ways, so telling someone with a
+				// scene object to put it in a Resources folder sends them somewhere useless.
+				var fix = SceneObjectIds.IsSceneObject(unityObject)
+					? $"Add a {nameof(Saveable)} component to '{unityObject.name}' — a scene object is identified by the guid on its {nameof(Saveable)}, "
+						+ "and objects that a verb reads or writes need one even if nothing else on them is saved."
+					: "Fix it in one of three ways: move the asset under a Resources folder, add it to the Narramancer asset manifest's Additional Assets, "
+						+ $"or call {nameof(RuntimeAssetRegistry)}.{nameof(RuntimeAssetRegistry.Register)} for it at runtime.";
+
 				Debug.LogError(
-					$"Narramancer cannot save a reference to '{unityObject.name}' ({unityObject.GetType().Name}) — it has no stable id, so the reference is being dropped. " +
-					"Fix it in one of three ways: move the asset under a Resources folder, add it to the Narramancer asset manifest's Additional Assets, " +
-					$"or call {nameof(RuntimeAssetRegistry)}.{nameof(RuntimeAssetRegistry.Register)} for it at runtime.",
+					$"Narramancer cannot save a reference to '{unityObject.name}' ({unityObject.GetType().Name}) — it has no stable id, so the reference is being dropped. " + fix,
 					unityObject);
 				return JsonValue.Null;
 			}

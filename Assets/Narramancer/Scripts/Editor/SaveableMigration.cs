@@ -62,6 +62,8 @@ namespace Narramancer {
 				}
 			}
 
+			AddMissingForWiredUpObjects(added, minted);
+
 			Report("open scenes", added, alreadyFine);
 			if (minted.Count > 0) {
 				Debug.Log($"Narramancer: minted {minted.Count} id(s) for objects that had a Saveable but no identity yet.\n  "
@@ -109,6 +111,85 @@ namespace Narramancer {
 			}
 
 			Report("prefabs", added, alreadyFine);
+		}
+
+		/// <summary>
+		/// Adds a <see cref="Saveable"/> to scene objects a verb has been <b>wired to</b>, which the scan above
+		/// cannot see.
+		/// <para>
+		/// A UI <c>Text</c> that a verb writes into carries no <see cref="SerializableMonoBehaviour"/> of its
+		/// own — nothing about the object says "I am saved". What connects it is a
+		/// <see cref="VariableAssignment"/> on whatever runs the verb, so that is what gets searched. Without
+		/// this the reference is dropped at save time and the author only finds out from an error, which is how
+		/// the Character Equipment sample lost its labels.
+		/// </para>
+		/// </summary>
+		private static void AddMissingForWiredUpObjects(List<string> added, List<string> minted) {
+			for (var i = 0; i < SceneManager.sceneCount; i++) {
+				var scene = SceneManager.GetSceneAt(i);
+				if (!scene.isLoaded) {
+					continue;
+				}
+
+				foreach (var root in scene.GetRootGameObjects()) {
+					foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true)) {
+						if (behaviour == null) {
+							continue;
+						}
+
+						foreach (var assignment in AssignmentsOn(behaviour)) {
+							var target = assignment?.objectValue;
+							if (target == null || !Serialization.SceneObjectIds.IsSceneObject(target)) {
+								continue;
+							}
+
+							var targetObject = target as GameObject ?? (target as Component)?.gameObject;
+							if (targetObject == null) {
+								continue;
+							}
+
+							var saveable = targetObject.GetComponent<Saveable>();
+							if (saveable == null) {
+								saveable = Undo.AddComponent<Saveable>(targetObject);
+								added.Add($"{scene.name}: {Path(targetObject.transform)} (wired to {behaviour.GetType().Name} on {behaviour.gameObject.name})");
+							}
+
+							var before = saveable.Guid;
+							if (saveable.EnsureGuid() != before) {
+								minted.Add($"{scene.name}: {Path(targetObject.transform)}");
+							}
+							EditorUtility.SetDirty(targetObject);
+						}
+					}
+
+					EditorSceneManager.MarkSceneDirty(scene);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Every <see cref="VariableAssignment"/> reachable from a component, found by reflection rather than
+		/// by naming the component types that hold them — so a game's own component holding assignments is
+		/// covered too.
+		/// </summary>
+		private static IEnumerable<VariableAssignment> AssignmentsOn(MonoBehaviour behaviour) {
+			var fields = behaviour.GetType().GetFields(
+				System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+
+			foreach (var field in fields) {
+				if (field.FieldType == typeof(VariableAssignment)) {
+					yield return (VariableAssignment)field.GetValue(behaviour);
+				}
+				else if (typeof(IEnumerable<VariableAssignment>).IsAssignableFrom(field.FieldType)) {
+					var list = (IEnumerable<VariableAssignment>)field.GetValue(behaviour);
+					if (list == null) {
+						continue;
+					}
+					foreach (var assignment in list) {
+						yield return assignment;
+					}
+				}
+			}
 		}
 
 		private static string Path(Transform transform) {

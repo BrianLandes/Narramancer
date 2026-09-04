@@ -28,6 +28,19 @@ namespace Narramancer.Serialization {
 		public static bool IsSceneId(string id) => id != null && id.StartsWith(Prefix, StringComparison.Ordinal);
 
 		/// <summary>
+		/// True for a GameObject or Component living in a loaded scene. Such an object needs a
+		/// <see cref="Saveable"/> to be nameable — which is different advice from an asset, so callers reporting a
+		/// failure need to be able to tell them apart.
+		/// </summary>
+		public static bool IsSceneObject(UnityEngine.Object value) {
+			var gameObject = value as GameObject;
+			if (gameObject == null && value is Component component) {
+				gameObject = component.gameObject;
+			}
+			return gameObject != null && gameObject.scene.IsValid();
+		}
+
+		/// <summary>
 		/// The id for a scene GameObject or Component, or false when it has no <see cref="Saveable"/> — an
 		/// object with no identity cannot be named, and the caller reports that.
 		/// </summary>
