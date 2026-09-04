@@ -34,7 +34,33 @@ namespace Narramancer {
 		[SerializeField]
 		private StringObjectDictionary objects = default;
 
+		/// <summary>
+		/// Builds a blackboard key scoped to one owner — normally a node keeping private state, such as a
+		/// loop's index or the object a spawn node created.
+		/// <para>
+		/// The owner is identified by its <b>durable</b> id, not its hash. This used to be
+		/// <c>owner.GetHashCode()</c>, and on a <c>UnityEngine.Object</c> that <b>is the instanceID</b> — a
+		/// number handed out by a session-global counter in load order. So every key built here changed
+		/// meaning whenever the build changed, and a save carrying a half-finished loop, a spawned object, or
+		/// a running timer quietly lost it: a key that no longer matches simply reads back as the default.
+		/// Same failure as the saved-reference bug in docs/ODIN_REMOVAL_PLAN.md §2A, in a second place.
+		/// </para>
+		/// </summary>
 		public static string UniqueKey(object owner, string key) {
+			if (owner is UnityEngine.Object unityOwner) {
+				var id = Serialization.PersistentId.Of(unityOwner);
+				if (!id.IsNullOrEmpty()) {
+					return key + " " + id;
+				}
+
+				// No durable id: an object made at runtime and never registered. The old hash keeps things
+				// working for the current session, which is all such an object can support anyway — but say so,
+				// because state stored under this key will not survive a save.
+				Debug.LogWarning(
+					$"'{unityOwner.name}' ({unityOwner.GetType().Name}) has no durable id, so blackboard state keyed to it will not survive a save. " +
+					$"Register it with {nameof(Serialization.RuntimeAssetRegistry)} if that state matters.",
+					unityOwner);
+			}
 			return key + " " + owner.GetHashCode().ToString();
 		}
 

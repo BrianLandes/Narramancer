@@ -325,6 +325,87 @@ public class AssetReferenceTests {
 
 	#endregion
 
+	#region Blackboard keys — the second place instanceIDs were hiding
+
+	/// <summary>
+	/// <c>Blackboard.UniqueKey</c> scopes a key to its owner, and used to do it with
+	/// <c>owner.GetHashCode()</c> — which on a <c>UnityEngine.Object</c> <b>is the instanceID</b>. So every
+	/// loop index, spawned object, timer and chosen element stored under one of these keys silently changed
+	/// meaning when the build changed, and the state read back as a default. The same bug as the saved
+	/// references, in a second place, found while sizing M2.
+	/// </summary>
+	[Test]
+	public void ABlackboardKeyIsScopedByDurableIdNotInstanceId() {
+		var graph = CreateAsset<ActionVerb>("Verb");
+		var node = AddSubAsset<PrintTextNode>(graph, "node");
+		Assume.That(node.GetHashCode(), Is.EqualTo(node.GetInstanceID()),
+			"precondition: Unity's GetHashCode really is the instanceID — the whole reason for this fix");
+
+		var key = Blackboard.UniqueKey(node, "index");
+
+		AssetIds.TryGetId(node, out var durableId);
+		StringAssert.Contains(durableId, key, "the key should carry the asset's durable id");
+		StringAssert.DoesNotContain(node.GetInstanceID().ToString(), key,
+			"a session-local instanceID must not scope anything that gets saved");
+	}
+
+	[Test]
+	public void TwoNodesGetDifferentBlackboardKeys() {
+		var graph = CreateAsset<ActionVerb>("Verb");
+		var first = AddSubAsset<PrintTextNode>(graph, "first");
+		var second = AddSubAsset<PrintTextNode>(graph, "second");
+
+		Assert.AreNotEqual(Blackboard.UniqueKey(first, "index"), Blackboard.UniqueKey(second, "index"),
+			"two nodes in one graph must not collide, or they would overwrite each other's private state");
+	}
+
+	[Test]
+	public void TheSameNodeAlwaysGetsTheSameBlackboardKey() {
+		var graph = CreateAsset<ActionVerb>("Verb");
+		var node = AddSubAsset<PrintTextNode>(graph, "node");
+
+		Assert.AreEqual(Blackboard.UniqueKey(node, "index"), Blackboard.UniqueKey(node, "index"));
+	}
+
+	/// <summary>
+	/// State keyed to a node survives the save/load boundary — the thing that was actually broken. A key built
+	/// from a durable id still matches after the graph has been through the serializer.
+	/// </summary>
+	[Test]
+	public void StateKeyedToANodeSurvivesARoundTrip() {
+		var graph = CreateAsset<ActionVerb>("Verb");
+		var node = AddSubAsset<PrintTextNode>(graph, "node");
+		var story = new StoryInstance();
+		story.Blackboard.Set(Blackboard.UniqueKey(node, "index"), 7);
+
+		var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+		var restored = serializer.Deserialize<StoryInstance>(serializer.Serialize(story));
+
+		Assert.AreEqual(7, restored.Blackboard.Get<int>(Blackboard.UniqueKey(node, "index")),
+			"a half-finished loop, a spawned object or a running timer all live under keys like this one");
+	}
+
+	/// <summary>
+	/// An object with no durable id still works for the session, but says so — silently falling back to the
+	/// broken key is how this went unnoticed in the first place.
+	/// </summary>
+	[Test]
+	public void AnUnregisterableOwnerFallsBackButWarns() {
+		var loose = ScriptableObject.CreateInstance<PrintTextNode>();
+		loose.name = "Loose";
+		try {
+			UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning,
+				new System.Text.RegularExpressions.Regex("Loose.*durable id"));
+
+			Assert.IsNotEmpty(Blackboard.UniqueKey(loose, "index"));
+		}
+		finally {
+			Object.DestroyImmediate(loose);
+		}
+	}
+
+	#endregion
+
 	#region The manifest — how a build resolves
 
 	[Test]

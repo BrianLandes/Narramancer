@@ -70,7 +70,9 @@ namespace Narramancer {
 		public static NarramancerSerializer Serializer {
 			get {
 				if (serializer == null) {
-					serializer = new NarramancerSerializer(new UnityReferenceResolver());
+					// PersistentId owns the shared resolver, so saved references and blackboard keys
+					// cannot disagree about what an asset is called.
+					serializer = new NarramancerSerializer(PersistentId.Resolver);
 				}
 				return serializer;
 			}
@@ -82,6 +84,7 @@ namespace Narramancer {
 		/// </summary>
 		public static void ResetSerializer() {
 			serializer = null;
+			PersistentId.Reset();
 		}
 
 		/// <summary>
