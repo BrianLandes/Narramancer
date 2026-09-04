@@ -25,9 +25,7 @@ namespace Narramancer {
 				var promise = serializeAnimation.Play(animationClip);
 				if (wait) {
 					runner.Suspend();
-					promise.WhenDone(() => {
-						runner.Resume();
-					});
+					promise.WhenDone(Continuation.Resume(runner));
 				}
 			}
 			else {

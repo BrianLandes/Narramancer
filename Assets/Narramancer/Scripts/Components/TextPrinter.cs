@@ -48,7 +48,7 @@ namespace Narramancer {
 			}
 		}
 
-		public virtual void SetText(string text, Action callback, bool clearPreviousText = true, bool waitForContinue = true) {
+		public virtual void SetText(string text, Continuation callback, bool clearPreviousText = true, bool waitForContinue = true) {
 			ShowParentCanvas();
 			var previousText = string.Empty;
 			if (!clearPreviousText && targetText.IsNotNullOrEmpty()) {

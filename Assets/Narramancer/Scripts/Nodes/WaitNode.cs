@@ -17,10 +17,7 @@ namespace Narramancer {
 
 			NarramancerSingleton.Instance
 				.MakeTimer(duration)
-				.WhenDone(() => {
-					runner.Resume();
-				}
-			);
+				.WhenDone(Continuation.Resume(runner));
 		}
 	}
 

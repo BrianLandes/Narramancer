@@ -1,6 +1,7 @@
 # Replacing serialized closures with a `Continuation` record
 
-> **Status:** design only. Prerequisite work (characterization tests) in `tasks.md` §2.
+> **Status:** ready to build. Both prerequisites and the characterization tests landed in M1/M2
+> (2026-09-04); M3 is the last of the breaking work before launch.
 > **Sequencing:** after the serializer port, not before — see "Why this is not a port blocker".
 > **Problem statement and evidence:** [`ODIN_REMOVAL_PLAN.md`](ODIN_REMOVAL_PLAN.md) §2B.
 
@@ -106,36 +107,81 @@ whole point, versus `<>c__DisplayClass22_0`.
 - Shared mutable locals move to `runner.Blackboard` under `Blackboard.UniqueKey(this, "…")`, following
   `ChoosePrioritizedBranchNode`. They become inspectable in a save rather than invisible closure state.
 
-### ⚠️ Prerequisite: two key-stability bugs must be fixed first
+### ✅ Prerequisites — both fixed in M2, 2026-09-04
 
-Both were found while designing this, and both are the **same family as the instanceID bug** — an identity
-built from something the process invents at runtime.
+Both were found while designing this, and both were the **same family as the instanceID bug** — an identity
+built from something the process invents at runtime. Neither is a blocker any more.
 
-**1. `Blackboard.UniqueKey` embeds a hash code.**
+**1. `Blackboard.UniqueKey` embedded a hash code.** ✅ Fixed. And it was far wider than this design assumed:
+**13 call sites across 9 node types**, not the two polling flags. `UnityEngine.Object.GetHashCode()` **is**
+`GetInstanceID()`, so it was literally the instanceID bug in a second place. Keys are now scoped by durable id
+through `Serialization.PersistentId`. This design leans on `UniqueKey` for moving shared mutable state out of
+closures, so it is now safe to do so.
+
+**2. Sub-runner names had to be stable.** ✅ Fixed, but not the way this section proposed. Rather than deriving
+a *reconstructible* name from asset GUIDs, M2 removed the need to reconstruct anything: a runner now records
+the runners it starts (`NodeRunner.SubRunnerNames`), and `StopAndReset` walks that tree. The name became a
+label. `CreateNodeRunner` also disambiguates duplicates, which it previously threw on.
+
+> The old note here claimed `RunActionVerbForDurationNode` "already does the right thing" with
+> `$"{name} - {graph.name}"`. It was stable but **not unique**, and the runner table is a dictionary — two
+> concurrent instances of that node threw on `Add`.
+
+**Still owed, inherited from M2:** timer cancellation. `WaitNode` and the polling nodes leave a
+`SerializableTimer` in `StoryInstance.Timers` when cancelled. It fires once against a stopped runner
+(`Resume()` early-returns, so it is inert) and clears itself — but the fix wants an owner key on the timer,
+and this is the work that rewrites those callbacks anyway.
+
+---
+
+## Not every callback should be data
+
+A distinction the first draft missed, and the reason to make it explicit: right now **every** callback goes
+through `SerializableAction`, including ones that could not possibly outlive the frame. Once `doneCallbacks`
+becomes `List<Continuation>`, that would force every caller into the data model whether or not the callback
+needs to survive a save.
+
+So `Promise` should carry **both**:
 
 ```csharp
-public static string UniqueKey(object owner, string key) => key + " " + owner.GetHashCode().ToString();
+[SerializeField] private List<Continuation> doneCallbacks;   // survives a save
+[NonSerialized] private Action transientDone;                // does not, and should not
 ```
 
-This is the mechanism the design leans on for moving shared mutable state out of closures — so shipping it
-as-is would *relocate* the instability rather than remove it. `WaitUntilNode` and
-`ChoosePrioritizedBranchNode` already store their poll flags this way, meaning **those flags do not survive a
-save today**. Pinned by `PollingNodeCharacterizationTests.WaitUntil_RunningFlagKeyIsBuiltFromAnUnstableHashCode`.
-Fix: key off the owning node's asset GUID.
+`WhenDone(Continuation)` for anything that must resume after a load; `WhenDone(Action)` for UI glue, editor
+tooling, and anything whose lifetime is the current frame. v2 does exactly this — its `Finished` is a plain
+non-serialized C# event.
 
-**2. Sub-runner names must be stable**
+The rule for choosing: **if the promise can still be pending when the player saves, the callback must be a
+`Continuation`.** Everything reachable from a suspended verb falls on that side.
 
-`Continuation` addresses runners by string key, which works because `CreateNodeRunner(name)` registers them in
-`storyInstance.NodeRunners`. **But `ParallelNode.NameKey` builds that name from `GetHashCode()`:**
+---
+
+## Why `SerializableAction` goes rather than staying for named methods
+
+Worth writing down, because the instability is a property of **lambdas**, not of `SerializableAction`:
 
 ```csharp
-$"Name {runner.GetHashCode()} {this.GetHashCode()} {node.GetHashCode()}"
+serializedMethod = new SerializableMethodInfo(srcAction.Method);   // a signature name — stable
+serializedTarget = new SerializableObject(action.Target);          // the object — the hard half
 ```
 
-Object hash codes are **not stable across sessions**, so a sub-runner's key is already unstable across a save,
-and it is a hard blocker for `runnerKey`. Fix: derive sub-runner names from the node's asset GUID plus the
-parent runner key. *(Note `RunActionVerbForDurationNode` already does the right thing —
-`$"{name} - {graph.name}"` — so only `ParallelNode` needs changing.)*
+Pointed at a *named* method, the method half is stable across recompilation. So keeping it for named callbacks
+is a coherent idea. Three things sink it:
+
+1. **Nothing uses it that way.** All 18 sites in this repo are `() => { … }` lambdas. Deleting it loses
+   nothing that exists.
+2. **The target half is broken independently.** `SerializableObject` stores a Unity target as an object
+   reference, and a **scene MonoBehaviour is not an asset** — it has no durable id, so the serializer drops it
+   (§6.3) and `Delegate.CreateDelegate` then throws on a null target for an instance method. So
+   `promise.WhenDone(this.OnDoorOpened)` does not survive a save *today*, and cannot until the `Saveable`
+   refactor gives scene objects an identity. This is not a regression introduced by `Continuation`.
+3. **The escape hatch is strictly better.** `OnContinuation(callbackId, runner)` is keyed by an
+   **author-chosen string**, which survives a method rename. A method name does not.
+
+**If the extensibility need turns out to be real, add it back after the `Saveable` refactor** as a
+`Continuation` kind pointing at a `Saveable` GUID plus a named method. That is a better version of the same
+idea, and cheap once scene objects have identity.
 
 ---
 
@@ -159,8 +205,10 @@ parent runner key. *(Note `RunActionVerbForDurationNode` already does the right 
    is frozen within an EditMode frame). Cover: polling continues while the condition holds, the correct next
    node is prepended, and — most important — **the double-fire guard**, where the sub-runner completing and the
    duration timer firing must not both take effect.
-2. **Stabilize sub-runner naming** (the prerequisite above).
-3. `Continuation` + `Promise.doneCallbacks` + `RunnableNode.OnContinuation`.
+2. ~~**Stabilize sub-runner naming**~~ ✅ **Done 2026-09-04** in M2, by removing the need to reconstruct a
+   name at all — see the prerequisites section.
+3. `Continuation` + `Promise.doneCallbacks` + `RunnableNode.OnContinuation`, **plus the transient
+   `WhenDone(Action)` overload** so callbacks that cannot outlive the frame are not forced into the data model.
 4. Tier 1's 10 mechanical sites.
 5. Tier 2's 4 nodes, one at a time, each verified against its characterization tests.
 6. The choice-callback path: `VisibleChoice` in both printers.

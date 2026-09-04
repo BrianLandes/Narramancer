@@ -40,9 +40,7 @@ namespace Narramancer {
 				var subRunner = NarramancerSingleton.Instance.CreateSubRunner($"{name} - {node.name}", runner);
 				subRunner.Blackboard = runner.Blackboard;
 
-				subRunner.Start(node).WhenDone(() => {
-					NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-				});
+				subRunner.Start(node).WhenDone(Continuation.Release(subRunner));
 
 			}
 		}

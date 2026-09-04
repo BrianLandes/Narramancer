@@ -23,6 +23,44 @@ namespace Narramancer {
 		[Output(connectionType = ConnectionType.Override, typeConstraint = TypeConstraint.Inherited)]
 		public RunnableNode thenRunNode;
 
+		/// <summary>Ids for this node's two continuations. Written into saves verbatim.</summary>
+		private const string VerbFinishedCallbackId = "verb-finished";
+
+		private const string TimeoutCallbackId = "timeout";
+
+		private string RunningKey => Blackboard.UniqueKey(this, "Running");
+
+		private string SubRunnerKey => Blackboard.UniqueKey(this, "SubRunner");
+
+		public override void OnContinuation(string callbackId, NodeRunner runner) {
+			if (runner == null) {
+				return;
+			}
+
+			// Whichever of the two arrives first wins, and clearing the flag makes the other a no-op.
+			if (!runner.Blackboard.GetBool(RunningKey)) {
+				return;
+			}
+			runner.Blackboard.Set(RunningKey, false);
+
+			if (callbackId == TimeoutCallbackId) {
+				// Out of time: stop the verb where it is. On the other path it finished on its own.
+				var subRunner = NarramancerSingleton.Instance.GetNodeRunner(runner.Blackboard.GetString(SubRunnerKey));
+				if (subRunner != null) {
+					subRunner.StopAndReset();
+				}
+			}
+
+			NarramancerSingleton.Instance.ReleaseNodeRunner(
+				NarramancerSingleton.Instance.GetNodeRunner(runner.Blackboard.GetString(SubRunnerKey)));
+
+			if (TryGetRunnableNodeFromPort(nameof(thenRunNode), out var nextNode)) {
+				runner.Prepend(nextNode);
+			}
+
+			runner.Resume();
+		}
+
 		public override void Run(NodeRunner runner) {
 
 			if (actionVerb != null && actionVerb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
@@ -44,39 +82,19 @@ namespace Narramancer {
 					}
 				}
 
-				var subRunnerStillRunning = true;
+				// The verb finishing and the duration elapsing race each other, and exactly one of them must
+				// take effect. That guard used to be a bool captured by both lambdas; it lives on the
+				// blackboard now, because a save can land between the two.
+				runner.Blackboard.Set(RunningKey, true);
+				runner.Blackboard.SetString(SubRunnerKey, subRunner.name);
 
-				subRunner.Start(runnableNode).WhenDone(() => {
-					subRunnerStillRunning = false;
-
-					NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-
-					if (TryGetRunnableNodeFromPort(nameof(thenRunNode), out var nextNode)) {
-						runner.Prepend(nextNode);
-					}
-
-					runner.Resume();
-				});
+				subRunner.Start(runnableNode).WhenDone(Continuation.NodeCallbackTo(this, VerbFinishedCallbackId, runner));
 
 				var duration = GetInputValue(runner.Blackboard, nameof(this.duration), this.duration);
 
 				NarramancerSingleton.Instance
 					.MakeTimer(duration)
-						.WhenDone(() => {
-
-							if (!subRunnerStillRunning) {
-								return;
-							}
-
-							NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-
-							if (TryGetRunnableNodeFromPort(nameof(thenRunNode), out var nextNode)) {
-								runner.Prepend(nextNode);
-							}
-
-							runner.Resume();
-						}
-					);
+					.WhenDone(Continuation.NodeCallbackTo(this, TimeoutCallbackId, runner));
 			}
 			else {
 				Debug.LogError("Runnable Graph not set or not setup properly.");

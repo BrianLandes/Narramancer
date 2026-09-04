@@ -31,14 +31,82 @@ namespace Narramancer {
 		public RunnableNode runNodeOnConditionFalse;
 
 
-		public override void Run(NodeRunner runner) {
+		/// <summary>Ids for this node's two continuations. Written into saves verbatim.</summary>
+		private const string VerbFinishedCallbackId = "verb-finished";
 
-			bool IsConditionTrue() {
-				var result = GetInputValue(runner.Blackboard, nameof(this.condition), this.condition);
-				return result;
+		private const string PollCallbackId = "poll";
+
+		private string RunningKey => Blackboard.UniqueKey(this, "Running");
+
+		private string SubRunnerKey => Blackboard.UniqueKey(this, "SubRunner");
+
+		private bool IsConditionTrue(NodeRunner runner) {
+			return GetInputValue(runner.Blackboard, nameof(this.condition), this.condition);
+		}
+
+		private NodeRunner GetSubRunner(NodeRunner runner) {
+			return NarramancerSingleton.Instance.GetNodeRunner(runner.Blackboard.GetString(SubRunnerKey));
+		}
+
+		/// <summary>
+		/// One tick: keep the verb running while the condition holds, stop it when the condition goes false.
+		/// Was a self-rescheduling local function, which is what <see cref="OnContinuation"/> exists for.
+		/// </summary>
+		private void Poll(NodeRunner runner) {
+			if (runner == null || !runner.Blackboard.GetBool(RunningKey)) {
+				return;
 			}
 
-			if (IsConditionTrue()) {
+			if (IsConditionTrue(runner)) {
+				NarramancerSingleton.Instance
+					.MakeTimer(refreshDelay)
+					.WhenDone(Continuation.NodeCallbackTo(this, PollCallbackId, runner));
+				return;
+			}
+
+			runner.Blackboard.Set(RunningKey, false);
+
+			var subRunner = GetSubRunner(runner);
+			if (subRunner != null) {
+				subRunner.StopAndReset();
+				NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
+			}
+
+			if (TryGetRunnableNodeFromPort(nameof(runNodeOnConditionFalse), out var nextNode)) {
+				runner.Prepend(nextNode);
+			}
+
+			runner.Resume();
+		}
+
+		public override void OnContinuation(string callbackId, NodeRunner runner) {
+			if (callbackId == PollCallbackId) {
+				Poll(runner);
+				return;
+			}
+
+			if (callbackId != VerbFinishedCallbackId || runner == null) {
+				return;
+			}
+
+			// The verb ran to completion before the condition went false.
+			if (!runner.Blackboard.GetBool(RunningKey)) {
+				return;
+			}
+			runner.Blackboard.Set(RunningKey, false);
+
+			NarramancerSingleton.Instance.ReleaseNodeRunner(GetSubRunner(runner));
+
+			if (TryGetRunnableNodeFromPort(nameof(runNodeOnTrueAndFinish), out var finishedNode)) {
+				runner.Prepend(finishedNode);
+			}
+
+			runner.Resume();
+		}
+
+		public override void Run(NodeRunner runner) {
+
+			if (IsConditionTrue(runner)) {
 				if (actionVerb != null && actionVerb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
 
 					runner.Suspend();
@@ -58,46 +126,15 @@ namespace Narramancer {
 						}
 					}
 
-					var subRunnerIsStillRunning = true;
+					// The verb finishing and the condition going false race each other, and exactly one must
+					// take effect. That guard was a bool captured by both closures; it lives on the blackboard
+					// now, so a save landing mid-poll carries it.
+					runner.Blackboard.Set(RunningKey, true);
+					runner.Blackboard.SetString(SubRunnerKey, subRunner.name);
 
-					subRunner.Start(runnableNode).WhenDone(() => {
-						subRunnerIsStillRunning = false;
+					subRunner.Start(runnableNode).WhenDone(Continuation.NodeCallbackTo(this, VerbFinishedCallbackId, runner));
 
-						NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-
-						if (TryGetRunnableNodeFromPort(nameof(runNodeOnTrueAndFinish), out var nextNode)) {
-							runner.Prepend(nextNode);
-						}
-
-						runner.Resume();
-					});
-
-					void RunUpdate() {
-						if (!subRunnerIsStillRunning) {
-							return;
-						}
-
-						if (IsConditionTrue()) {
-							NarramancerSingleton.Instance
-								.MakeTimer(refreshDelay)
-									.WhenDone(() => {
-										RunUpdate();
-									}
-								);
-						}
-						else {
-							subRunner.StopAndReset();
-							NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-
-							if (TryGetRunnableNodeFromPort(nameof(runNodeOnConditionFalse), out var nextNode)) {
-								runner.Prepend(nextNode);
-							}
-
-							runner.Resume();
-						}
-					}
-
-					RunUpdate();
+					Poll(runner);
 				}
 				else {
 					Debug.LogError("Runnable Graph not set or not setup properly.");

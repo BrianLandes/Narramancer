@@ -57,7 +57,7 @@ namespace Narramancer {
 
 		#region Text Printer
 
-		public override void SetText(string text, Action callback, bool clearPreviousText = true, bool waitForContinue = true) {
+		public override void SetText(string text, Continuation callback, bool clearPreviousText = true, bool waitForContinue = true) {
 			this.StopCoroutineMaybe(scrollCoroutine);
 			base.SetText(text, callback, clearPreviousText, waitForContinue);
 

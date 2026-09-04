@@ -60,9 +60,7 @@ namespace Narramancer {
 			if (wait) {
 				runner.Suspend();
 				var time = audioClip.length;
-				NarramancerSingleton.Instance.MakeTimer(time).WhenDone(() => {
-					runner.Resume();
-				});
+				NarramancerSingleton.Instance.MakeTimer(time).WhenDone(Continuation.Resume(runner));
 			}
 		}
 	}

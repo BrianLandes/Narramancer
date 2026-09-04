@@ -84,9 +84,7 @@ namespace Narramancer {
 
 					if (promise != null && wait) {
 						runner.Suspend();
-						promise.WhenDone(() => {
-							runner.Resume();
-						});
+						promise.WhenDone(Continuation.Resume(runner));
 					}
 				}
 				else {

@@ -21,6 +21,21 @@ namespace Narramancer {
 			// This area left blank intentionally
 		}
 
+		/// <summary>
+		/// Called by a <see cref="Continuation"/> of kind <c>NodeCallback</c> — the escape hatch for logic a
+		/// data record cannot express, such as a polling loop that reschedules itself.
+		/// <para>
+		/// <paramref name="callbackId"/> is chosen by whoever writes the node and is stored in saves verbatim,
+		/// so <b>treat it as part of the save format</b>: renaming one invalidates saves that are mid-callback.
+		/// That is still a large improvement on what this replaces, where the id was a compiler-generated
+		/// ordinal that changed when the file was edited at all.
+		/// </para>
+		/// <para><paramref name="runner"/> may be null if the runner the continuation named is gone.</para>
+		/// </summary>
+		public virtual void OnContinuation(string callbackId, NodeRunner runner) {
+			// This area left blank intentionally
+		}
+
 		public override object GetValue(INodeContext context, NodePort port) {
 
 			if (port.fieldName == nameof(thisNode)) {

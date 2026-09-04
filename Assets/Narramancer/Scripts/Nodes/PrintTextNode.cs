@@ -71,13 +71,11 @@ namespace Narramancer {
 			if (textPrinter == null) {
 				textPrinter = GameObjectExtensions.FindObjectsOfType<TextPrinter>(true).FirstOrDefault(x => x.isMainTextPrinter);
 			}
-			textPrinter.SetText(inputText, () => {
-				if (waitForContinue) {
-					runner.Resume();
-				}
+			// No continuation at all when the node is not waiting, rather than a continuation that checks a
+			// flag and does nothing. The captured bool disappears from the save format.
+			var whenContinued = waitForContinue ? Continuation.Resume(runner) : null;
 
-			},
-			clearPreviousText, waitForContinue);
+			textPrinter.SetText(inputText, whenContinued, clearPreviousText, waitForContinue);
 		}
 	}
 }

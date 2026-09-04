@@ -217,37 +217,10 @@ public class SerializerStoryGraphTests {
 
 	#endregion
 
-	/// <summary>Holds a promise and the object its callback captured, so both cross the boundary together.</summary>
-	private class PromiseHolder {
-		public StringIntDictionary Box;
-		public Promise Promise;
-	}
-
-	/// <summary>
-	/// The continuation path, which is the most fragile thing in a save: <c>Promise.doneCallbacks</c> stores
-	/// serialized lambda closures, and their captured state lives in compiler-generated fields. This asserts
-	/// the whole chain — the closure survives, still resolves to a callable action, and the object it
-	/// captured is the <em>same instance</em> the restored graph holds elsewhere rather than a second copy.
-	/// <para>
-	/// It passing does not make the closure model safe. The type name a closure is stored under is a compiler
-	/// ordinal that moves when the node's source file is edited, which is Landmine B in
-	/// docs/ODIN_REMOVAL_PLAN.md and the reason docs/CONTINUATION_DESIGN.md exists. This test pins the
-	/// behaviour so the Continuation work has something to replace rather than guess at.
-	/// </para>
-	/// </summary>
-	[Test]
-	public void ASerializedCallbackSurvivesAndStillSeesWhatItCaptured() {
-		var holder = new PromiseHolder { Box = new StringIntDictionary(), Promise = new Promise() };
-		var captured = holder.Box;
-		holder.Promise.WhenDone(() => captured["ran"] = 1);
-
-		var restored = RoundTrip(holder);
-		restored.Promise.Resolve();
-
-		Assert.IsTrue(restored.Box.ContainsKey("ran"), "the restored callback did not run against the restored graph");
-		Assert.AreEqual(1, restored.Box["ran"]);
-		Assert.IsFalse(captured.ContainsKey("ran"), "the restored callback must not still be pointing at the original object");
-	}
+	// The test that lived here round-tripped a Promise holding a serialized lambda closure and checked the
+	// restored callback still saw what it captured. It pinned behaviour that M3 deliberately removed: closures
+	// are no longer serialized at all. Its replacement is ContinuationTests, which asserts the stronger
+	// property — that no compiler-generated name reaches a save file.
 
 	#region Every reference is accounted for
 

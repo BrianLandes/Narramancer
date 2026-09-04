@@ -243,9 +243,23 @@ M3 touches them once rather than twice.
   path needs manual playtesting. Once it lands the serializer can drop `$systemType` and the
   compiler-generated-field carve-out.
   - [x] Characterization tests pinning the polling nodes *(done 2026-08-27; `PollingNodeCharacterizationTests`)*
-  - [ ] `Continuation` + `RunnableNode.OnContinuation` + the 10 mechanical sites
-  - [ ] The 4 polling nodes, one at a time, each verified against its characterization tests
-  - [ ] The choice-callback path (`VisibleChoice` in both printers), then delete `SerializableActionHelper`
+  - [x] `Continuation` + `Promise` + `RunnableNode.OnContinuation` *(2026-09-04)*. `Promise` now takes a
+    `Continuation` (saved) or a transient `Action` (not saved) — **deliberately different names, not an
+    overload**: a lambda binds to an `Action` parameter silently, so an overload let all 18 call sites keep
+    compiling while quietly losing the ability to survive a save. Renaming turned that into 14 compile errors,
+    which is the checklist.
+  - [x] The mechanical sites *(2026-09-04)* — five "resume this runner", `ParallelNode`'s release, and the
+    printer path. `PrintTextNode`'s `waitForContinue` bool leaves the save format entirely: it passes **no
+    continuation** when false rather than encoding a flag to check.
+  - [x] The 4 polling nodes *(2026-09-04)* — `WaitUntilNode`, `ChoosePrioritizedBranchNode`,
+    `RunActionVerbForDurationNode`, `RunActionVerbWhileConditionIsTrueNode`. Each self-rescheduling local
+    function became a real method reached through `OnContinuation`, and every shared mutable local moved to
+    the runner's blackboard. **All 7 characterization tests still pass** — which is what they were written for.
+  - [ ] The choice-callback path (`VisibleChoice` in both printers) — the last 4 of the 18 sites and the only
+    `SerializableAction` users left. UI-coupled and playtest-only, so it lands on its own commit.
+  - [ ] Delete `SerializableActionHelper`; drop it from `Third-Party Notices.txt` and `LICENSING.md`. Then the
+    serializer can drop `$systemType` and the compiler-generated-field carve-out.
+  - [ ] Timer cancellation *(inherited from M2)* and a re-run of the build smoke, since serialization changed.
   - Prerequisite moved to M2: the two `GetHashCode()`-based unstable keys.
 
 ---
