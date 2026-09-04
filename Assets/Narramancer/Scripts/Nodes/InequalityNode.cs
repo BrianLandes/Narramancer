@@ -12,10 +12,24 @@ namespace Narramancer {
         [SerializeField]
         protected float a = 0;
 
+        /// <summary>
+        /// The order here is load-bearing and must not be rearranged. Unity serializes an enum field by its
+        /// <b>integer</b> value, so an authored graph stores the index, not the name.
+        /// <para>
+        /// Until 2026-09-04 there were three members and the middle two were misnamed: <c>GreaterThan</c>
+        /// evaluated <c>&gt;=</c> and <c>LessThan</c> evaluated <c>&lt;=</c>. Renaming them in place and
+        /// appending the two strict operators makes every existing graph keep its exact behaviour — index 1
+        /// still means <c>&gt;=</c>, index 2 still means <c>&lt;=</c> — while the label finally matches what
+        /// runs. Inserting the new members anywhere but the end would silently change the meaning of every
+        /// authored comparison.
+        /// </para>
+        /// </summary>
         public enum Comparison {
-            ApproximatelyEqualTo,
-            GreaterThan,
-            LessThan
+            ApproximatelyEqualTo = 0,
+            GreaterThanOrEqualTo = 1,
+            LessThanOrEqualTo = 2,
+            GreaterThan = 3,
+            LessThan = 4,
         }
         [SerializeField, NodeEnum]
         [Tooltip("A is {comparison} B")]
@@ -36,13 +50,19 @@ namespace Narramancer {
 
                 switch (comparison) {
                     case Comparison.ApproximatelyEqualTo:
-                        return Mathf.Approximately( leftValue, rightValue);
+                        return Mathf.Approximately(leftValue, rightValue);
 
-                    case Comparison.GreaterThan:
+                    case Comparison.GreaterThanOrEqualTo:
                         return leftValue >= rightValue;
 
-                    case Comparison.LessThan:
+                    case Comparison.LessThanOrEqualTo:
                         return leftValue <= rightValue;
+
+                    case Comparison.GreaterThan:
+                        return leftValue > rightValue;
+
+                    case Comparison.LessThan:
+                        return leftValue < rightValue;
 
                 }
             }

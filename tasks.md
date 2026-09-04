@@ -83,10 +83,14 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **M2 — execution-model correctness.** M1 is done: the serializer is swapped, Odin is deleted, and both
-  the build smoke and the patch test passed on a real WebGL player *(2026-09-04)*. Next up is the sub-runner
-  tree and `RunnableNode.Cancel` — a live leak today — carrying the two `GetHashCode()` unstable-key fixes
-  with it. See §2 M2 below.
+- [ ] **M3 — replace the serialized closures with a `Continuation` record.** M1 and M2 are both done as of
+  2026-09-04. M3 is the last of the breaking work before §3, at ~4–6 evenings the largest remaining piece, and
+  it now also inherits timer cancellation from the sub-runner work. Design is written:
+  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md).
+  ⚠️ **Read the code before trusting the task notes.** Three premises in M2 turned out to be stale — `Cancel`
+  "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), and the Promise registry
+  being dead code (it is load-bearing). All three came from the same 2026-08-11 inbox pass. Treat the
+  remaining Tier B notes as leads, not specs.
 
 ---
 
@@ -175,10 +179,10 @@ rebuild, load — which is the one that proves a saved reference survives a renu
 
 ---
 
-### M2 — Execution-model correctness *(~3–4 evenings)*
+### M2 — Execution-model correctness ✅ *(done 2026-09-04)*
 
-Independent of the serializer, and worth doing before `Continuation`: it restructures the sub-runner nodes
-once instead of twice.
+Sub-runner ownership, durable blackboard keys, and both riders. Restructuring the sub-runner nodes here means
+M3 touches them once rather than twice.
 
 - [x] **Sub-runner tree + node cancellation** *(done 2026-09-04)*. A runner now records the runners it starts,
   and `StopAndReset()` stops and releases them depth-first — so stopping a runner mid-flight no longer abandons
@@ -211,19 +215,22 @@ once instead of twice.
     it is inert) and then clears itself. Minor and self-healing, but it wants an owner key on the timer.
     Natural to fold into M3, whose whole job is replacing those callbacks.
 
-**Riders — no dependencies, do them whenever there is a gap:**
+**Riders — both done 2026-09-04:**
 
-- [ ] **Fix `InequalityNode` comparison semantics** — `Comparison.GreaterThan` currently evaluates `>=` and
-  `LessThan` evaluates `<=`. Adding `GreaterThanOrEqualTo`/`LessThanOrEqualTo` at indices 1–2 fixes the
-  semantics *and* happens to be migration-safe: old index 1 (`GreaterThan`, behaving as `>=`) maps to new
-  index 1 (`GreaterThanOrEqualTo`, `>=`), same for index 2. Existing authored graphs keep their exact behavior
-  and gain correct labels. Rare freebie. Graph-enum change, not save-format. *(from inbox 2026-08-11 — Tier B3)*
-- [ ] **Regression tests for the Tier A fixes** — nine real bugs were fixed on 2026-08-12 with **zero tests**,
-  so nothing stops them coming back. Worth covering the pure-logic ones: `StatInstance` min+max clamp (a stat
-  with both only honored the max), `NounInstancesQuery` null/empty equality *and* hash agreement (it's a
-  dictionary key), the `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and
-  `InequalityNode`'s comparison semantics once that lands. Skip the editor-UI ones (A6 port style, A8 icon) —
-  not worth a harness. ~1 evening.
+- [x] **`InequalityNode` comparison semantics fixed** — `GreaterThan` evaluated `>=` and `LessThan` evaluated
+  `<=`. The two misnamed members keep their enum **indices** (renamed to `GreaterThanOrEqualTo` /
+  `LessThanOrEqualTo`) and the strict operators are appended at 3 and 4, so every authored graph keeps its
+  exact behaviour and gains a correct label. Unity serializes an enum by its integer value, so that ordering
+  is load-bearing — `TheComparisonEnumIndicesAreFrozen` asserts it rather than trusting a comment.
+  *(Its sibling `CompareFloatNode` was already correct — checked while here.)*
+- [x] **Regression tests for the Tier A fixes** — 18 tests in `TierARegressionTests`: the `StatInstance`
+  min+max clamp, `NounInstancesQuery` null/empty equality **and** hash agreement (it is a dictionary key), the
+  `AssemblyUtilities` nested-namespace AQN regex, `AddRelationshipNode`'s null guard, and the
+  `InequalityNode` operators above. The two editor-UI fixes (A6 port style, A8 icon) are deliberately left
+  uncovered — a test for either would assert more about Unity's inspector than about this code.
+  *Verified by reintroducing the `StatInstance` bug and watching the test fail with the original signature
+  (expected 5, got 0) while its two siblings still passed* — which is exactly the shape of "only the max was
+  honoured". A regression test written after the fix is worth nothing until it has been seen to fail.
 
 ---
 
