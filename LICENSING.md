@@ -53,7 +53,6 @@ this repository, which keep their original licenses and may be used under those 
 |---|---|---|
 | xNode (Thor Brigsted / Siccity) | MIT | `Assets/Narramancer/Scripts/Plugins/xNode/` |
 | Unity-SerializableDictionary (azixMcAze) | MIT | `Assets/Narramancer/Scripts/Plugins/SerializableDictionary/` |
-| SerializableAction / UndoPro (Seneral) | MIT | `Assets/Narramancer/Scripts/Plugins/SerializableAction/` |
 | Open Sans | SIL OFL | `Assets/Narramancer/Fonts/Open_Sans/` |
 
 Full attribution is in [`Assets/Narramancer/Third-Party Notices.txt`](Assets/Narramancer/Third-Party%20Notices.txt).

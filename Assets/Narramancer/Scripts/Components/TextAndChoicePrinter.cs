@@ -1,4 +1,3 @@
-using Narramancer.SerializableActionHelper;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,7 +30,7 @@ namespace Narramancer {
 			public string displayText;
 			public string toolTip;
 			public bool enabled = true;
-			public SerializableAction callback;
+			public Continuation callback;
 		}
 
 		[SerializeField]
@@ -107,11 +106,11 @@ namespace Narramancer {
 			showingChoices = false;
 		}
 
-		public void AddChoice(string displayText, string toolTip, Action callbackAction) {
+		public void AddChoice(string displayText, string toolTip, Continuation callback) {
 			var newChoice = new VisibleChoice() {
 				displayText = displayText,
 				toolTip = toolTip,
-				callback = new SerializableAction(callbackAction)
+				callback = callback
 			};
 
 			choices.Add(newChoice);
@@ -132,10 +131,12 @@ namespace Narramancer {
 				newChoiceObject.name = choice.displayText;
 
 				var button = newChoiceObject.GetComponentInChildren<Button>();
+				// Captured before ClearChoices(), which empties the list this choice lives in.
+				var chosen = choice.callback;
 				button.onClick.AddListener(() => {
 					if (!dragging) {
 						ClearChoices();
-						choice.callback.Action();
+						chosen?.Invoke();
 					}
 
 				});

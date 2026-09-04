@@ -170,20 +170,26 @@ public class SerializerTests {
 		Assert.AreEqual(2, result.DerivedValue);
 	}
 
+	/// <summary>
+	/// Inverted when M3 landed. Closures used to be serialized, with a carve-out that pulled in their private
+	/// captured fields — and that was the bug: the ordinal in <c>&lt;&gt;c__DisplayClass22_0</c> moves when the
+	/// source file is edited, so a save stopped resolving its own continuations after an unrelated change.
+	/// <para>
+	/// It refuses them now rather than merely lacking the carve-out. Without one a closure's fields are
+	/// neither public nor <c>[SerializeField]</c>, so it would serialize as an <b>empty object</b> and lose
+	/// its captured state silently — which is how this class of bug returns.
+	/// </para>
+	/// </summary>
 	[Test]
-	public void CompilerGeneratedClosureFieldsAreSaved() {
-		// Promise.doneCallbacks serializes lambda closures today, and their captured state lives in
-		// fields that are neither public nor attributed. Odin has the same carve-out; until the
-		// Continuation work lands (docs/CONTINUATION_DESIGN.md), dropping it would break every
-		// suspended verb.
+	public void ACompilerGeneratedClosureIsRefusedRatherThanSilentlyEmptied() {
 		var captured = new Simple { PublicField = 42 };
 		Action action = () => captured.PublicField++;
 		var closure = action.Target;
 		Assume.That(closure, Is.Not.Null, "precondition: the lambda captures a local, so it has a display class");
 
-		var json = serializer.Serialize(closure);
+		var exception = Assert.Throws<SerializationException>(() => serializer.Serialize(closure));
 
-		StringAssert.Contains("42", json, "the captured local must be written, or a resumed callback loses its state");
+		StringAssert.Contains("Continuation", exception.Message, "the message should point at what to use instead");
 	}
 
 	// --- scalars ---

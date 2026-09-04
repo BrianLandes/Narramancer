@@ -78,6 +78,35 @@ namespace Narramancer {
 
 		private string ElementKey => Blackboard.UniqueKey(this, "Element");
 
+		/// <summary>Ids for this node's continuations. Written into saves verbatim.</summary>
+		private const string ChoiceCallbackPrefix = "choice:";
+
+		private const string BackCallbackId = "back";
+
+		/// <summary>Where the element behind offered choice <paramref name="index"/> is parked.</summary>
+		private string OptionKey(int index) => Blackboard.UniqueKey(this, $"Option {index}");
+
+		public override void OnContinuation(string callbackId, NodeRunner runner) {
+			if (runner == null) {
+				return;
+			}
+
+			if (callbackId == BackCallbackId) {
+				runner.Blackboard.Set(ElementKey, null, type.Type);
+				runner.Resume(GetRunnableNodeFromPort(nameof(runWhenBackSelected)));
+				return;
+			}
+
+			if (!callbackId.StartsWith(ChoiceCallbackPrefix, System.StringComparison.Ordinal)
+				|| !int.TryParse(callbackId.Substring(ChoiceCallbackPrefix.Length), out var index)) {
+				return;
+			}
+
+			// GetAndRemove so the options this node parked do not linger in the save after a choice is made.
+			runner.Blackboard.Set(ElementKey, runner.Blackboard.GetAndRemove(OptionKey(index), type.Type), type.Type);
+			runner.Resume(GetRunnableNodeFromPort(nameof(runWhenObjectSelected)));
+		}
+
 		protected override void Init() {
 			type.OnChanged -= UpdatePorts;
 			type.OnChanged += UpdatePorts;
@@ -139,6 +168,11 @@ namespace Narramancer {
 
 			var useEnabledPredicate = useValueVerbForEnabled && enabledPredicate;
 
+			// Each offered element is written to the blackboard under its own key, and the choice's
+			// continuation carries only the index. The element itself is genuine captured state — the one
+			// thing in the node library a closure was really holding — and this is how it becomes data.
+			var optionIndex = 0;
+
 			foreach (var element in elementsList) {
 				if (useEnabledPredicate && enabledPredicate != null) {
 					foreach (var inputPort in DynamicInputs) {
@@ -157,11 +191,10 @@ namespace Narramancer {
 					if (useToolTip && toolTipPredicate != null) {
 						toolTip = toolTipPredicate.RunForValue<string>(runner.Blackboard, type.Type, element);
 					}
-					choicePrinter.AddChoice(displayText, toolTip, () => {
-						runner.Blackboard.Set(ElementKey, element);
-						var nextNode = GetRunnableNodeFromPort(nameof(runWhenObjectSelected));
-						runner.Resume(nextNode);
-					});
+					runner.Blackboard.Set(OptionKey(optionIndex), element, type.Type);
+					choicePrinter.AddChoice(displayText, toolTip,
+						Continuation.NodeCallbackTo(this, ChoiceCallbackPrefix + optionIndex, runner));
+					optionIndex++;
 				}
 				else
 				if (showIfDisabled) {
@@ -174,11 +207,8 @@ namespace Narramancer {
 			}
 
 			if (addOptionForBack) {
-				choicePrinter.AddChoice("Back", string.Empty, () => {
-					runner.Blackboard.Set(ElementKey, null, type.Type);
-					var nextNode = GetRunnableNodeFromPort(nameof(runWhenBackSelected));
-					runner.Resume(nextNode);
-				});
+				choicePrinter.AddChoice("Back", string.Empty,
+					Continuation.NodeCallbackTo(this, BackCallbackId, runner));
 			}
 
 

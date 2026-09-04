@@ -1,4 +1,3 @@
-using Narramancer.SerializableActionHelper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Narramancer {
 
 		void ClearChoices();
 
-		void AddChoice(string displayText, string toolTip, Action callbackAction);
+		void AddChoice(string displayText, string toolTip, Continuation callback);
 
 		void AddDisabledChoice(string displayText);
 
@@ -41,7 +40,13 @@ namespace Narramancer {
 			public string displayText;
 			public string toolTip;
 			public bool enabled = true;
-			public SerializableAction callback;
+
+			/// <summary>
+			/// What running this choice does. Data rather than a delegate, because an offered choice can sit
+			/// on screen across a save: the player is looking at it precisely when they are most likely to
+			/// save the game.
+			/// </summary>
+			public Continuation callback;
 		}
 
 		[SerializeField]
@@ -77,11 +82,11 @@ namespace Narramancer {
 			showingChoices = false;
 		}
 
-		public void AddChoice(string displayText, string toolTip, Action callbackAction) {
+		public void AddChoice(string displayText, string toolTip, Continuation callback) {
 			var newChoice = new VisibleChoice() {
 				displayText = displayText,
 				toolTip = toolTip,
-				callback = new SerializableAction(callbackAction)
+				callback = callback
 			};
 
 			choices.Add(newChoice);
@@ -102,9 +107,10 @@ namespace Narramancer {
 				newChoiceObject.name = choice.displayText;
 
 				var button = newChoiceObject.GetComponentInChildren<Button>();
+				var chosen = choice.callback;
 				button.onClick.AddListener(() => {
 					ClearChoices();
-					choice.callback.Action();
+					chosen?.Invoke();
 				});
 				button.interactable = choice.enabled;
 

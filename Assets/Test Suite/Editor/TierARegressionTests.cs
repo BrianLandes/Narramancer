@@ -228,7 +228,7 @@ public class TierARegressionTests {
 	/// </summary>
 	[Test]
 	public void ATypeInANestedNamespaceResolvesFromItsQualifiedName() {
-		var type = typeof(Narramancer.SerializableActionHelper.SerializableAction);
+		var type = typeof(Narramancer.Serialization.NarramancerSerializer);
 		Assume.That(type.Namespace.Count(character => character == '.'), Is.GreaterThan(0),
 			"precondition: this type really is in a nested namespace");
 
@@ -237,7 +237,7 @@ public class TierARegressionTests {
 
 	[Test]
 	public void TheClassNameIsTakenFromTheLastSegment() {
-		var type = typeof(Narramancer.SerializableActionHelper.SerializableAction);
+		var type = typeof(Narramancer.Serialization.NarramancerSerializer);
 
 		Assert.AreEqual(type.Name, AssemblyUtilities.GetClassName(type.AssemblyQualifiedName));
 	}

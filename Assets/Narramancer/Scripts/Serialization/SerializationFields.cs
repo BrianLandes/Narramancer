@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Narramancer.Serialization {
@@ -35,18 +34,12 @@ namespace Narramancer.Serialization {
 			var fields = new List<FieldInfo>();
 			for (var current = type; current != null && current != typeof(object); current = current.BaseType) {
 
-				// A compiler-generated closure class captures its locals in fields that are neither public
-				// nor attributed, so the general policy would skip all of them. Odin has the same carve-out,
-				// and `Promise.doneCallbacks` depends on it until the Continuation work lands and closures
-				// stop being serialized at all — see docs/CONTINUATION_DESIGN.md.
-				var isClosure = current.IsDefined(typeof(CompilerGeneratedAttribute), inherit: false);
-
 				var declared = current.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 				foreach (var field in declared) {
 					if (field.IsNotSerialized) {
 						continue;
 					}
-					if (isClosure || field.IsPublic || field.IsDefined(typeof(SerializeField), inherit: false)) {
+					if (field.IsPublic || field.IsDefined(typeof(SerializeField), inherit: false)) {
 						fields.Add(field);
 					}
 				}

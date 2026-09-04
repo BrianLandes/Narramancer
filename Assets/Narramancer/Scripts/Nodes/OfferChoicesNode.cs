@@ -39,11 +39,10 @@ namespace Narramancer {
 				if (choiceNode.IsConditionMet(runner.Blackboard)) {
 					var displayText = choiceNode.GetDisplayText(runner.Blackboard);
 					var toolTip = choiceNode.GetToolTip(runner.Blackboard);
-					choicePrinter.AddChoice(displayText, toolTip, () => {
-
-						var nextNode = choiceNode.GetNextNode();
-						runner.Resume(nextNode);
-					});
+					// Resolved now rather than at click time. The connection a choice points at cannot change
+					// while the choice is on screen, and resolving eagerly is what makes this plain data.
+					choicePrinter.AddChoice(displayText, toolTip,
+						Continuation.ResumeWith(runner, choiceNode.GetNextNode()));
 				}
 				else
 				if (choiceNode.DisplayWhenDisabled) {

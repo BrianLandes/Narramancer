@@ -33,14 +33,3 @@ License: MIT License
 License URL: https://github.com/azixMcAze/Unity-SerializableDictionary?tab=MIT-1-ov-file
 License Summary: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
 
-
-SerializableAction
-
-Name: SerializableAction (UndoPro)
-Author: Seneral
-Description: SerializableAction is a component of UndoPro that allows for the serialization of simple C# methods and callbacks.
-URL: https://github.com/Seneral/UndoPro/tree/master/UndoPro/SerializableAction
-Version: LTS v1.0.0
-License: MIT License
-License URL: https://github.com/Seneral/UndoPro?tab=License-1-ov-file
-License Summary: A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.

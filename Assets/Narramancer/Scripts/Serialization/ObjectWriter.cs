@@ -45,6 +45,7 @@ namespace Narramancer.Serialization {
 			}
 
 			var runtimeType = value.GetType();
+			RefuseCompilerGeneratedType(runtimeType);
 
 			if (Scalars.IsScalar(runtimeType)) {
 				if (runtimeType == declaredType) {
@@ -89,6 +90,29 @@ namespace Narramancer.Serialization {
 			}
 			WriteBody(structNode, value, runtimeType);
 			return structNode;
+		}
+
+		/// <summary>
+		/// Refuses to write a compiler-generated type — a lambda's closure class, an iterator state machine,
+		/// an anonymous type.
+		/// <para>
+		/// These used to be written, and that was the bug: the ordinal in <c>&lt;&gt;c__DisplayClass22_0</c> is
+		/// assigned by the compiler and moves when the source file is edited, so a save could stop resolving
+		/// its own continuations after an unrelated change. <c>Continuation</c> replaced all of them.
+		/// </para>
+		/// <para>
+		/// Failing here rather than simply not having a carve-out for them: without one, a closure's fields
+		/// are neither public nor <c>[SerializeField]</c>, so it would serialize as an <em>empty</em> object
+		/// and silently lose its captured state. A loud failure is the only version of this that cannot
+		/// quietly reintroduce the bug.
+		/// </para>
+		/// </summary>
+		private static void RefuseCompilerGeneratedType(Type type) {
+			if (type.IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false)) {
+				throw new SerializationException(
+					$"'{type}' is compiler-generated — a lambda closure or similar — and cannot be saved: its name contains an ordinal that changes when the source file is edited. " +
+					$"Use a {nameof(Continuation)} instead, or {nameof(Promise)}.WhenDoneThisSession for a callback that does not need to survive a save.");
+			}
 		}
 
 		private JsonValue WriteAssetHandle(UnityEngine.Object unityObject) {

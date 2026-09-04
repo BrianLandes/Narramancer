@@ -255,11 +255,21 @@ M3 touches them once rather than twice.
     `RunActionVerbForDurationNode`, `RunActionVerbWhileConditionIsTrueNode`. Each self-rescheduling local
     function became a real method reached through `OnContinuation`, and every shared mutable local moved to
     the runner's blackboard. **All 7 characterization tests still pass** — which is what they were written for.
-  - [ ] The choice-callback path (`VisibleChoice` in both printers) — the last 4 of the 18 sites and the only
-    `SerializableAction` users left. UI-coupled and playtest-only, so it lands on its own commit.
-  - [ ] Delete `SerializableActionHelper`; drop it from `Third-Party Notices.txt` and `LICENSING.md`. Then the
-    serializer can drop `$systemType` and the compiler-generated-field carve-out.
-  - [ ] Timer cancellation *(inherited from M2)* and a re-run of the build smoke, since serialization changed.
+  - [x] The choice-callback path *(2026-09-04)* — `VisibleChoice.callback` is a `Continuation` in both
+    printers. `OfferChoicesNode` resolves its next node eagerly; `OfferObjectsAsChoicesNode` was the one site
+    holding real captured state, so each offered element is parked on the blackboard under its own key and the
+    continuation carries only the index. **Needs a playtest** — no EditMode test can drive the choice UI.
+  - [x] `SerializableActionHelper` deleted *(2026-09-04)*, and dropped from `Third-Party Notices.txt` and
+    `LICENSING.md`. Nothing referenced it.
+  - [x] Serializer follow-up *(2026-09-04)* — the compiler-generated-field carve-out is gone, and a closure is
+    now **refused** rather than merely unsupported. Without a carve-out a closure's fields are neither public
+    nor `[SerializeField]`, so it would have serialized as an empty object and lost its captured state
+    silently, which is exactly how this bug class comes back. `$systemType` support was **kept**: nothing
+    needs it today, but it is written, tested, costs nothing, and a blackboard can legitimately hold a `Type`.
+  - [ ] Timer cancellation *(inherited from M2)* — `WaitNode` and the polling nodes leave a
+    `SerializableTimer` behind on cancel. Inert and self-healing, but it wants an owner key on the timer.
+  - [ ] **Playtest the sample scenes**, then re-run the build smoke — serialization changed again.
+    [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
   - Prerequisite moved to M2: the two `GetHashCode()`-based unstable keys.
 
 ---
