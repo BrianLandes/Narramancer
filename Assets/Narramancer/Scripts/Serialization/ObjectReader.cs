@@ -143,6 +143,10 @@ namespace Narramancer.Serialization {
 		}
 
 		private object ReadObject(JsonValue node, Type type, bool hasId, int id) {
+			if (UnityValueTypes.Handles(type)) {
+				return UnityValueTypes.Read(node, type);
+			}
+
 			if (type.IsAbstract || type.IsInterface) {
 				throw new SerializationException($"Cannot reconstruct '{type}' — it is abstract. The save is missing the {NarramancerSerializer.TypeKey} tag naming the concrete type.");
 			}

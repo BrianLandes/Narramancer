@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Narramancer.Serialization.Json;
 using UnityEngine;
 
@@ -172,9 +173,54 @@ namespace Narramancer.Serialization {
 				return;
 			}
 
-			foreach (var field in SerializationFields.Of(runtimeType)) {
+			if (UnityValueTypes.Handles(runtimeType)) {
+				foreach (var member in UnityValueTypes.Write(value, runtimeType).Members) {
+					node.Add(member.Key, member.Value);
+				}
+				return;
+			}
+
+			var fields = SerializationFields.Of(runtimeType);
+			RefuseTypeWithNothingToWrite(runtimeType, fields.Length);
+
+			foreach (var field in fields) {
 				node.Add(field.Name, Write(field.GetValue(value), field.FieldType));
 			}
+		}
+
+		/// <summary>
+		/// Refuses a type that <em>has</em> state but none the field policy can see.
+		/// <para>
+		/// This is the shape of the worst bug this serializer has had. <see cref="UnityEngine.Rect"/> keeps its
+		/// four floats in private fields with no <c>[SerializeField]</c>, so "public or <c>[SerializeField]</c>"
+		/// selected none of them: it wrote <c>{}</c> and read back <c>(0, 0, 0, 0)</c>, with no error, because
+		/// an empty object is valid JSON. A saved sprite rect silently became a zero rect.
+		/// </para>
+		/// <para>
+		/// A type with no instance fields at all is genuinely empty and fine. A type with fields, none of them
+		/// selected, is data being thrown away — so it stops here instead.
+		/// </para>
+		/// </summary>
+		private static void RefuseTypeWithNothingToWrite(Type type, int selectedFieldCount) {
+			if (selectedFieldCount > 0 || !HasState(type)) {
+				return;
+			}
+
+			throw new SerializationException(
+				$"'{type}' has fields but none of them can be saved: they are neither public nor [SerializeField]. " +
+				"It would be written as an empty object and read back as a default value, losing the data silently. " +
+				$"If it is a Unity type, add it to {nameof(UnityValueTypes)}; otherwise mark the fields it needs to keep.");
+		}
+
+		private static bool HasState(Type type) {
+			for (var current = type; current != null && current != typeof(object); current = current.BaseType) {
+				foreach (var field in current.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+					if (!field.IsNotSerialized) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		private void WriteElements(JsonValue node, IEnumerable items, Type elementType) {

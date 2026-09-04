@@ -49,3 +49,9 @@ history clearly shows the inbox being drained.
   just waiting out a timer. Cosmetic but misleading, and it lands on the exact moment the plugin is sold on.
   Likely `TextPrinter` restoring its visual state without knowing the promise it is waiting on is a timer
   rather than a click. (found 2026-09-04, smoke-testing the M3 build)
+
+- [ ] **`SerializeImage` rebuilds a sprite instead of referencing one** — it saves the texture, rect and pivot,
+  then does `Sprite.Create(...)` on load. That makes a *new* sprite every load rather than pointing at the
+  authored asset, so anything comparing sprites by reference breaks, and the rebuilt sprite loses border,
+  pixelsPerUnit and any atlas packing. Now that asset references are GUID-keyed it could just save the sprite
+  itself. Same shape in `SerializeSpriteRenderer`. (found 2026-09-04 while fixing the Rect bug)

@@ -266,6 +266,51 @@ public class SerializerTests {
 		Assert.AreEqual(new Vector3(1f, -2.5f, 3f), result.Position);
 	}
 
+	/// <summary>
+	/// Unity value types that keep their state in private, unattributed fields. The field policy is "public or
+	/// [SerializeField]", which selects none of them — <see cref="Rect"/> serialized as <c>{}</c> and read back
+	/// as <c>(0, 0, 0, 0)</c>, with no error, because an empty object is valid JSON.
+	/// <para>
+	/// That reached a user: the Character Equipment sample saved its sprite rects, got zero rects back, and
+	/// the equipment UI loaded blank. <see cref="Vector3"/> and <see cref="Color"/> only ever worked because
+	/// their fields happen to be public, which is invisible from the outside.
+	/// </para>
+	/// </summary>
+	[Test]
+	public void UnityTypesWithPrivateStateRoundTrip() {
+		Assert.AreEqual(new Rect(10f, 20f, 300f, 400f), RoundTrip(new Scalar<Rect> { Value = new Rect(10f, 20f, 300f, 400f) }).Value);
+		Assert.AreEqual(new RectInt(1, 2, 3, 4), RoundTrip(new Scalar<RectInt> { Value = new RectInt(1, 2, 3, 4) }).Value);
+		Assert.AreEqual(new Bounds(new Vector3(1, 2, 3), new Vector3(4, 5, 6)), RoundTrip(new Scalar<Bounds> { Value = new Bounds(new Vector3(1, 2, 3), new Vector3(4, 5, 6)) }).Value);
+		Assert.AreEqual(new BoundsInt(1, 2, 3, 4, 5, 6), RoundTrip(new Scalar<BoundsInt> { Value = new BoundsInt(1, 2, 3, 4, 5, 6) }).Value);
+		Assert.AreEqual(new Vector2Int(7, 8), RoundTrip(new Scalar<Vector2Int> { Value = new Vector2Int(7, 8) }).Value);
+		Assert.AreEqual(new Vector3Int(7, 8, 9), RoundTrip(new Scalar<Vector3Int> { Value = new Vector3Int(7, 8, 9) }).Value);
+		Assert.AreEqual(5, RoundTrip(new Scalar<LayerMask> { Value = (LayerMask)5 }).Value.value);
+	}
+
+	/// <summary>
+	/// The general guard behind the fix above. A type that has state but none the policy can see is refused,
+	/// so this class of bug cannot be silent again — the failure that made it dangerous was that an empty
+	/// object is perfectly valid JSON and reads back as a default.
+	/// </summary>
+	[Test]
+	public void ATypeWhoseStateCannotBeSeenIsRefused() {
+		var exception = Assert.Throws<SerializationException>(
+			() => serializer.Serialize(new Scalar<Plane> { Value = new Plane(Vector3.up, 2f) }));
+
+		StringAssert.Contains("Plane", exception.Message);
+		StringAssert.Contains("silently", exception.Message);
+	}
+
+	[Test]
+	public void AGenuinelyEmptyTypeIsStillFine() {
+		// The guard keys on "has fields, none selected" rather than "no fields", so a marker class is not
+		// mistaken for data loss.
+		Assert.IsNotNull(RoundTrip(new Marker()));
+	}
+
+	private class Marker {
+	}
+
 	[Test]
 	public void CollectionsRoundTrip() {
 		var original = new Collections {
