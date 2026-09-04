@@ -83,10 +83,10 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **M4 — the `Saveable` refactor.** M1, M2 and M3 are all done as of 2026-09-04, each verified on a real
-  WebGL player. M4 is the **last** of the breaking work before §3 launch, and its headline is the same bug one
-  more time: a scene object's save key is `path + component index`, so renaming an object, reparenting it, or
-  reordering components silently breaks a save. Design:
+- [ ] **M4a — give scene objects a durable identity.** M1, M2 and M3 are all done as of 2026-09-04, each
+  verified on a real WebGL player. M4 is the last of the breaking work before §3, and re-reading its plan
+  against the code split it in two: **M4a is the bug** (path-based save keys), **M4b is the feature** (one
+  component + drivers). Start with M4a. Design and corrections:
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
@@ -242,32 +242,52 @@ M3 touches them once rather than twice.
 
 ---
 
-### M4 — Saveable refactor, then one smoke *(~4–6 evenings)*
+### M4 — Scene-object identity, then the driver refactor *(~5–7 evenings)*
 
-- [ ] **Saveable refactor — one component + drivers** — see
-  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) for the full design.
-  The real reason to do it: the current key is `$"{field} {transform.FullPath()}[{componentIndex}]"`
-  (`SerializableMonoBehaviour.cs:22`), so renaming an object, reparenting it, reordering components, or two
-  same-named siblings **silently breaks the save** — a latent correctness bug in the headline feature, and the
-  single strongest reason this section goes before the launch rather than after.
-  Keep driver `StateType`s as simple serializer-friendly structs so they survive the serializer swap.
-  - [ ] `Saveable` + stable GUID (mint at author time; duplicate-paste detection — copy Unity's open-source
-    `GuidComponent` approach; prefab assets carry no guid)
+Split on 2026-09-04 after re-reading the plan against the code: **M4a is a live correctness bug, M4b is an
+ergonomics feature.** Both belong in the zero-user window, but M4a is independently verifiable and is the half
+that must ship if anything gets time-boxed. Full reasoning in the Reassessment at the top of
+[`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
+
+- [ ] **M4a — guid identity (the correctness bug)** — see the **Reassessment** at the top of
+  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md), which corrects the plan below it.
+  A scene object's save key is `$"{field} {transform.FullPath()}[{componentIndex}]"`
+  (`SerializableMonoBehaviour.cs:22`), so renaming an object, reparenting it, reordering its components, or two
+  same-named siblings **silently break the save**. Same family as every other identity bug this quarter.
+  - [ ] `Saveable` component holding a minted guid — `Reset()`/`OnValidate()` at author time, `Awake()` for
+    runtime spawns, with duplicate-paste detection (copy Unity's open-source `GuidComponent` approach). No guid
+    on the prefab asset; instances mint their own.
+  - [ ] `SerializableMonoBehaviour.Key` becomes `$"{guid}:{key}"` for **all 16 subclasses**, not the 9 in the
+    driver table. ⚠️ The four the plan never named all carry live state: `TextPrinter`, `ChoicePrinter`,
+    `CreateNounForGameObject`, `SetGlobalVariablesMonoBehaviour`. The first two are the text/choice UI that
+    resumes a story after a load — leaving them path-keyed while everything else moves is worse than not
+    starting.
+  - [ ] **`SerializableSpawner` reassigns the guid on re-spawn — in this step, not later.** It currently
+    restores identity with `newSpawn.name = name`, which works *only* because keys contain `FullPath()`. Switch
+    to guids without this and every spawned object's state silently stops loading. The plan files it as
+    deferrable step 5; it is not.
+  - [ ] Migrate `RunActionVerbMonoBehaviour` and `NarramancerScene` with the rest — they hold the in-flight
+    `NodeRunner`s, so their identity matters most. Keep the `NodeRunner`/`Promise` side-table routing, keyed by
+    guid instead of path.
   - [ ] **Fold in the fork's noun-instance init-order fixes** — `[DefaultExecutionOrder(-100)]` and an
     idempotence guard on `CreateNounForGameObject.Start()`, plus lazy creation in
-    `SerializeNounInstanceReference.GetInstance()`. Fixes a real race (anything asking for a noun instance
-    during another component's `Awake`/`Start` gets null today), but it overlaps this task's GUID identity
-    work — fold it in rather than porting it standalone. *(from inbox 2026-08-11 — Tier B8)*
-  - [ ] `IComponentSaver` registry + the 9 built-in drivers (port the `Serialize*` table)
-    - [ ] Port the fork's `SerializeNavMeshAgent` as the **reference driver** — it's the best real-world
-      hand-written save driver in either tree (serializes agent enabled/stoppingDistance plus either a
-      destination `Vector3` or a `Transform` full-path, and resumes a `Promise` on arrival). Ships as a
-      sample/driver, not core. *(from inbox 2026-08-11 — Tier C)*
-  - [ ] `[Save]` behavior-field scan (rename of `[SerializeMonoBehaviourField]`), incl. `NodeRunner`/`Promise`
-    side-table routing under the guid key
-  - [ ] Migrate `RunActionVerbMonoBehaviour` + `NarramancerScene` to the guid model
-  - [ ] Spawned-object guid reassignment in `SerializableSpawner`
-  - [ ] Update the 4 sample scenes; EditMode tests per driver
+    `SerializeNounInstanceReference.GetInstance()`. Fixes a real race, and overlaps this task's identity work.
+    *(from inbox 2026-08-11 — Tier B8)*
+  - [ ] Update the 4 sample scenes; EditMode tests for guid stability across rename/reparent/reorder, duplicate
+    paste, prefab instances, and the spawner round-trip.
+  - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
+    [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
+- [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
+  savers, so adding an object is "drop one component" and supporting a new component type is "write one
+  driver". Real value, but **no urgency of its own** — the correctness half is M4a. Still belongs in the
+  zero-user window, because collapsing 9 components into drivers also changes which keys exist.
+  - [ ] `IComponentSaver` + `ComponentSaverRegistry` + the 9 built-in drivers.
+    - [ ] Port the fork's `SerializeNavMeshAgent` as the **reference driver** — the best real-world save driver
+      in either tree. Ships as a sample, not core. *(from inbox 2026-08-11 — Tier C)*
+  - [ ] `[Save]` behaviour-field scan (rename of `[SerializeMonoBehaviourField]`).
+  - [ ] ⚠️ `SerializeTransform` carries **eight** `[SerializeMonoBehaviourField]`s of tween state. "Tween logic
+    moves to a behaviour component" is the largest single item in the driver table and the plan understates it.
+  - [ ] Auto-detect profile + inspector opt-out.
 - [ ] **Re-run the Task Z build smoke** — **required, not optional**, and this is the one that covers M2, M3
   and M4 together. Repeat the full round-trip (run → suspend → save → close the app → reopen → load → resume)
   on a **WebGL build** at minimum, since it's IL2CPP-only and therefore covers AOT codegen + managed stripping
@@ -387,6 +407,13 @@ Larger builds that each have their own design doc — read the linked handoff be
 
 ## Future / Nice to Have
 
+- [ ] **Let a save point at a scene object** *(unlocked by M4a — record now, build later)*. Scene objects have
+  never had a durable identity, which is why `Blackboard.gameObjects` and `.components` are `[NonSerialized]`:
+  a save simply cannot refer to one. `Saveable`'s guid is the first durable scene identity in the project, so
+  a fourth `IReferenceResolver` id form — `scene:<guid>` alongside `ref:`, `res:` and `<guid>:<localId>` —
+  becomes possible, and those two blackboards could start saving. Also unblocks the parked `Continuation`
+  extensibility idea (a continuation naming a `Saveable` guid plus a method) from
+  [`docs/CONTINUATION_DESIGN.md`](docs/CONTINUATION_DESIGN.md). Judge on demand — nothing needs it today.
 - [ ] **Extract `Narramancer.Core`** — a `noEngineReferences` netstandard2.1 assembly for the serializer,
   domain model, and utilities, with a `dotnet/` mirror for fast Unity-free CI. **Stops at the xNode boundary**
   — nodes derive from xNode's `Node : ScriptableObject` and cannot move; pushing past that boundary *is* the v2

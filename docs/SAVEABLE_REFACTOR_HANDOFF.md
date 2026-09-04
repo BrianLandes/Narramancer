@@ -1,5 +1,95 @@
 # Handoff: single `Saveable` component + drivers (port the v2 model to v1)
 
+> ## Reassessment, 2026-09-04 — read this before the plan below
+>
+> Checked against the code after M1–M3 landed. The **diagnosis is right and the GUID decision is right**; three
+> things about the *shape* of the work are wrong, and one of them would have broken something that works today.
+>
+> ### 1. The migration surface is 16 components, not 9 + a spawner
+>
+> The driver table covers the nine `Serialize*` components. There are **16 `SerializableMonoBehaviour`
+> subclasses**, and four the plan never names carry live save state:
+>
+> | Not in the plan | Overrides | `[SerializeMonoBehaviourField]` |
+> |---|---|---|
+> | `TextPrinter` | 1 | 2 |
+> | `ChoicePrinter` | 2 | 1 |
+> | `CreateNounForGameObject` | 2 | — |
+> | `SetGlobalVariablesMonoBehaviour` | 1 | — |
+>
+> The first two matter most: they are the text/choice UI whose state resumes a story after a load — the exact
+> thing playtested on 2026-09-04. They are not driver candidates (they are behaviour components, so they belong
+> to the `[Save]` half of the design), but they **must move to guid keys with everything else**. Leaving them
+> path-keyed while the rest moves is worse than not starting.
+>
+> ### 2. Spawned-object guid reassignment cannot be step 5 — it is part of the guid switch
+>
+> The plan defers it as "the fiddly case". It is not deferrable. `SerializableSpawner.Deserialize` re-identifies
+> its spawns **by name**:
+>
+> ```csharp
+> var newSpawn = Spawn();
+> newSpawn.name = name;                       // <- this is the identity restore
+> foreach (var mb in newSpawn.GetComponentsInChildren<ISerializableMonoBehaviour>()) mb.Deserialize(story);
+> ```
+>
+> That works *only* because keys contain `transform.FullPath()`, which contains the name. The moment identity
+> becomes a guid, restoring the name restores nothing, and every spawned object's state silently fails to load.
+> So the spawner has to set the **guid** on each re-spawned object in the same change — otherwise spawner
+> support regresses from working to broken.
+>
+> ### 3. Split the correctness fix from the ergonomics — see "Revised build order"
+>
+> Two separable pieces are bundled here, and only one is a bug:
+>
+> - **The key format is a live correctness bug.** Renaming, reparenting or reordering components silently
+>   breaks a save, for all 16 components at once.
+> - **One component + a driver registry is an ergonomics and extensibility feature.** Real value, no urgency
+>   of its own.
+>
+> Both still belong in the zero-user window, because the driver refactor also changes which keys exist. But
+> doing the identity fix **first and on its own** makes it independently verifiable, and it is the half that
+> must ship if anything gets time-boxed. This is the same split that was missed on the Promise registry, where
+> a feature was filed as a correctness fix and sat in the critical path for a month.
+>
+> ### Verified as still accurate
+>
+> `Key()` really is `$"{key} {transform.FullPath()}[{transform.IndexOfComponent(this)}]"`
+> (`SerializableMonoBehaviour.cs:22`) and is the **only** save-identity source — `SaveMenu`/`LoadMenu` also call
+> `FullPath()` but for UI prefab lookup, not saving. The singleton registry, `PrepareStoryForSave`, the
+> scene-reload-on-load orchestration, `StoryInstance.SaveTable`, and the nine `Serialize*` components are all
+> as described.
+>
+> ### Stale references, now corrected
+>
+> The save table is no longer "Odin-serialized" — OdinSerializer was deleted on 2026-09-04. The "Interplay with
+> the Odin removal (Item #1)" section is historical: that work is done, and its advice (keep driver
+> `StateType`s simple) is now simply a requirement rather than a coordination problem. The test net the plan
+> says its tests would "feed" already exists at 493 EditMode tests.
+>
+> ### What this unlocks downstream — record, do not build in M4
+>
+> Scene objects have **never had a durable identity**. `Saveable`'s guid is the first one, and two deferred
+> items become possible once it exists:
+>
+> - A fourth `IReferenceResolver` id form, `scene:<guid>`, which is what
+>   `Blackboard.gameObjects` / `.components` would need to stop being `[NonSerialized]`. A save could then point
+>   at a scene object, which it cannot today.
+> - The `Continuation` extensibility idea parked in `CONTINUATION_DESIGN.md` — a continuation naming a
+>   `Saveable` guid plus a method — which was blocked on exactly this.
+>
+> ### Revised build order
+>
+> **M4a — identity (the bug).** `Saveable` with a minted, duplicate-detected guid; `SerializableMonoBehaviour.Key`
+> switches to `$"{guid}:{key}"` for **all 16** subclasses; `SerializableSpawner` reassigns guids on re-spawn
+> *(not optional — see §2)*; sample scenes updated; EditMode tests for guid stability, duplicate paste, prefab
+> instances, and spawner round-trip. Then the build smoke **and** the patch test, since identity changed.
+>
+> **M4b — ergonomics (the feature).** `IComponentSaver` + registry + the nine drivers; `[Save]` rename;
+> auto-detect profile. `SerializeTransform` alone carries **eight** `[SerializeMonoBehaviourField]`s of tween
+> state, so "tween logic moves to a behaviour component" is the largest single item in the driver table and is
+> understated below.
+
 **Goal:** replace v1's zoo of `Serialize*` MonoBehaviours (one per Unity component type) with **one `Saveable`
 component per object** that drives a **registry of savers ("drivers")**. Adding a GameObject to the save
 system becomes "drop one component"; adding support for a new component type becomes "write one driver," not
