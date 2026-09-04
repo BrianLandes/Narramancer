@@ -43,3 +43,9 @@ history clearly shows the inbox being drained.
   (found 2026-08-11)
 - [ ] **OdinSerializer emits obsolete-platform warnings** (`ArchitectureInfo.cs:67,69,74` — PS3, XBOX360, WiiU).
   Harmless, and moot once Odin is removed — noted only so it isn't re-investigated. (found 2026-08-11)
+
+- [ ] **The continue indicator shows while a `Wait` is running after a load** — reloading into a suspended
+  `WaitNode` displays `TextPrinter`'s continue indicator, so it looks like it wants a click when it is actually
+  just waiting out a timer. Cosmetic but misleading, and it lands on the exact moment the plugin is sold on.
+  Likely `TextPrinter` restoring its visual state without knowing the promise it is waiting on is a timer
+  rather than a click. (found 2026-09-04, smoke-testing the M3 build)

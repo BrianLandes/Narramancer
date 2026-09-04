@@ -319,6 +319,44 @@ public class ContinuationTests {
 
 	#endregion
 
+	/// <summary>
+	/// A pending timer must carry <b>how long is left</b>, not a <c>Time.time</c> deadline.
+	/// <para>
+	/// <c>Time.time</c> counts from when the game started, so it resets on relaunch. A timer saved as "fire at
+	/// t=104" by a session that had been running 100 seconds came back meaning "fire 104 seconds from now" —
+	/// every saved wait delayed by however long the previous session had run, and worse the later you saved.
+	/// Found by smoke-testing a build: a 4-second cancellation took about twelve.
+	/// </para>
+	/// <para>
+	/// This test pins the shape, not the timing. <c>Time.time</c> is 0 in EditMode, so the old absolute form
+	/// would have stored the same number here and no editor test can tell the two apart — the timing itself is
+	/// only observable in a player.
+	/// </para>
+	/// </summary>
+	[Test]
+	public void APendingTimerIsSavedAsRemainingTimeNotADeadline() {
+		var story = GetStory();
+		NarramancerSingleton.Instance.MakeTimer(5f);
+
+		var restored = RoundTrip(story);
+
+		Assert.AreEqual(1, restored.Timers.Count, "the pending timer should survive the save");
+		Assert.AreEqual(5f, restored.Timers[0].secondsRemaining, 0.0001f,
+			"a timer must carry its remaining duration, so nothing has to be rebased against the new session's clock");
+	}
+
+	[Test]
+	public void TimersCountDownAndResolveAtZero() {
+		var story = GetStory();
+		var resolved = false;
+		NarramancerSingleton.Instance.MakeTimer(0f).WhenDoneThisSession(() => resolved = true);
+
+		Pump();
+
+		Assert.IsTrue(resolved);
+		Assert.IsEmpty(story.Timers, "a resolved timer should be dropped");
+	}
+
 	#region Promise mechanics
 
 	[Test]

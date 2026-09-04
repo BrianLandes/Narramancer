@@ -91,9 +91,13 @@ namespace Narramancer {
 
 			foreach (var timer in storyInstance.Timers.ToList()) {
 
-				if (timer.timeStamp <= Time.time) {
-					timer.promise.Resolve();
+				timer.secondsRemaining -= Time.deltaTime;
+
+				if (timer.secondsRemaining <= 0f) {
+					// Removed before resolving, so a callback that starts another timer is not competing with
+					// this one's cleanup.
 					storyInstance.Timers.Remove(timer);
+					timer.promise.Resolve();
 				}
 			}
 		}
@@ -111,7 +115,7 @@ namespace Narramancer {
 		public Promise MakeTimer(float duration, string ownerKey) {
 			var promise = new Promise();
 			storyInstance.Timers.Add(new SerializableTimer() {
-				timeStamp = Time.time + duration,
+				secondsRemaining = duration,
 				promise = promise,
 				ownerKey = ownerKey
 			});
