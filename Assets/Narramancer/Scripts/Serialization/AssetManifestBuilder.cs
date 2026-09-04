@@ -63,6 +63,11 @@ namespace Narramancer.Serialization {
 				}
 			}
 
+			// Sorted by id, not left in discovery order. Sorting the *paths* is not enough: the order of
+			// sub-assets within one file comes from LoadAllAssetsAtPath and is not stable between imports, so a
+			// graph's nodes would shuffle and the baked asset would churn in version control on every rebake for
+			// no actual change.
+			entries.Sort((left, right) => string.CompareOrdinal(left.id, right.id));
 			manifest.SetEntries(entries);
 		}
 

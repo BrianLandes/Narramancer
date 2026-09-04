@@ -10,18 +10,6 @@ Author: Brian Landes (Professional Bad Guys)
 Third-Party Components:
 
 
-Odin Serializer
-
-Name: OdinSerializer
-Author: TeamSirenix
-Description: OdinSerializer is an open-source version of the custom serializer built for and used by Odin - Inspector & Serializer
-Version: 2022.11.9 - 8d9fc0bc
-URL: https://github.com/TeamSirenix/odin-serializer/tree/master
-License: Apache-2.0 license
-License URL: https://github.com/TeamSirenix/odin-serializer/tree/master?tab=Apache-2.0-1-ov-file#readme
-License Summary: A permissive license whose main conditions require preservation of copyright and license notices. Contributors provide an express grant of patent rights. Licensed works, modifications, and larger works may be distributed under different terms and without source code.
-
-
 xNode
 
 Name: xNode

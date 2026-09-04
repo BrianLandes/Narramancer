@@ -1,6 +1,7 @@
 # Odin removal — implementation plan
 
-> **Status:** phases 0–3 done, phase 4 (the swap) next. The replacement serializer exists and round-trips the real
+> **Status:** phases 0–5 done as of 2026-09-04 — **OdinSerializer is deleted.** The patch test and the Odin
+> Inspector coexistence check are the two verifications still outstanding. The replacement serializer exists and round-trips the real
 > story graph; **it is not wired up** — Odin is still what writes and reads saves. The save→load round-trip test net **exists**
 > as of 2026-08-27 (60 EditMode tests, including resume-after-load), so this work is unblocked.
 > **Landmine A is no longer hypothetical — it was proved on 2026-08-27 (§2A).**
@@ -440,13 +441,40 @@ Unity persists rather than one invented per session. 15 further tests; 426 green
 > they establish that the id is made of things that persist. The patch test is what closes that gap. Enumerate every type reachable from
 `StoryInstance` and assert each round-trips. Build the GUID resolver and the baked manifest.
 
-**Phase 4 — the swap** *(~1 evening)*. Replace the two `SerializationUtility` calls. Ship `schemaVersion` in
-the envelope from day one and fail with a clear "incompatible save" message rather than a crash. Replace
-`SaveDataWrapper.objects` (the instanceID list) with GUID handles.
+**Phase 4 — the swap.** ✅ **Done 2026-09-03.** `SaveLoadUtilities` goes through `NarramancerSerializer` +
+`UnityReferenceResolver`. `SaveDataWrapper.objects` — the instanceID list at the centre of §2A — is gone,
+replaced by inline `$asset` handles, and the wrapper carries a `version` so a pre-1.0 save is refused by name
+rather than failing on a type name deep in the reader. §6.3 was decided asymmetric: **write** logs an error
+naming the asset and drops the reference, **read** stays fatal.
 
-**Phase 5 — delete Odin** *(~1 evening)*. Remove `Assets/Narramancer/Plugins/OdinSerializer` (186 files) and
-its asmdef; drop the Odin entry from `Third-Party Notices.txt` and `LICENSING.md`; re-run the Task Z build
-smoke on IL2CPP **and** WebGL, since serialization changed wholesale.
+Two findings on the way through:
+
+- **Both real saves in `Assets/Saves/` round-trip losslessly.** Loaded with Odin, re-serialized with the
+  replacement: 8,891 → 3,067 bytes and 8,889 → 3,189, and both **byte-identical** under
+  `Serialize(Deserialize(Serialize(x)))`. Captured deliberately before the swap invalidated them.
+- **The test suite had been depending on `instanceID` identity.** Tests build nodes and nouns with
+  `CreateInstance`, which yields objects that are not assets and have no persistent id at all; Odin papered
+  over that. They now register with `RuntimeAssetRegistry`.
+
+**Phase 5 — delete Odin.** ✅ **Done 2026-09-04**, after the build smoke passed. 186 `.cs` files (397 with
+`.meta`), the emptied `Assets/Narramancer/Plugins/` folder, the `Third-Party Notices.txt` and `LICENSING.md`
+entries, and the `Narramancer.asmdef` reference — where Odin was the **only** entry, so that array is now
+empty. 441 EditMode tests green afterwards.
+
+### The AOT question, answered
+
+The single largest risk in this whole plan was whether a **pure-reflection serializer survives IL2CPP**, since
+that is exactly where reflection-based serializers break and no EditMode test can see it.
+
+✅ **A WebGL release build passed the full round trip on 2026-09-04** — suspend mid-verb → save → close the tab
+→ reopen → load → resume, no errors, resuming on the right node.
+
+Worth recording precisely, because an earlier version of this plan got it wrong: **Odin was contributing no AOT
+support to this project at all.** It has no build hooks (`IPreprocessBuildWithReport` appears nowhere in it),
+nothing ever called `AOTSupportUtilities.ScanProjectForSerializedTypes` or `GenerateLinkXmlFile`, and no
+`link.xml` exists anywhere in the project. Its AOT machinery is opt-in and was never opted into. So smoke #1
+already ran with no Odin assistance, and deleting Odin changed nothing at build time — which is why the
+originally-planned second smoke cycle was folded into the patch test's build instead of run on its own.
 
 Roughly **7–9 evenings** after the test net, assuming the closure model is kept.
 

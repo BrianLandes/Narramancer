@@ -51,7 +51,6 @@ this repository, which keep their original licenses and may be used under those 
 
 | Component | License | Location |
 |---|---|---|
-| OdinSerializer (TeamSirenix) | Apache-2.0 | `Assets/Narramancer/Plugins/OdinSerializer/` |
 | xNode (Thor Brigsted / Siccity) | MIT | `Assets/Narramancer/Scripts/Plugins/xNode/` |
 | Unity-SerializableDictionary (azixMcAze) | MIT | `Assets/Narramancer/Scripts/Plugins/SerializableDictionary/` |
 | SerializableAction / UndoPro (Seneral) | MIT | `Assets/Narramancer/Scripts/Plugins/SerializableAction/` |
@@ -60,9 +59,6 @@ this repository, which keep their original licenses and may be used under those 
 Full attribution is in [`Assets/Narramancer/Third-Party Notices.txt`](Assets/Narramancer/Third-Party%20Notices.txt).
 All of these are permissive, so bundling and redistributing them inside a commercial product is fine — but they
 are **not ours to relicense**, and their terms are unaffected by anything here.
-
-> Note: OdinSerializer is scheduled for removal (see [`tasks.md`](tasks.md) §2). When it goes, drop its entry
-> from the table above and from the Third-Party Notices.
 
 ## "What if you abandon the project?"
 
