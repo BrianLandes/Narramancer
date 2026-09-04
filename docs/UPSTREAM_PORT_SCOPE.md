@@ -81,15 +81,24 @@ tree.
 **Sequencing:** `subrunners` is a serialized field, so this alters the save format. Land it during
 `tasks.md` §2 while breaking the format is still free — not after.
 
-### B2. Promise registry on the singleton ⚠️ *completes dead code*
+### B2. Promise registry on the singleton — *a new feature, not a cleanup*
 
-`StoryInstance` already has `StringPromiseDictionary promises` with a public accessor — and **nothing in
-this repo reads or writes it.** The fork finishes the job: `NarramancerSingleton.MakePromise()` /
-`BreakPromise()` / `UpdatePromises()` driven from `Update()`, plus `Promise.WithUpdate(Action)`,
-`Promise.removeOnResolve`, and a `Promise.DefaultDone` singleton.
+> ⚠️ **Corrected 2026-09-04.** This entry used to say `StoryInstance.promises` had a public accessor and
+> **nothing in this repo reads or writes it**. That is wrong, and the error propagated into `tasks.md`.
+> `SerializableMonoBehaviour.Serialize`/`Deserialize` route every `[SerializeMonoBehaviourField]` field of
+> type `Promise` through `story.Promises`, exactly as they route `NodeRunner` fields through
+> `story.NodeRunners`. **Two shipped components declare one** — `SerializeAnimation.promise` and
+> `SerializeTransform.positionPromise` — and `SerializeAnimation` uses it to save an in-flight animation
+> (clip, speed, time, wrap mode) alongside its promise and resume it on load with the caller's callback
+> intact. It is neither dead nor empty.
 
-Worth doing for the dead-code cleanup alone. Same sequencing note as B1 — it puts live data into a
-serialized dictionary that currently ships empty.
+What the fork actually adds is new behaviour: `NarramancerSingleton.MakePromise()` / `BreakPromise()` /
+`UpdatePromises()` driven from `Update()`, plus `Promise.WithUpdate(Action)`, `Promise.removeOnResolve`, and a
+`Promise.DefaultDone` singleton — a promise that gets polled every frame, rather than only resolving.
+
+**It carries no save-format change.** The field is already a `StringPromiseDictionary`; putting more entries
+in it does not alter the format. So the "land it while breaking the save is free" argument does not apply, and
+this does not belong in the pre-launch window. Judge it on the merits of the feature.
 
 ### B3. `InequalityNode` — the comparison operators are wrong *(free migration)*
 

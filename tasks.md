@@ -211,14 +211,6 @@ once instead of twice.
     it is inert) and then clears itself. Minor and self-healing, but it wants an owner key on the timer.
     Natural to fold into M3, whose whole job is replacing those callbacks.
 
-- [ ] **Finish the Promise registry** — `StoryInstance.promises` (`StringPromiseDictionary`) exists with a
-  public accessor and **nothing in the repo reads or writes it**. Add
-  `NarramancerSingleton.MakePromise()/BreakPromise()/UpdatePromises()` driven from `Update()`, plus
-  `Promise.WithUpdate(Action)`, `Promise.removeOnResolve`, and `Promise.DefaultDone`. Worth doing for the
-  dead-code cleanup alone; it also puts live data into a serialized dictionary that currently ships empty, so
-  it belongs here rather than after. Pair it with the sub-runner work above.
-  *(from inbox 2026-08-11 — Tier B2)*
-
 **Riders — no dependencies, do them whenever there is a gap:**
 
 - [ ] **Fix `InequalityNode` comparison semantics** — `Comparison.GreaterThan` currently evaluates `>=` and
@@ -401,6 +393,17 @@ Larger builds that each have their own design doc — read the linked handoff be
   — nodes derive from xNode's `Node : ScriptableObject` and cannot move; pushing past that boundary *is* the v2
   rewrite. Genuine "harden for the long haul" value, but no buyer perceives it. **Skip entirely if the 30-day
   measurement comes back flat.**
+- [ ] **Promise registry on the singleton (port-back)** — `NarramancerSingleton.MakePromise()` /
+  `BreakPromise()` / `UpdatePromises()` driven from `Update()`, plus `Promise.WithUpdate(Action)`,
+  `Promise.removeOnResolve`, and a `Promise.DefaultDone` singleton. A promise that is *polled every frame*
+  rather than only resolved.
+  ⚠️ **Moved out of §2 on 2026-09-04, because the reason it was there was false.** The task claimed
+  `StoryInstance.promises` was dead code that "ships empty", so it belonged in the break-the-save-format
+  window. It is neither: `SerializableMonoBehaviour` routes every `[SerializeMonoBehaviourField]` `Promise`
+  field through it, `SerializeAnimation` and `SerializeTransform` both declare one, and `SerializeAnimation`
+  uses it to save an in-flight animation and resume it on load. The field is already a
+  `StringPromiseDictionary`, so adding entries changes no format — **this is a feature with no pre-launch
+  urgency.** Judge it on merit. *(from inbox 2026-08-11 — Tier B2)*
 - [ ] **Tier C generic node adds (port-back)** — `MinFloatNode`/`MaxFloatNode`,
   `GetDistanceBetweenGameObjectsNode`, `RemoveBlackboardVariableNode`/`RemoveInstanceBlackboardVariableNode`
   (the `Blackboard.Remove(key, Type)` API already exists here — the nodes were simply never written, an obvious
