@@ -144,7 +144,7 @@ namespace Narramancer {
 
 			if (furtherChosenBranch != null && furtherChosenBranch == chosenBranch) {
 				NarramancerSingleton.Instance
-					.MakeTimer(refreshDelay)
+					.MakeTimer(refreshDelay, TimerKey(runner))
 					.WhenDone(Continuation.NodeCallbackTo(this, PollCallbackId, runner));
 				return;
 			}
@@ -189,6 +189,7 @@ namespace Narramancer {
 		/// left running.
 		/// </summary>
 		public override void Cancel(NodeRunner runner) {
+			base.Cancel(runner);
 			runner.Blackboard.Set(Blackboard.UniqueKey(this, "Running"), false);
 		}
 		public Node AddBranch() {

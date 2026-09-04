@@ -58,7 +58,7 @@ namespace Narramancer {
 			}
 			else {
 				NarramancerSingleton.Instance
-					.MakeTimer(refreshDelay)
+					.MakeTimer(refreshDelay, TimerKey(runner))
 					.WhenDone(Continuation.NodeCallbackTo(this, PollCallbackId, runner));
 			}
 		}
@@ -70,6 +70,7 @@ namespace Narramancer {
 		}
 
 		public override void Cancel(NodeRunner runner) {
+			base.Cancel(runner);
 			runner.Blackboard.Set(RunningKey, false);
 		}
 	}

@@ -93,7 +93,7 @@ namespace Narramancer {
 				var duration = GetInputValue(runner.Blackboard, nameof(this.duration), this.duration);
 
 				NarramancerSingleton.Instance
-					.MakeTimer(duration)
+					.MakeTimer(duration, TimerKey(runner))
 					.WhenDone(Continuation.NodeCallbackTo(this, TimeoutCallbackId, runner));
 			}
 			else {

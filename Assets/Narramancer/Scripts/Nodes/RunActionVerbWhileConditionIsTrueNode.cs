@@ -59,7 +59,7 @@ namespace Narramancer {
 
 			if (IsConditionTrue(runner)) {
 				NarramancerSingleton.Instance
-					.MakeTimer(refreshDelay)
+					.MakeTimer(refreshDelay, TimerKey(runner))
 					.WhenDone(Continuation.NodeCallbackTo(this, PollCallbackId, runner));
 				return;
 			}

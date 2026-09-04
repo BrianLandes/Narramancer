@@ -17,8 +17,22 @@ namespace Narramancer {
 		public abstract void Run(NodeRunner runner);
 
 
+		/// <summary>
+		/// Identifies timers this node started on behalf of <paramref name="runner"/>. Scoped to both, because
+		/// the same node can legitimately be running on two runners at once — and built from the node's durable
+		/// id, so it survives a save.
+		/// </summary>
+		protected string TimerKey(NodeRunner runner) {
+			return Blackboard.UniqueKey(this, $"Timer {runner?.name}");
+		}
+
+		/// <summary>
+		/// Called when a runner is stopped part-way through this node. The default drops any timers this node
+		/// started for that runner, which is what a node waiting on one needs; override to add cleanup, and
+		/// call <c>base.Cancel(runner)</c>.
+		/// </summary>
 		public virtual void Cancel(NodeRunner runner) {
-			// This area left blank intentionally
+			NarramancerSingleton.Instance?.CancelTimers(TimerKey(runner));
 		}
 
 		/// <summary>

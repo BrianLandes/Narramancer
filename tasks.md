@@ -258,7 +258,9 @@ M3 touches them once rather than twice.
   - [x] The choice-callback path *(2026-09-04)* — `VisibleChoice.callback` is a `Continuation` in both
     printers. `OfferChoicesNode` resolves its next node eagerly; `OfferObjectsAsChoicesNode` was the one site
     holding real captured state, so each offered element is parked on the blackboard under its own key and the
-    continuation carries only the index. **Needs a playtest** — no EditMode test can drive the choice UI.
+    continuation carries only the index. ✅ **Playtested 2026-09-04** in play mode *and* in a build: saved at
+    the offer-choices point, reloaded, and took various branches — all correct. That save-mid-choice case is
+    the one this whole refactor exists for.
   - [x] `SerializableActionHelper` deleted *(2026-09-04)*, and dropped from `Third-Party Notices.txt` and
     `LICENSING.md`. Nothing referenced it.
   - [x] Serializer follow-up *(2026-09-04)* — the compiler-generated-field carve-out is gone, and a closure is
@@ -266,9 +268,17 @@ M3 touches them once rather than twice.
     nor `[SerializeField]`, so it would have serialized as an empty object and lost its captured state
     silently, which is exactly how this bug class comes back. `$systemType` support was **kept**: nothing
     needs it today, but it is written, tested, costs nothing, and a blackboard can legitimately hold a `Type`.
-  - [ ] Timer cancellation *(inherited from M2)* — `WaitNode` and the polling nodes leave a
-    `SerializableTimer` behind on cancel. Inert and self-healing, but it wants an owner key on the timer.
-  - [ ] **Playtest the sample scenes**, then re-run the build smoke — serialization changed again.
+  - [x] Timer cancellation *(2026-09-04)* — `SerializableTimer` carries an `ownerKey`, and the default
+    `RunnableNode.Cancel` drops the timers that node started for that runner.
+    ⚠️ **Not the tidy-up it was filed as.** A continuation names its runner **by key**, and a released
+    runner's name becomes available again — `CreateNodeRunner` only disambiguates against names *currently*
+    in use. So a cancelled node's surviving timer held a continuation that would resume whichever runner was
+    next given that name: an unrelated part of the story resumed out of nowhere, with nothing in the log to
+    explain it. Proved by disabling the fix and watching
+    `AStaleTimerCannotResumeAnUnrelatedRunnerThatReusedTheName` fail (expected 0, got 1) while its control
+    still passed.
+  - [ ] **Re-run the build smoke** — serialization changed again, so it is owed before M4 counts as safe.
+    The choice path is already playtested in a build; this is the full runbook §1 pass.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
   - Prerequisite moved to M2: the two `GetHashCode()`-based unstable keys.
 

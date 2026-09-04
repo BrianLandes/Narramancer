@@ -98,15 +98,35 @@ namespace Narramancer {
 			}
 		}
 
+		/// <summary>Starts a timer nobody owns. It cannot be cancelled, so it will always fire.</summary>
 		public Promise MakeTimer(float duration) {
-			var timeStamp = Time.time + duration;
+			return MakeTimer(duration, null);
+		}
+
+		/// <summary>
+		/// Starts a timer owned by <paramref name="ownerKey"/>, so <see cref="CancelTimers"/> can stop it if
+		/// whatever started it is cancelled first. Nodes should use
+		/// <see cref="RunnableNode.TimerKey(NodeRunner)"/> for the key.
+		/// </summary>
+		public Promise MakeTimer(float duration, string ownerKey) {
 			var promise = new Promise();
-			var timer = new SerializableTimer() {
-				timeStamp = timeStamp,
-				promise = promise
-			};
-			storyInstance.Timers.Add(timer);
+			storyInstance.Timers.Add(new SerializableTimer() {
+				timeStamp = Time.time + duration,
+				promise = promise,
+				ownerKey = ownerKey
+			});
 			return promise;
+		}
+
+		/// <summary>
+		/// Drops every pending timer started under <paramref name="ownerKey"/>, without resolving them — a
+		/// cancelled wait did not finish, so its continuation must not run.
+		/// </summary>
+		public void CancelTimers(string ownerKey) {
+			if (ownerKey.IsNullOrEmpty() || storyInstance == null) {
+				return;
+			}
+			storyInstance.Timers.RemoveAll(timer => string.Equals(timer.ownerKey, ownerKey, StringComparison.Ordinal));
 		}
 
 		#endregion

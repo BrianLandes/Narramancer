@@ -237,6 +237,88 @@ public class ContinuationTests {
 
 	#endregion
 
+	#region Timers are owned, so cancelling stops them
+
+	/// <summary>Sets a node's private input.</summary>
+	private static void SetField(object target, string field, object value) {
+		var info = target.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+		Assert.IsNotNull(info, $"field '{field}' not found on {target.GetType().Name}");
+		info.SetValue(target, value);
+	}
+
+	/// <summary>
+	/// A zero-delay timer fires on the very next pump: Time.time is frozen inside an EditMode frame, so each
+	/// pump is exactly one tick.
+	/// </summary>
+	private static void Pump() => NarramancerSingleton.Instance.OnUpdate();
+
+	private WaitNode Waiter(string name, float duration) {
+		var node = Node<WaitNode>(name);
+		SetField(node, "duration", duration);
+		return node;
+	}
+
+	[Test]
+	public void CancellingAWaitDropsItsTimer() {
+		var story = GetStory();
+		var runner = Runner("main");
+		runner.Start(Waiter("wait", 0f));
+		runner.Update();
+		Assume.That(story.Timers.Count, Is.EqualTo(1), "precondition: the wait started a timer");
+
+		runner.StopAndReset();
+
+		Assert.IsEmpty(story.Timers, "a cancelled wait did not finish, so its timer must not still be pending");
+	}
+
+	[Test]
+	public void AnUncancelledWaitStillFires() {
+		// The control. Without it the test above would pass just as well if timers never ran at all.
+		var story = GetStory();
+		var runner = Runner("main");
+		var after = Node<RecordingTestNode>("after");
+		runner.Start(Waiter("wait", 0f), after);
+		runner.Update();
+
+		Pump();
+		runner.Update();
+
+		Assert.AreEqual(1, after.runCount);
+		Assert.IsEmpty(story.Timers);
+	}
+
+	/// <summary>
+	/// The sharp edge, and the real reason timers need owners. A continuation names its runner <b>by key</b>,
+	/// and a released runner's name becomes available again — <c>CreateNodeRunner</c> only disambiguates
+	/// against names currently in use. So a timer left running by a cancelled node held a continuation that
+	/// would resume whatever runner was next given that name: a completely unrelated part of the story,
+	/// resumed out of nowhere, with nothing in the log to explain it.
+	/// </summary>
+	[Test]
+	public void AStaleTimerCannotResumeAnUnrelatedRunnerThatReusedTheName() {
+		var cancelled = Runner("main");
+		cancelled.Start(Waiter("wait", 0f));
+		cancelled.Update();
+
+		cancelled.StopAndReset();
+		NarramancerSingleton.Instance.ReleaseNodeRunner(cancelled);
+
+		// Something else now takes the name the cancelled runner gave up.
+		var recycled = Runner("main");
+		Assume.That(recycled.name, Is.EqualTo("main"), "precondition: the name really was recycled");
+		var itsWork = Node<RecordingTestNode>("unrelated");
+		recycled.Start(Node<SuspendingTestNode>("suspends"), itsWork);
+		recycled.Update();
+
+		Pump();
+		recycled.Update();
+
+		Assert.AreEqual(0, itsWork.runCount,
+			"the cancelled wait's timer resumed a runner that merely reused its name");
+	}
+
+	#endregion
+
 	#region Promise mechanics
 
 	[Test]
