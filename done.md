@@ -17,6 +17,64 @@ Archive of completed tasks and finished phases, moved here from
 
 ---
 
+## Completed 2026-09-04
+
+- [x] **OdinSerializer removed — replaced by a serializer we own.** The headline feature's engine, rebuilt and
+  proven on a real player build. `Assets/Narramancer/Scripts/Serialization/`, ~1,000 LOC, 441 EditMode tests.
+  Plan and full detail in [`docs/ODIN_REMOVAL_PLAN.md`](docs/ODIN_REMOVAL_PLAN.md).
+
+  **Why:** a buyer who owned Odin Inspector hit a duplicate-assembly conflict on import, because both shipped
+  OdinSerializer — a conversion blocker in exactly the segment most likely to pay. What it turned into was a
+  correctness fix.
+
+  **The bug it fixed.** Odin stored Unity references as `instanceID`s, handed out by a session-global counter
+  in load order — a save recorded *"the 46,810th object loaded this session"* and nothing about the asset, so
+  shipping a patch renumbered everything. Reproduced 2026-08-27: every reference shifted by exactly 44, and
+  the save loaded with **no errors and no nulls**, resuming the story one node early. Silent corruption of the
+  one feature the plugin is sold on. References are now keyed by `<asset GUID>:<local file id>`, a
+  `res:Path/Name` Resources path, or a `ref:<key>` runtime registration.
+
+  **Proven, not argued** *(WebGL release build, 2026-09-04)*:
+  - The round trip through a full app restart — suspend mid-verb → save → close the tab → reopen → load →
+    resume, on the right node.
+  - **The patch test** — save, change the project's assets, rebuild, load that save in the new build. Resumes
+    correctly. This is the check that failed silently before, and no EditMode test can stand in for it: every
+    editor test runs in one session, where a session-local id looks exactly as good as a persistent one.
+
+  *Things that turned out differently than planned, worth keeping:*
+  - **The AOT risk was the big unknown and it evaporated.** A pure-reflection serializer with no `link.xml`,
+    no `[Preserve]`, and managed stripping on Low survives IL2CPP. A second build smoke was planned to isolate
+    whether Odin's AOT preprocessor had been helping — it never ran at all (Odin has no build hooks and its
+    AOT utilities were never called), so that cycle was folded into the patch test's build.
+  - **v2's `TypeResolver` was not ported.** It drags in a whole naming subsystem v1 has no other use for;
+    `TypeNames` (~140 LOC) does the job behind two methods a vocabulary can slot in behind later.
+  - **Two gaps the plan did not predict**, both found by writing the thing: Odin's policy serializes *every*
+    field of a compiler-generated type regardless of visibility, which `Promise.doneCallbacks` depends on —
+    missing it would have compiled, passed most tests, and broken every suspended verb. And NaN/infinity have
+    no JSON representation; Odin wrote bare tokens that are not legal JSON.
+  - **The test suite had been depending on `instanceID` identity.** Tests build nodes and nouns with
+    `CreateInstance`, which yields objects that are not assets and have no persistent id at all. They now
+    register with `RuntimeAssetRegistry`.
+  - **The golden-file check in plan §5.2 was not executable as written** — the 40-save corpus comes from six
+    other projects and its `$eref`s point at assets that do not exist here. It is a format inventory, not a
+    fixture. Substituted: this repo's own two saves, from a live play session, which round-trip
+    **byte-identically** under `Serialize(Deserialize(Serialize(x)))` and shrank 8,891 → 3,067 bytes and
+    8,889 → 3,189.
+
+  *Deliberately NOT done:* the Odin Inspector coexistence check — the actual commercial goal — still needs a
+  copy of Odin Inspector and a scratch project. Left open in `tasks.md`, not blocking.
+
+- [x] **Release runbook written** — [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md). The three checks
+  EditMode structurally cannot make (build smoke, patch test, Odin coexistence), what each failure mode looks
+  like, and which kind of change triggers which.
+
+- [x] **§2 resequenced into four milestones** *(2026-09-03)*. The old order ran `Continuation` and three
+  smaller items *before* the serializer swap, which put 8–11 evenings of work on top of an unmeasured AOT
+  question. Swap first, smoke immediately, batch the rest behind a second smoke. Vindicated: the swap took
+  about a day and the smoke passed first try.
+
+---
+
 ## Completed 2026-08-27
 
 - [x] **`Continuation` design + characterization tests for the polling nodes.** `Tests.Editor` at **366

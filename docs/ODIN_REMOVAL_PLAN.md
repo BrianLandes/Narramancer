@@ -1,10 +1,12 @@
 # Odin removal — implementation plan
 
-> **Status:** phases 0–5 done as of 2026-09-04 — **OdinSerializer is deleted.** The patch test and the Odin
-> Inspector coexistence check are the two verifications still outstanding. The replacement serializer exists and round-trips the real
-> story graph; **it is not wired up** — Odin is still what writes and reads saves. The save→load round-trip test net **exists**
-> as of 2026-08-27 (60 EditMode tests, including resume-after-load), so this work is unblocked.
-> **Landmine A is no longer hypothetical — it was proved on 2026-08-27 (§2A).**
+> **Status:** ✅ **COMPLETE, 2026-09-04.** OdinSerializer is deleted and the replacement is proven on a WebGL
+> player build — both the full-restart round trip and the patch test (save → change the assets → rebuild →
+> load) pass. The only item left is the Odin Inspector coexistence check, which needs a copy of Odin
+> Inspector; it is tracked in `tasks.md` and blocks nothing. Retrospective in [`done.md`](../done.md).
+>
+> The document below is kept as written, as the record of how the work was planned and where the plan was
+> wrong — the phase notes carry the corrections inline.
 >
 > **Scope:** replace the vendored `Narramancer.OdinSerializer` with a serializer we own, porting v2's
 > `NarraSerializer` (`/home/brian/Projects/Narramancer2/Assets/Narramancer/Core/Serialization`, ~1,300 LOC).
