@@ -180,25 +180,23 @@ rebuild, load — which is the one that proves a saved reference survives a renu
 Independent of the serializer, and worth doing before `Continuation`: it restructures the sub-runner nodes
 once instead of twice.
 
-- [ ] **Sub-runner tree + node cancellation** — `NodeRunner` gains a serialized `List<NodeRunner> subRunners`;
-  `StopAndReset()` recurses into them and releases each; the nodes that spawn sub-runners register and
-  deregister them.
-  ⚠️ **The premise below was stale — corrected 2026-09-04.** `RunnableNode.Cancel` is *not* "overridden by
-  nothing": `ParallelNode`, `ChoosePrioritizedBranchNode` and `WaitUntilNode` all override it. The real state
-  of things is worse in one way and smaller in another:
-  - Both existing sub-runner `Cancel`s work by **reconstructing the sub-runner's name from hash codes** and
-    looking it up. After a save/load the name no longer matches: `ChoosePrioritizedBranchNode` null-checks and
-    so silently fails to cancel (leak), `ParallelNode` does not and **throws a `NullReferenceException`**.
-  - Only `RunActionVerbForDurationNode` and `RunActionVerbWhileConditionIsTrueNode` have no `Cancel` at all,
-    plus `WaitNode`, which leaks its timer.
-  - `RunActionVerbForDurationNode` names its sub-runner `$"{name} - {graph.name}"` — stable, but **not
-    unique**, and `CreateNodeRunner` uses `Dictionary.Add`, so two concurrent instances of that node throw.
-    (An earlier note called this naming "the right thing"; it is stable but collides.)
-  Parent ownership fixes all of these at once, because the name stops being how a sub-runner is found.
-  **Do this before `Continuation`** — 3 of the 14 `Promise` sites and **2 of the 4 hard polling nodes** are
-  about sub-runner ownership, so doing it after would restructure them twice. A parent-owned tree may also
-  make the `ReleaseRunner` continuation kind unnecessary.
-  *(from inbox 2026-08-11 — Tier B1)*
+- [x] **Sub-runner tree + node cancellation** *(done 2026-09-04)*. A runner now records the runners it starts,
+  and `StopAndReset()` stops and releases them depth-first — so stopping a runner mid-flight no longer abandons
+  everything below it, still being ticked by `UpdateNodeRunners` against a blackboard nobody owns.
+  `NarramancerSingleton.CreateSubRunner(name, parent)` is the way to start one. 10 tests in `SubRunnerTests`.
+  - **Ownership is recorded, never recomputed.** That was the actual bug: nodes rebuilt a sub-runner's name
+    from hash codes at cancel time, so after a reload `ChoosePrioritizedBranchNode` silently failed to cancel
+    and `ParallelNode` threw a `NullReferenceException`. Both `Cancel` overrides shrank — `ParallelNode`'s is
+    gone entirely, `ChoosePrioritizedBranchNode`'s only clears its own flag now.
+  - **Stored by *name*, not by reference** — and that is not a retreat to the old scheme. A stored name travels
+    with the save and is never recomputed, exactly as the runner table has always been keyed. Holding
+    `NodeRunner` references does not work: `NodeRunner` is also serialized by *Unity*
+    (`NarramancerSingleton.storyInstance` is a `[SerializeField]`), which serializes nested plain classes by
+    value with a depth limit of 10 — the first attempt blew that limit, and would have come back from a domain
+    reload as copies rather than the objects the runner table holds.
+  - **`CreateNodeRunner` no longer throws on a duplicate name.** The table is a dictionary and `Add` throws;
+    `RunActionVerbForDurationNode` names its sub-runner `"{node} - {graph}"`, the same string every time, so
+    two concurrent instances of that node were a crash.
   - [x] **`Blackboard.UniqueKey` no longer keys on the instanceID** *(2026-09-04)*. Bigger than the two sites
     the task claimed: **13 call sites across 9 node types** — loop indices, spawned objects, timers, chosen
     elements. And `UnityEngine.Object.GetHashCode()` **is** `GetInstanceID()` (verified, not assumed), so this
@@ -207,11 +205,12 @@ once instead of twice.
     `Serialization.PersistentId`, which shares the save system's resolver so keys and references cannot
     disagree. An owner with no durable id still works for the session but logs a warning saying it will not
     survive a save.
-  - [ ] **`ParallelNode`'s sub-runner name — folded into the tree work above, not a separate fix.** It builds
-    the name from three `GetHashCode()`s, then *reconstructs* it in `Cancel` to look the runner up — and
-    `NodeRunner` is a plain C# object, so its hash changes every session. After a round trip the lookup misses
-    and `Cancel` calls `StopAndReset()` on the null it got back. Parent-owned sub-runners delete the
-    reconstruction entirely, so the name stops being load-bearing rather than being repaired.
+  - [ ] **Timer cancellation is still owed** — deliberately not done here, because timers are a separate
+    mechanism from sub-runners. `WaitNode` and the two polling nodes leave a `SerializableTimer` in
+    `StoryInstance.Timers` after a cancel; it fires once against a stopped runner (`Resume()` early-returns, so
+    it is inert) and then clears itself. Minor and self-healing, but it wants an owner key on the timer.
+    Natural to fold into M3, whose whole job is replacing those callbacks.
+
 - [ ] **Finish the Promise registry** — `StoryInstance.promises` (`StringPromiseDictionary`) exists with a
   public accessor and **nothing in the repo reads or writes it**. Add
   `NarramancerSingleton.MakePromise()/BreakPromise()/UpdatePromises()` driven from `Update()`, plus

@@ -55,6 +55,78 @@ namespace Narramancer {
 		[SerializeField]
 		public string name = "Node Runner";
 
+		/// <summary>
+		/// Runners this one started and is responsible for — a <see cref="ParallelNode"/>'s branches, or the
+		/// verb a "run for a duration" node is driving. Held as <b>names</b>, which are the keys of the story's
+		/// runner table.
+		/// <para>
+		/// Names rather than references, deliberately, and not a retreat to the old scheme. What was broken
+		/// before was that nodes <em>reconstructed</em> a sub-runner's name from hash codes at cancel time, so
+		/// the name stopped matching the moment the build or the session changed. A name that is <em>stored</em>
+		/// travels with the save and is never recomputed — the same way the runner table itself has always been
+		/// keyed.
+		/// </para>
+		/// <para>
+		/// Holding <c>NodeRunner</c> references instead does not work: this class is also serialized by Unity
+		/// (<c>NarramancerSingleton.storyInstance</c> is a <c>[SerializeField]</c>), and Unity serializes nested
+		/// plain classes <em>by value</em> with a depth limit of 10. A list of runners inside a runner both
+		/// blows that limit and, worse, would come back from a domain reload as copies rather than the same
+		/// objects the runner table holds.
+		/// </para>
+		/// </summary>
+		[SerializeField]
+		private List<string> subRunnerNames = new List<string>();
+
+		#endregion
+
+		#region Sub-runners
+
+		/// <summary>The names of the runners this one started and will stop when it stops.</summary>
+		public IReadOnlyList<string> SubRunnerNames => subRunnerNames;
+
+		/// <summary>Takes ownership of a runner, so stopping this one stops that one too.</summary>
+		public void AddSubRunner(NodeRunner subRunner) {
+			if (subRunner == null || subRunner == this || subRunner.name.IsNullOrEmpty() || subRunnerNames.Contains(subRunner.name)) {
+				return;
+			}
+			subRunnerNames.Add(subRunner.name);
+		}
+
+		/// <summary>Gives up ownership of a runner without stopping it.</summary>
+		public void RemoveSubRunner(NodeRunner subRunner) {
+			if (subRunner != null) {
+				subRunnerNames.Remove(subRunner.name);
+			}
+		}
+
+		/// <summary>The runners this one owns that the story still has. Skips any already released.</summary>
+		public IEnumerable<NodeRunner> GetSubRunners() {
+			var singleton = NarramancerSingleton.Instance;
+			if (singleton == null) {
+				yield break;
+			}
+			foreach (var subRunnerName in subRunnerNames.ToArray()) {
+				var subRunner = singleton.GetNodeRunner(subRunnerName);
+				if (subRunner != null) {
+					yield return subRunner;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Stops and releases every runner below this one, depth first. Called from
+		/// <see cref="StopAndReset"/>: without it, stopping a runner mid-flight abandons everything it
+		/// started, each still ticking against a blackboard nobody owns.
+		/// </summary>
+		private void StopSubRunners() {
+			var singleton = NarramancerSingleton.Instance;
+			foreach (var subRunner in GetSubRunners().ToArray()) {
+				subRunner.StopAndReset();
+				singleton.ReleaseNodeRunner(subRunner);
+			}
+			subRunnerNames.Clear();
+		}
+
 		#endregion
 
 		#region Public Properties
@@ -135,6 +207,12 @@ namespace Narramancer {
 
 		/// <summary> Interrupts the process and resets it to a cleared state. </summary>
 		public void StopAndReset() {
+
+			// Children first, so a sub-runner is never left running against a parent that has already reset.
+			// This is what makes most RunnableNode.Cancel overrides unnecessary: a node no longer has to find
+			// and stop the runners it started, because the runner that owns them does it.
+			StopSubRunners();
+
 			var node = runStatus == RunStatus.Running ? runningNode : lastRunningNode;
 
 			if (TryGetLastNodeEvent(runningNode, out var @event)) {

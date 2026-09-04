@@ -57,8 +57,11 @@ namespace Narramancer {
 			return null;
 		}
 
+		// A label only. Nothing looks the sub-runner up by this name any more — the runner that started it
+		// holds a reference, so the name no longer has to be reconstructible (and this one was not: it was
+		// built from a hash code, which changes when the build does).
 		private string SubRunnerName(NodeRunner runner) {
-			return $"{runner.name} {this.GetHashCode()}";
+			return $"{runner.name} - {name}";
 		}
 
 		public override void Run(NodeRunner runner) {
@@ -70,7 +73,7 @@ namespace Narramancer {
 
 				runner.Suspend();
 
-				var subRunner = NarramancerSingleton.Instance.CreateNodeRunner(SubRunnerName(runner));
+				var subRunner = NarramancerSingleton.Instance.CreateSubRunner(SubRunnerName(runner), runner);
 				subRunner.Blackboard = runner.Blackboard;
 
 				var runningKey = Blackboard.UniqueKey(this, "Running");
@@ -143,21 +146,14 @@ namespace Narramancer {
 			}
 		}
 
+		/// <summary>
+		/// Only this node's own flag needs clearing. Stopping and releasing the sub-runner is
+		/// <see cref="NodeRunner.StopAndReset"/>'s job now that the runner owns it — which also fixes the case
+		/// this used to miss, where after a save/load the name lookup returned null and the sub-runner was
+		/// left running.
+		/// </summary>
 		public override void Cancel(NodeRunner runner) {
-			var runningKey = Blackboard.UniqueKey(this, "Running");
-			var subRunnerStillRunning = runner.Blackboard.GetBool(runningKey);
-
-			if (subRunnerStillRunning) {
-				var subRunner = NarramancerSingleton.Instance.GetNodeRunner(SubRunnerName(runner));
-				if (subRunner != null) {
-					subRunner.StopAndReset();
-					NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-				}
-
-
-				runner.Blackboard.Set(runningKey, false);
-
-			}
+			runner.Blackboard.Set(Blackboard.UniqueKey(this, "Running"), false);
 		}
 		public Node AddBranch() {
 			var position = this.position + new Vector2(300, 0);

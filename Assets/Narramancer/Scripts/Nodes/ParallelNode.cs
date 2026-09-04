@@ -37,8 +37,7 @@ namespace Narramancer {
 
 			foreach (var node in nodes.Reverse()) {
 
-				var subRunnerName = SubRunnerName(node, runner);
-				var subRunner = NarramancerSingleton.Instance.CreateNodeRunner(subRunnerName);
+				var subRunner = NarramancerSingleton.Instance.CreateSubRunner($"{name} - {node.name}", runner);
 				subRunner.Blackboard = runner.Blackboard;
 
 				subRunner.Start(node).WhenDone(() => {
@@ -48,31 +47,9 @@ namespace Narramancer {
 			}
 		}
 
-		private string NameKey(RunnableNode node, NodeRunner runner) {
-			return $"Name {runner.GetHashCode()} {this.GetHashCode()} {node.GetHashCode()}";
-		}
-
-		private string SubRunnerName(RunnableNode node, NodeRunner runner) {
-			var nameKey = NameKey(node, runner);
-			return $"{name} - {graph.name} ({nameKey})";
-		}
-
-		public override void Cancel(NodeRunner runner) {
-
-			var nodes = GetNextNodes();
-
-			if (!nodes.Any()) {
-				return;
-			}
-
-			foreach (var node in nodes.Reverse()) {
-
-				var subRunnerName = SubRunnerName(node, runner);
-				var subRunner = NarramancerSingleton.Instance.GetNodeRunner(subRunnerName);
-				subRunner.StopAndReset();
-				NarramancerSingleton.Instance.ReleaseNodeRunner(subRunner);
-
-			}
-		}
+		// No Cancel override: NodeRunner.StopAndReset stops everything it owns, and this node's branches are
+		// now owned by the runner that started them. The override this replaced rebuilt each sub-runner's name
+		// from three GetHashCode() values and looked it up — after a save/load the name no longer matched, so
+		// the lookup returned null and Cancel threw a NullReferenceException.
 	}
 }

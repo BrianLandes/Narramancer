@@ -129,10 +129,41 @@ namespace Narramancer {
 
 		}
 
+		/// <summary>
+		/// Creates a runner and registers it under <paramref name="name"/>, or the next free variation of it.
+		/// <para>
+		/// The disambiguation matters: the table is a dictionary and <c>Add</c> throws on a duplicate key, so
+		/// two concurrent instances of the same node used to be a crash. <c>RunActionVerbForDurationNode</c>
+		/// names its sub-runner <c>"{node} - {graph}"</c>, which is the same string every time that node runs.
+		/// </para>
+		/// <para>
+		/// The name is a label, not an identity. Nothing looks a runner up by rebuilding its name any more —
+		/// owners hold references (<see cref="NodeRunner.SubRunners"/>).
+		/// </para>
+		/// </summary>
 		public NodeRunner CreateNodeRunner(string name) {
+			var uniqueName = name;
+			var suffix = 2;
+			while (storyInstance.NodeRunners.ContainsKey(uniqueName)) {
+				uniqueName = $"{name} ({suffix})";
+				suffix++;
+			}
+
 			var runner = new NodeRunner();
-			runner.name = name;
-			storyInstance.NodeRunners.Add(name, runner);
+			runner.name = uniqueName;
+			storyInstance.NodeRunners.Add(uniqueName, runner);
+			return runner;
+		}
+
+		/// <summary>
+		/// Creates a runner owned by <paramref name="parent"/>, so stopping the parent stops it too. Use this
+		/// rather than <see cref="CreateNodeRunner"/> for anything a node starts on another runner's behalf.
+		/// </summary>
+		public NodeRunner CreateSubRunner(string name, NodeRunner parent) {
+			var runner = CreateNodeRunner(name);
+			if (parent != null) {
+				parent.AddSubRunner(runner);
+			}
 			return runner;
 		}
 
@@ -147,6 +178,16 @@ namespace Narramancer {
 		}
 
 		public void ReleaseNodeRunner(NodeRunner runner) {
+			if (runner == null) {
+				return;
+			}
+
+			// Detach before removing, or whichever runner owns this one keeps a name the story no longer has —
+			// which would then be saved, and looked up again on the next cancel.
+			foreach (var owner in storyInstance.NodeRunners.Values.ToArray()) {
+				owner.RemoveSubRunner(runner);
+			}
+
 			foreach (var pair in storyInstance.NodeRunners.ToArray()) {
 				if (pair.Value == runner) {
 					storyInstance.NodeRunners.Remove(pair.Key);

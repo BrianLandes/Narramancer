@@ -43,7 +43,7 @@ namespace Narramancer {
 
 					runner.Suspend();
 
-					var subRunner = NarramancerSingleton.Instance.CreateNodeRunner($"{name} - {graph.name}");
+					var subRunner = NarramancerSingleton.Instance.CreateSubRunner($"{name} - {graph.name}", runner);
 					subRunner.Blackboard = runner.Blackboard;
 
 					foreach (var inputPort in DynamicInputs) {
