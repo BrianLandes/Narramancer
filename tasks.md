@@ -289,13 +289,23 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     - ⚠️ It mints on objects that **already had** a `Saveable`, not only ones it adds. A scene instance of a
       prefab inherits the component but not an id — the asset deliberately has none — so "already has a
       Saveable" does not mean "already has an identity". The first version missed this.
+    - ⚠️ It also has to find objects that carry **no saver at all** — a UI `Text` a verb writes into has
+      nothing on it saying "I am saved"; what makes it saved is a `VariableAssignment` pointing at it from
+      elsewhere in the scene. Two versions got this wrong before it worked: the first looked for savers only,
+      the second reflected over each component's own fields and so found only assignments held *directly*.
+      Character Equipment holds its five three levels down (`NarramancerScene.variables` → a list wrapper →
+      the port → the assignment) and the tool called the scene clean. It now iterates the `SerializedObject`,
+      which is Unity's own view of the nesting. `SaveableMigrationTests` covers the shapes; the two nesting
+      tests were confirmed to fail against the old scan.
   - [x] Prefabs migrated *(2026-09-04)* — the three printer canvases (`ChoicePrinter`, `TextAndChoicePrinter`,
     `TextPrinter`) now carry a `Saveable` with **no id**, verified in the asset files. Those are the text and
     choice UI whose state resumes a story after a load.
   - [ ] **Migrate the 4 sample scenes — needs you to run it.** `NarramancerScene` in scenes 1–3, and scene 4
-    has 10 savers (`NarramancerScene`, 6× `RunActionVerbMonoBehaviour`, 3× `SerializeImage`). Not done here
+    has 10 savers (`NarramancerScene`, 6× `RunActionVerbMonoBehaviour`, 3× `SerializeImage`) **plus 5
+    verb-wired objects** the tool only started finding once it looked past one level of nesting. Not done here
     because scene 1 was open with unsaved smoke-test changes; saving it would have baked those in. Open each
-    scene, run `Window/Narramancer/Add Missing Saveables (open scenes)`, save.
+    scene, run `Window/Narramancer/Add Missing Saveables (open scenes)`, save. Scene 4 needs re-running even
+    though it was run before — the five were missed.
   - [x] Round-trip test *(2026-09-04)*, and the build smoke passed on a real player.
   - [x] **A save can now point at a scene object** *(2026-09-04)* — pulled forward from Future because a bug
     report demanded it. `SceneObjectIds` adds a fourth id form, `scene:<guid>` (plus the component type, since

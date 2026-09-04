@@ -131,15 +131,16 @@ namespace Narramancer {
 					continue;
 				}
 
+				var changed = false;
+
 				foreach (var root in scene.GetRootGameObjects()) {
 					foreach (var behaviour in root.GetComponentsInChildren<MonoBehaviour>(true)) {
 						if (behaviour == null) {
 							continue;
 						}
 
-						foreach (var assignment in AssignmentsOn(behaviour)) {
-							var target = assignment?.objectValue;
-							if (target == null || !Serialization.SceneObjectIds.IsSceneObject(target)) {
+						foreach (var target in AssignedObjectsOn(behaviour)) {
+							if (!Serialization.SceneObjectIds.IsSceneObject(target)) {
 								continue;
 							}
 
@@ -152,41 +153,50 @@ namespace Narramancer {
 							if (saveable == null) {
 								saveable = Undo.AddComponent<Saveable>(targetObject);
 								added.Add($"{scene.name}: {Path(targetObject.transform)} (wired to {behaviour.GetType().Name} on {behaviour.gameObject.name})");
+								changed = true;
 							}
 
 							var before = saveable.Guid;
 							if (saveable.EnsureGuid() != before) {
 								minted.Add($"{scene.name}: {Path(targetObject.transform)}");
+								changed = true;
 							}
 							EditorUtility.SetDirty(targetObject);
 						}
 					}
+				}
 
+				if (changed) {
 					EditorSceneManager.MarkSceneDirty(scene);
 				}
 			}
 		}
 
 		/// <summary>
-		/// Every <see cref="VariableAssignment"/> reachable from a component, found by reflection rather than
-		/// by naming the component types that hold them — so a game's own component holding assignments is
-		/// covered too.
+		/// Every object a component assigns to a variable, at whatever depth the assignment is nested.
+		/// <para>
+		/// Asked of Unity through a <see cref="SerializedObject"/> rather than walked by hand. The first version
+		/// of this reflected over the component's own fields looking for a <see cref="VariableAssignment"/> or a
+		/// list of them, and found none in the Character Equipment sample: the assignments there are three levels
+		/// down — <c>NarramancerScene.variables</c> holds a list wrapper, which holds
+		/// <see cref="NarramancerPortWithAssignment"/>, which holds the assignment. A hand-rolled walk has to
+		/// re-derive Unity's rules about which fields it descends into and how deep; iterating the serialized
+		/// data gets nesting, lists, wrappers and base classes for free, and cannot disagree with what Unity
+		/// actually stored.
+		/// </para>
 		/// </summary>
-		private static IEnumerable<VariableAssignment> AssignmentsOn(MonoBehaviour behaviour) {
-			var fields = behaviour.GetType().GetFields(
-				System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-
-			foreach (var field in fields) {
-				if (field.FieldType == typeof(VariableAssignment)) {
-					yield return (VariableAssignment)field.GetValue(behaviour);
-				}
-				else if (typeof(IEnumerable<VariableAssignment>).IsAssignableFrom(field.FieldType)) {
-					var list = (IEnumerable<VariableAssignment>)field.GetValue(behaviour);
-					if (list == null) {
+		public static IEnumerable<Object> AssignedObjectsOn(MonoBehaviour behaviour) {
+			using (var serialized = new SerializedObject(behaviour)) {
+				var property = serialized.GetIterator();
+				while (property.Next(true)) {
+					if (property.propertyType != SerializedPropertyType.Generic
+						|| !string.Equals(property.type, nameof(VariableAssignment), System.StringComparison.Ordinal)) {
 						continue;
 					}
-					foreach (var assignment in list) {
-						yield return assignment;
+
+					var value = property.FindPropertyRelative(nameof(VariableAssignment.objectValue));
+					if (value != null && value.objectReferenceValue != null) {
+						yield return value.objectReferenceValue;
 					}
 				}
 			}
