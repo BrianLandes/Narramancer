@@ -3,7 +3,7 @@
 Checks that **cannot** be automated, and so have to be run by hand before a release. Everything here exists
 because the EditMode suite structurally cannot see it.
 
-> The 441 EditMode tests run in the editor, against the Mono runtime, in a single process. Three things matter
+> The EditMode tests (~520) run in the editor, against the Mono runtime, in a single process. Three things matter
 > to this plugin that none of that can reach: **AOT compilation** (IL2CPP resolves types at build time, not by
 > reflecting at runtime), **managed stripping** (code nothing statically references can be removed from the
 > build), and **identity across processes** (whether a saved reference still means the same asset tomorrow).

@@ -30,33 +30,4 @@ history clearly shows the inbox being drained.
 
 ## Unsorted
 
-- [ ] **Vendored xNode has its own Unity 6 deprecation warnings** — surfaced while fixing ours, out of scope at
-  the time. `NodeEditorUtilities.cs:267,277` (`EndNameEditAction`, `StartNameEditingIfProjectWindowExists` —
-  both want the `EntityId`/`AssetCreationEndAction` overloads) and `NodeEditorWindow.cs:196`
-  (`EditorUtility.InstanceIDToObject` → `EntityIdToObject`). We own the vendored source, so these are fixable;
-  natural to fold into the multi-window xNode work, which already touches `NodeEditorWindow`. (found 2026-08-11)
-- [ ] **`ChooseRankedWeightedActionNode` is not a quick win — size it before scheduling** — looked at it as a
-  candidate and backed off. The single-graph reference cases (`ListFilterNode`, `OfferObjectsAsChoicesNode`)
-  don't transfer cleanly: this node holds a *list* of `RankedWeightedAction`, each with its own effect graph, so
-  `UpdatePorts()` has to build a **union** of every action's graph inputs and decide what happens when two
-  actions expose same-named inputs of different types. That collision rule is a design decision, not a port.
-  (found 2026-08-11)
-- [ ] **OdinSerializer emits obsolete-platform warnings** (`ArchitectureInfo.cs:67,69,74` — PS3, XBOX360, WiiU).
-  Harmless, and moot once Odin is removed — noted only so it isn't re-investigated. (found 2026-08-11)
-
-- [ ] **The continue indicator shows while a `Wait` is running after a load** — reloading into a suspended
-  `WaitNode` displays `TextPrinter`'s continue indicator, so it looks like it wants a click when it is actually
-  just waiting out a timer. Cosmetic but misleading, and it lands on the exact moment the plugin is sold on.
-  Likely `TextPrinter` restoring its visual state without knowing the promise it is waiting on is a timer
-  rather than a click. (found 2026-09-04, smoke-testing the M3 build)
-
-- [ ] **`SerializeImage` rebuilds a sprite instead of referencing one** — it saves the texture, rect and pivot,
-  then does `Sprite.Create(...)` on load. That makes a *new* sprite every load rather than pointing at the
-  authored asset, so anything comparing sprites by reference breaks, and the rebuilt sprite loses border,
-  pixelsPerUnit and any atlas packing. Now that asset references are GUID-keyed it could just save the sprite
-  itself. Same shape in `SerializeSpriteRenderer`. (found 2026-09-04 while fixing the Rect bug)
-
-- [ ] **`Blackboard.Set(key, null)` throws a `NullReferenceException`** — the two-argument overload derives the
-  type from the value, so a null has nothing to derive from and NREs at `Blackboard.cs:442`. The three-argument
-  `Set(key, value, type)` is the one that handles null. Either guard it with a clear message or route it to the
-  typed overload. Pre-existing; found while testing scene references. (found 2026-09-04)
+_Empty. Append new tasks below this line._

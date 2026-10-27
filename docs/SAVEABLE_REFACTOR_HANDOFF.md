@@ -65,7 +65,7 @@
 > The save table is no longer "Odin-serialized" — OdinSerializer was deleted on 2026-09-04. The "Interplay with
 > the Odin removal (Item #1)" section is historical: that work is done, and its advice (keep driver
 > `StateType`s simple) is now simply a requirement rather than a coordination problem. The test net the plan
-> says its tests would "feed" already exists at 493 EditMode tests.
+> says its tests would "feed" already exists (493 EditMode tests at the time; 518 as of 2026-10-27).
 >
 > ### What this unlocks downstream — record, do not build in M4
 >

@@ -15,29 +15,31 @@
 
 ---
 
-## 0. Where things actually stand (verified against the working tree, not the docs)
+## 0. Where things actually stand (re-verified against the code 2026-10-27)
 
-The planning docs were written assuming Phase 0 hadn't started. Several items have since landed. Current truth:
+| Item | State |
+|---|---|
+| Unity 6 upgrade | ✅ Done — `6000.4.12f1`, compiles clean |
+| WebGL save persistence | ✅ Done — `SaveFileSync.jslib` + `SaveFileSync.cs` + the flush in `SaveLoadUtilities.WriteSaveData` |
+| B1 safe wins (TypeCache scanner, `FindObjectsOfType` cleanup) | ✅ Done 2026-08-11 — see `done.md` |
+| B2 test net | ✅ Done — 518 EditMode tests, all passing as of 2026-10-27, incl. suspend → save → load → resume |
+| B3 Odin removal | ✅ Done 2026-09-04 (**M1**) — `NarramancerSerializer`, GUID-keyed references, vendored OdinSerializer deleted. WebGL smoke + patch test passed |
+| Execution-model correctness | ✅ Done 2026-09-04 (**M2**) — sub-runner ownership, durable blackboard keys, owned timers |
+| Serialized closures | ✅ Done 2026-09-04 (**M3**) — `Continuation` record, WebGL smoke passed |
+| B4 Saveable — identity half | 🟡 **M4a, mostly done** — `Saveable` guid, guid-keyed `SerializableMonoBehaviour.Key`, spawner reassignment, `scene:<guid>` references, migration tool. Open items in `tasks.md` |
+| B4 Saveable — driver half | ❌ **M4b, not started** — 9 `Serialize*` components still in place |
+| Odin Inspector coexistence check | ❌ Not run — needs a copy of Odin Inspector |
+| #2 Core extraction | ❌ Not started — gated on the post-launch measurement |
+| #4 Multi-window xNode | ❌ Not started — sized, see §4 B6 |
+| Repo license | ✅ Resolved 2026-08-11 — PolyForm Noncommercial 1.0.0 going forward. See [`../LICENSING.md`](../LICENSING.md) |
+| Listing | Still 0.5.7, still the old positioning. Nothing in §3 has started, and the §1 baseline is not recorded yet |
 
-| Item | What the docs assume | Verified actual state |
-|---|---|---|
-| Unity 6 upgrade | "BLOCKING GATE — not started" | ✅ **Done.** `ProjectVersion.txt` = `6000.4.12f1`; editor open on it; console clean (0 errors, 0 warnings) |
-| WebGL save persistence | Handoff written as a to-do | ✅ **Done.** `Plugins/WebGL/SaveFileSync.jslib` + `Utilities/SaveFileSync.cs` + the flush call at [SaveLoadUtilities.cs:40](../Assets/Narramancer/Scripts/Utilities/SaveLoadUtilities.cs#L40) |
-| #5 TypeCache scanner | To do | ❌ Not started — [AssemblyUtilities.cs:16](../Assets/Narramancer/Scripts/Utilities/AssemblyUtilities.cs#L16) still does `AppDomain.CurrentDomain.GetAssemblies()` |
-| `FindObjectsOfType` cleanup | To do | ❌ Not started — wrapper at [GameObjectExtensions.cs:13](../Assets/Narramancer/Scripts/Extensions/GameObjectExtensions.cs#L13) + 6 direct sites |
-| #3 test net | "one `BlackboardTests.cs`" | ❌ Confirmed — 1 file, 50 lines. No save/load coverage at all |
-| #1 Odin removal | To do | ❌ Not started. **Good news: only 2 call sites** ([SaveLoadUtilities.cs:56](../Assets/Narramancer/Scripts/Utilities/SaveLoadUtilities.cs#L56) and [:82](../Assets/Narramancer/Scripts/Utilities/SaveLoadUtilities.cs#L82)) against 186 vendored files |
-| #2 Core extraction | To do | ❌ Not started |
-| #4 Multi-window xNode | To do, "sizing unknown" | ❌ Not started — **now sized, see §4.4** |
-| Saveable refactor | To do | ❌ Not started — 9 `Serialize*` components + `SerializableSpawner` still in place |
-| Repo license | "open question" | ✅ **Resolved 2026-08-11** — relicensed to PolyForm Noncommercial 1.0.0 going forward; prior Apache-2.0 versions stay Apache-2.0. See [`../LICENSING.md`](../LICENSING.md) |
-| Version | "bump to 1.0.0" | `bundleVersion: 1.0` in ProjectSettings (that's the demo project, not the listing — listing still reads 0.5.7) |
+**Scale of the thing:** ~27k LOC of first-party script (excluding vendored xNode), 156 node types, 78 editor
+scripts, 26 components.
 
-**Scale of the thing:** 25,403 LOC of first-party script (excluding vendored plugins), 156 node types, 77 editor
-scripts, 25 components. Vendored: 186 OdinSerializer files, 37 xNode files.
-
-**What this changes:** the "blocking gate" is already through. The critical path is no longer *make it work on
-Unity 6* — it's **prove it works in a shipped player, then fix the listing.**
+**What this means:** everything risky about the serializer is behind us and verified on a real player. What's
+left before the launch is the rest of M4, one final build smoke covering M2–M4, the Odin Inspector check, and
+then the marketing bundle.
 
 ---
 
@@ -174,7 +176,7 @@ more. Up but no sales → conversion problem; reviews and a free/lite tier are t
 
 Ordered by risk, cheapest and safest first. **Nothing here ships to the store until measurement completes.**
 
-### B1. Safe wins — ship-anytime, zero risk *(~1–2 evenings)*
+### B1. Safe wins — ship-anytime, zero risk ✅ *(done 2026-08-11)*
 These are small enough that they can go out with 1.0.0 if they're done in time, or wait.
 
 - **`FindObjectsOfType` deprecation cleanup.** Fix the wrapper once at
@@ -189,7 +191,7 @@ These are small enough that they can go out with 1.0.0 if they're done in time, 
   already retired it. Note `TypeCache` is editor-only; the runtime paths need to keep working, so this is a
   `#if UNITY_EDITOR` fast path, not a wholesale replacement.
 
-### B2. The test net — **the precondition for everything after it** *(~3–4 evenings)*
+### B2. The test net — **the precondition for everything after it** ✅ *(done 2026-08-27; 518 tests as of 2026-10-27)*
 Currently one 50-line test file. Before any surgery on the save format, lock current behavior down.
 
 Priority order (highest value first):
@@ -206,7 +208,7 @@ wait for B5.
 **Add a build smoke to the runbook**: Task Z (IL2CPP + WebGL round-trip) should be re-run before every release,
 because it's the one thing EditMode tests structurally cannot catch.
 
-### B3. #1 — Remove OdinSerializer *(~4–6 evenings)*
+### B3. #1 — Remove OdinSerializer ✅ *(done 2026-09-04 as M1)*
 Gated behind B2. The reason this matters is concrete and commercial: **a buyer who owns Odin Inspector hits a
 duplicate-assembly conflict**, because both ship OdinSerializer. That's a conversion blocker, not cleanup. It
 also drops an API-compatibility-level constraint and the AOT/IL2CPP risk surface that Task Z exists to probe.
@@ -224,7 +226,7 @@ handles, save envelope, no Reflection.Emit) behind those two calls, then delete 
 Ship a `schemaVersion` in the envelope from day one, and fail with a clear "incompatible save" message rather
 than a crash.
 
-### B4. Saveable refactor — one component + drivers *(~5–7 evenings)*
+### B4. Saveable refactor — one component + drivers 🟡 *(identity half = M4a, mostly done; drivers = M4b, not started)*
 Full design in `SAVEABLE_REFACTOR_HANDOFF.md`. Worth doing, and worth doing **adjacent to B3** since both touch
 the save format and both are free only in the zero-user window.
 
@@ -301,10 +303,10 @@ blocker 1's fix gives you for free). Keying the cache by `(target, window)` is t
 | 0 | ~~**Task Z** — IL2CPP + WebGL save/load round-trip in a built player~~ | B | ✅ **passed 2026-08-11** |
 | 1 | **Record the views/day baseline** | A | do first — unrecoverable once the listing changes |
 | 2 | Check whether the listing Description is populated at all | A | pure diagnostic, exposure-neutral |
-| 3 | B1 safe wins (deprecations + TypeCache) | B | independent warm-up |
-| 4 | **B2 test net** (save/load round-trip first) | B | **precondition for 5–6** |
-| 5 | B3 Odin removal → `NarraSerializer` | B | needs B2 |
-| 6 | B4 Saveable + GUID identity | B | needs B2; do near B3 |
+| 3 | ~~B1 safe wins (deprecations + TypeCache)~~ | B | ✅ done 2026-08-11 |
+| 4 | ~~**B2 test net** (save/load round-trip first)~~ | B | ✅ done 2026-08-27 |
+| 5 | ~~B3 Odin removal → `NarramancerSerializer`~~ | B | ✅ done 2026-09-04 (M1) |
+| 6 | B4 Saveable + GUID identity | B | 🟡 **in progress** — M4a mostly done, M4b not started |
 | 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization |
 | 8 | B6 multi-window xNode | B | independent; optional before launch, don't let it delay 10 |
 | 9 | Record demo video | A | after B4, so inspector footage doesn't go stale |

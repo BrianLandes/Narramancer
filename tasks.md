@@ -83,11 +83,12 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **M4a — give scene objects a durable identity.** M1, M2 and M3 are all done as of 2026-09-04, each
-  verified on a real WebGL player. M4 is the last of the breaking work before §3, and re-reading its plan
-  against the code split it in two: **M4a is the bug** (path-based save keys), **M4b is the feature** (one
-  component + drivers). Start with M4a. Design and corrections:
+- [ ] **Finish M4a — scene objects get a durable identity.** M1, M2 and M3 are all done as of 2026-09-04, each
+  verified on a real WebGL player. M4 is the last of the breaking work before §3, split in two: **M4a is the
+  bug** (path-based save keys), **M4b is the feature** (one component + drivers). M4a is most of the way there —
+  what's left is listed under §2 M4a below, ending in the build smoke + patch test. Design and corrections:
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
+  *Status re-verified against the code 2026-10-27, after a ~7-week gap: 518/518 EditMode tests passing.*
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
   dead code (it is load-bearing), and timer cancellation being cosmetic (it was not). Treat the remaining
@@ -129,8 +130,8 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 438
-EditMode tests, run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 518
+EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
 ### Why this order (resequenced 2026-09-03)
@@ -148,8 +149,8 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **438 passing**
-  EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **518 passing**
+  EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
     covers the data path; `NodeRunnerTests.SuspendedRunnerResumesAfterARoundTrip` covers the headline feature:
@@ -210,11 +211,9 @@ M3 touches them once rather than twice.
     `Serialization.PersistentId`, which shares the save system's resolver so keys and references cannot
     disagree. An owner with no durable id still works for the session but logs a warning saying it will not
     survive a save.
-  - [ ] **Timer cancellation is still owed** — deliberately not done here, because timers are a separate
-    mechanism from sub-runners. `WaitNode` and the two polling nodes leave a `SerializableTimer` in
-    `StoryInstance.Timers` after a cancel; it fires once against a stopped runner (`Resume()` early-returns, so
-    it is inert) and then clears itself. Minor and self-healing, but it wants an owner key on the timer.
-    Natural to fold into M3, whose whole job is replacing those callbacks.
+  - [x] **Timer cancellation** — done in M3 (`eb1851d`): `SerializableTimer.ownerKey` records who started a
+    timer, so cancelling a node removes its timer instead of leaving it to fire against a stopped runner. A
+    follow-up (`1ac410e`) fixed saved timers being anchored to the previous session's clock.
 
 **Riders — both done 2026-09-04:**
 
@@ -271,9 +270,10 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     restores identity with `newSpawn.name = name`, which works *only* because keys contain `FullPath()`. Switch
     to guids without this and every spawned object's state silently stops loading. The plan files it as
     deferrable step 5; it is not.
-  - [ ] Migrate `RunActionVerbMonoBehaviour` and `NarramancerScene` with the rest — they hold the in-flight
-    `NodeRunner`s, so their identity matters most. Keep the `NodeRunner`/`Promise` side-table routing, keyed by
-    guid instead of path.
+  - [ ] **`NarramancerScene` still names its runners by `verb.name`** (`NarramancerScene.cs:71`).
+    `RunActionVerbMonoBehaviour` is already done — it inherits the guid `Key()` and names its runner
+    `Key(nameof(runner))`. `NarramancerScene`'s run-on-start runners are keyed by bare verb name, so two scenes
+    (or a scene and anything else) running the same verb share one runner-table entry.
   - [ ] **Fold in the fork's noun-instance init-order fixes** — `[DefaultExecutionOrder(-100)]` and an
     idempotence guard on `CreateNounForGameObject.Start()`, plus lazy creation in
     `SerializeNounInstanceReference.GetInstance()`. Fixes a real race, and overlaps this task's identity work.
@@ -300,12 +300,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [x] Prefabs migrated *(2026-09-04)* — the three printer canvases (`ChoicePrinter`, `TextAndChoicePrinter`,
     `TextPrinter`) now carry a `Saveable` with **no id**, verified in the asset files. Those are the text and
     choice UI whose state resumes a story after a load.
-  - [ ] **Migrate the 4 sample scenes — needs you to run it.** `NarramancerScene` in scenes 1–3, and scene 4
-    has 10 savers (`NarramancerScene`, 6× `RunActionVerbMonoBehaviour`, 3× `SerializeImage`) **plus 5
-    verb-wired objects** the tool only started finding once it looked past one level of nesting. Not done here
-    because scene 1 was open with unsaved smoke-test changes; saving it would have baked those in. Open each
-    scene, run `Window/Narramancer/Add Missing Saveables (open scenes)`, save. Scene 4 needs re-running even
-    though it was run before — the five were missed.
+  - [~] **Migrate the 4 sample scenes — run, but not committed.** As of 2026-10-27 the working tree has
+    minted `Saveable`s in all four (1 each in scenes 1–3 plus a prefab-instance override in scene 1; 16 in
+    scene 4). **Review before committing:** scene 1's diff also carries RectTransform layout overrides on the
+    printer prefab — possibly the "unsaved smoke-test changes" this task was waiting on — and scene 4 has 16
+    against the 15 expected (10 savers + 5 verb-wired).
   - [x] Round-trip test *(2026-09-04)*, and the build smoke passed on a real player.
   - [x] **A save can now point at a scene object** *(2026-09-04)* — pulled forward from Future because a bug
     report demanded it. `SceneObjectIds` adds a fourth id form, `scene:<guid>` (plus the component type, since
@@ -316,6 +315,8 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
       blackboard, those references were dropped on save, and `SetTextNode` then found null and did nothing —
       labels at their scene defaults, nothing in the log. A scene object that still has no `Saveable` is now
       reported rather than dropped.
+  - [ ] **No test covers `SerializableSpawner` putting guids back on re-spawn** — the riskiest part of M4a,
+    and the one where a regression is silent (every spawned object's state just stops loading).
   - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
@@ -323,6 +324,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   driver". Real value, but **no urgency of its own** — the correctness half is M4a. Still belongs in the
   zero-user window, because collapsing 9 components into drivers also changes which keys exist.
   - [ ] `IComponentSaver` + `ComponentSaverRegistry` + the 9 built-in drivers.
+    - [ ] **`SerializeImage` / `SerializeSpriteRenderer` rebuild a sprite instead of referencing one** — they
+      save texture, rect and pivot, then `Sprite.Create(...)` on load: a *new* sprite every load, losing border,
+      pixelsPerUnit and atlas packing, and breaking anything that compares sprites by reference. Asset
+      references are GUID-keyed now, so the driver can just save the sprite. Changes the save format, so do it
+      as part of the driver rewrite. *(from inbox 2026-10-27)*
     - [ ] Port the fork's `SerializeNavMeshAgent` as the **reference driver** — the best real-world save driver
       in either tree. Ships as a sample, not core. *(from inbox 2026-08-11 — Tier C)*
   - [ ] `[Save]` behaviour-field scan (rename of `[SerializeMonoBehaviourField]`).
@@ -334,12 +340,28 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   on a **WebGL build** at minimum, since it's IL2CPP-only and therefore covers AOT codegen + managed stripping
   in one shot. See `done.md` for why WebGL is the decisive build.
 
+### Pre-launch fixes — small, non-breaking
+
+- [ ] **The continue indicator shows while a `Wait` is running after a load** — reloading into a suspended
+  `WaitNode` displays `TextPrinter`'s continue indicator, so it looks like it wants a click when it is actually
+  waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
+  will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
+  waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
+- [ ] **`Blackboard.Set(key, null)` throws a `NullReferenceException`** — the two-argument overload derives the
+  type from the value (`Blackboard.cs:442`), so a null has nothing to derive from. The three-argument
+  `Set(key, value, type)` handles null. *(from inbox 2026-10-27; found 2026-09-04)*
+- [ ] **Rewrite the shipped `Getting Started.pdf`** — `Assets/Narramancer/Documentation/Getting Started.pdf`
+  ships in the package and was last touched 2024-02-22, before the new serializer and `Saveable`. It almost
+  certainly describes the old `Serialize*` workflow. Do it after M4b settles which components exist.
+
 ---
 
 - [ ] **Multiple xNode editor windows** — non-breaking and independent, so it gates nothing. Room to ride along
   before the launch and give the relaunch a genuinely new feature to tout, but **don't let it delay §3.**
   ~2–3 evenings: four specific pieces of global state to make per-window, plus one known limitation to accept
-  rather than fix. **Read [`docs/V1_ROADMAP.md`](docs/V1_ROADMAP.md) §4/B6 before starting** — it has the
+  rather than fix. Also fix vendored xNode's own Unity 6 deprecation warnings while in there —
+  `NodeEditorUtilities.cs:267,277` (`EndNameEditAction`, `StartNameEditingIfProjectWindowExists`) and
+  `NodeEditorWindow.cs:196` (`InstanceIDToObject` → `EntityIdToObject`). *(from inbox 2026-10-27)* **Read [`docs/V1_ROADMAP.md`](docs/V1_ROADMAP.md) §4/B6 before starting** — it has the
   file:line breakdown.
 
 ### Editor & authoring quality — non-breaking riders
@@ -360,8 +382,12 @@ see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
   *(from inbox 2026-08-11 — Tier B5)*
 - [ ] **`ChooseRankedWeightedActionNode` doesn't forward graph inputs** — missing both `UpdatePorts()` (so the
   node never grows ports for its actions' verb inputs) and `AssignGraphVariableInputs()` (so the chosen effect
-  graph runs with unassigned inputs). Effectively only usable with zero-input action verbs today. Match the
-  pattern already used by `OfferObjectsAsChoicesNode`/`ListFilterNode`. *(from inbox 2026-08-11 — Tier B7)*
+  graph runs with unassigned inputs). Effectively only usable with zero-input action verbs today.
+  ⚠️ **Not a straight port — size it first:** the single-graph reference cases
+  (`OfferObjectsAsChoicesNode`/`ListFilterNode`) don't transfer cleanly, because this node holds a *list* of
+  actions, each with its own effect graph. `UpdatePorts()` has to build the union of their inputs and decide
+  what happens when two expose same-named inputs of different types — a design decision.
+  *(from inbox 2026-08-11 — Tier B7; sizing note from inbox 2026-10-27)*
 - [ ] **Graph editor navigation** — a History dropdown beside Back listing the recently-opened stack, and a
   corrected Back stack (the current one mutates the stack in `OnOpen()` and loses position). Plus live
   `NodeRunner` inspection of `NarramancerSingleton` during play, which fills the two in-code

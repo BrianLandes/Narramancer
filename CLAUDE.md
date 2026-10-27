@@ -39,20 +39,21 @@ The codebase is built around a deliberate metaphor; matching it matters when nam
 
 | Area | Where | Notes |
 |---|---|---|
-| Runtime | `Assets/Narramancer/Scripts/` (`Narramancer.asmdef`) | ~25k LOC first-party |
+| Runtime | `Assets/Narramancer/Scripts/` (`Narramancer.asmdef`) | ~27k LOC first-party |
 | Nodes | `Scripts/Nodes/` | 156 node types, all deriving from xNode's `Node : ScriptableObject` |
-| Editor | `Scripts/Editor/` (`Narramancer.Editor.asmdef`) | 77 scripts, incl. 30+ `[CustomNodeEditor]` classes |
-| Save/load entry points | `Scripts/Utilities/SaveLoadUtilities.cs` | The **only** two serializer call sites (lines 56, 82) |
+| Editor | `Scripts/Editor/` (`Narramancer.Editor.asmdef`) | 78 scripts, incl. 30+ `[CustomNodeEditor]` classes |
+| Serializer | `Scripts/Serialization/` | `NarramancerSerializer` — in-house, reflection-based JSON. Unity objects are saved by durable id (asset GUID, Resources path, runtime registry key, or `scene:<guid>`), never by instanceID |
+| Save/load entry points | `Scripts/Utilities/SaveLoadUtilities.cs` | `SerializePayload` / `DeserializePayload` are the **only** serializer call sites |
 | Save orchestration | `Scripts/Data/NarramancerSingleton.cs` | `PrepareStoryForSave()` / `LoadStory()`; a registry of `ISerializableMonoBehaviour` |
-| Execution | `Scripts/Data/NodeRunner.cs`, `Promise.cs` | Flag-based suspend/resume, not coroutines |
-| Tests | `Assets/Test Suite/Editor/` (`Tests.Editor.asmdef`) | Currently one 50-line file — see `tasks.md` |
+| Scene-object identity | `Scripts/Components/Saveable.cs` | A minted guid per GameObject; every `SerializableMonoBehaviour` keys its state off it |
+| Execution | `Scripts/Data/NodeRunner.cs`, `Promise.cs`, `Continuation` | Flag-based suspend/resume, not coroutines. Never serialize a closure — use a `Continuation` |
+| Tests | `Assets/Test Suite/Editor/` (`Tests.Editor.asmdef`) | ~520 EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`) |
 
-**Vendored dependencies (both are modifiable source, no DLLs):**
+**Vendored dependency (modifiable source, no DLLs):**
 - **xNode** — `Scripts/Plugins/xNode/`. Graph editor + the `Node`/`NodePort` model. Modified in place; changes
   here are expected, not off-limits.
-- **OdinSerializer** — `Plugins/OdinSerializer/` (`Narramancer.OdinSerializer.asmdef`). This is the **free,
-  open-source OdinSerializer**, not paid Odin Inspector. Slated for removal — a buyer who owns Odin Inspector
-  hits a duplicate-assembly conflict.
+- OdinSerializer **was** vendored and was deleted on 2026-09-04 (a buyer who owns Odin Inspector hit a
+  duplicate-assembly conflict). Don't reintroduce it, or any other copy of it.
 
 **The load-bearing constraint:** nodes derive from xNode's `Node : ScriptableObject`, so node logic cannot be
 moved into an engine-agnostic assembly while the project stays on xNode. Any refactor that starts pulling
@@ -69,9 +70,10 @@ nodes out of Unity has drifted into the paused v2 rewrite. The xNode boundary is
 ## Working notes
 
 - **Unity 6000.4.12f1.** The project is already upgraded and compiles clean.
-- **A clean editor compile is not proof the plugin works.** Odin's AOT codegen and the build preprocessors only
-  run during a real player build. Any change touching serialization needs an IL2CPP build + save/load smoke
-  before it can be called done.
+- **A clean editor compile is not proof the plugin works.** IL2CPP AOT compilation, managed stripping and the
+  build preprocessors (e.g. the asset-manifest bake) only run during a real player build. Any change touching
+  serialization needs a WebGL build + save/load smoke before it can be called done — see
+  [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - **There are ~0 users.** Breaking the save format is currently free and will not stay that way. Save-format
   changes are deliberately front-loaded for this reason.
 - Sample scenes live in `Assets/Narramancer/Scenes/` — four of them, and they are part of the shipped package,
