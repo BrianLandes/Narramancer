@@ -1,5 +1,36 @@
 # Handoff: single `Saveable` component + drivers (port the v2 model to v1)
 
+> ## Decisions, 2026-10-27 — M4b is settled; read this, then the Reassessment, then the plan
+>
+> M4a is done in code (identity, spawner reassignment, runner savers, `scene:<guid>` references, and a saved
+> marker so a load leaves alone what the save never saw). Everything below is **M4b only**. Where this section
+> and the plan further down disagree, this section wins.
+>
+> 1. **In scope, before launch.** Not because of the save format — drivers could reuse today's keys — but
+>    because of the public API: once a buyer places `SerializeTransform` in a scene, removing it breaks their
+>    project. The nine `Serialize*` components are deleted, not deprecated.
+> 2. **`Saveable` does not save everything it detects by default.** It is now also added purely for identity
+>    (the migration tool puts it on verb-wired `Text` objects, printers, `NarramancerScene`), and auto-saving
+>    those would quietly change behaviour. The inspector lists detected components with a toggle each: **on**
+>    when a user adds `Saveable` by hand, **off** when the migration tool adds it for identity only.
+> 3. **Tween and animation state go to behaviour components** (`Tweener`, plus the animation equivalent) with
+>    `[Save]` fields, **added on demand** by `TranslateGameObjectNode`, `TweenGameObjectRotationNode` and
+>    `PlayAnimationNode`. Drivers stay stateless.
+> 4. **Registration is explicit:** a fixed list of built-in drivers plus a public
+>    `ComponentSaverRegistry.Register(...)` for third parties. No reflection discovery — a type reached only by
+>    reflection is exactly what IL2CPP stripping removes (`RELEASE_RUNBOOK.md` §1). Revisit with `[Preserve]`
+>    if auto-discovery is ever wanted.
+> 5. **Scope:** drivers for Transform, RectTransform, Active, AudioSource, Image, SpriteRenderer, Text, and
+>    **NavMeshAgent** (ported from the fork's `SerializeNavMeshAgent`; pulled in from post-launch). It must
+>    compile in a project with the built-in AI module disabled. **Not** converted:
+>    `SerializeNounInstanceReference` and `SerializableSpawner` — neither saves component state, and nodes use
+>    both. The full spawn/tombstone delta stays deferred.
+> 6. **Sprites are saved by reference** when they have a durable id, falling back to texture/rect/pivot for
+>    sprites built at runtime.
+>
+> Shipped scenes and prefabs use only two of the nine components (scene 4: one `SerializeTransform`, three
+> `SerializeImage`), so sample migration is small. The work is the node-facing tween/animation split.
+
 > ## Reassessment, 2026-09-04 — read this before the plan below
 >
 > Checked against the code after M1–M3 landed. The **diagnosis is right and the GUID decision is right**; three

@@ -27,7 +27,7 @@
 | Execution-model correctness | ✅ Done 2026-09-04 (**M2**) — sub-runner ownership, durable blackboard keys, owned timers |
 | Serialized closures | ✅ Done 2026-09-04 (**M3**) — `Continuation` record, WebGL smoke passed |
 | B4 Saveable — identity half | 🟡 **M4a, mostly done** — `Saveable` guid, guid-keyed `SerializableMonoBehaviour.Key`, spawner reassignment, `scene:<guid>` references, migration tool. Open items in `tasks.md` |
-| B4 Saveable — driver half | ❌ **M4b, not started** — 9 `Serialize*` components still in place |
+| B4 Saveable — driver half | ❌ **M4b, not started** — confirmed in, pre-launch (2026-10-27); design settled in `SAVEABLE_REFACTOR_HANDOFF.md` |
 | Odin Inspector coexistence check | ❌ Not run — needs a copy of Odin Inspector |
 | #2 Core extraction | ❌ Not started — gated on the post-launch measurement |
 | #4 Multi-window xNode | ❌ Not started — sized, see §4 B6 |

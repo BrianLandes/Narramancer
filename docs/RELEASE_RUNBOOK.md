@@ -19,6 +19,8 @@ considered complete after WebGL — see `done.md`.)
 
 1. Build WebGL and serve it. The asset manifest rebakes automatically —
    `AssetManifestBuilder.BuildPreprocessor` runs on every build.
+   Build Settings starts with `0. Sample Launcher`, so one build covers all four samples: pick one from the
+   launcher, and the **◀ Samples** button in the corner goes back (starting a fresh story).
 2. Run a graph until a verb **suspends** mid-action. A choice prompt or a wait is ideal; the point is to be
    stopped *inside* a verb, not between them.
 3. Save.
@@ -73,7 +75,8 @@ Worth doing directly rather than reasoning about, since it is the entire justifi
 
 ## 4. Sample scenes
 
-The four scenes in `Assets/Narramancer/Scenes/` ship with the package. Open each and confirm it plays. Any
+The four scenes in `Assets/Narramancer/Scenes/` ship with the package. Open each and confirm it plays — in a
+build, through the launcher. Any
 component-level refactor has to update them, and a broken sample is the first thing a new buyer sees.
 
 ---

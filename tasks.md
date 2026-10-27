@@ -310,20 +310,34 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
   savers, so adding an object is "drop one component" and supporting a new component type is "write one
-  driver". Real value, but **no urgency of its own** — the correctness half is M4a. Still belongs in the
-  zero-user window, because collapsing 9 components into drivers also changes which keys exist.
-  - [ ] `IComponentSaver` + `ComponentSaverRegistry` + the 9 built-in drivers.
-    - [ ] **`SerializeImage` / `SerializeSpriteRenderer` rebuild a sprite instead of referencing one** — they
-      save texture, rect and pivot, then `Sprite.Create(...)` on load: a *new* sprite every load, losing border,
-      pixelsPerUnit and atlas packing, and breaking anything that compares sprites by reference. Asset
-      references are GUID-keyed now, so the driver can just save the sprite. Changes the save format, so do it
-      as part of the driver rewrite. *(from inbox 2026-10-27)*
-    - [ ] Port the fork's `SerializeNavMeshAgent` as the **reference driver** — the best real-world save driver
-      in either tree. Ships as a sample, not core. *(from inbox 2026-08-11 — Tier C)*
-  - [ ] `[Save]` behaviour-field scan (rename of `[SerializeMonoBehaviourField]`).
-  - [ ] ⚠️ `SerializeTransform` carries **eight** `[SerializeMonoBehaviourField]`s of tween state. "Tween logic
-    moves to a behaviour component" is the largest single item in the driver table and the plan understates it.
-  - [ ] Auto-detect profile + inspector opt-out.
+  driver". **In, before launch — decided 2026-10-27.** The reason is the *public API*, not the save format:
+  drivers could reuse today's keys, but once a buyer places `SerializeTransform` in a scene, removing it is a
+  breaking change to their project. The demo video and the `Getting Started.pdf` rewrite both wait on it.
+  ~4½–6 evenings. All design decisions are settled — see **Decisions (2026-10-27)** at the top of
+  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md). Build order:
+  - [ ] `IComponentSaver` + `ComponentSaverRegistry` (explicit built-in list + public `Register`, no reflection
+    discovery) + `Saveable` driving them, with an inspector list of detected components and a toggle each.
+  - [ ] Drivers: Transform, RectTransform, Active, AudioSource, Image, SpriteRenderer, Text, **NavMeshAgent**.
+    - [ ] **Sprites are saved by reference** — `SerializeImage` / `SerializeSpriteRenderer` rebuild a sprite with
+      `Sprite.Create(...)` on load: a *new* sprite every load, losing border, pixelsPerUnit and atlas packing,
+      and breaking anything that compares sprites by reference. Save the sprite when it has a durable id; fall
+      back to texture/rect/pivot for sprites built at runtime (save-slot thumbnails). *(from inbox 2026-10-27)*
+    - [ ] **NavMeshAgent driver** — port the fork's `SerializeNavMeshAgent`, the best real-world save driver in
+      either tree. Pulled into M4b on 2026-10-27 (was a post-launch sample). `NavMeshAgent` lives in the
+      built-in AI module, which a project can disable — so it must not break compilation when the module is
+      absent (separate asmdef with a `versionDefines` on `com.unity.modules.ai`, or equivalent).
+      *(from inbox 2026-08-11 — Tier C)*
+  - [ ] **Tween and animation state moves to behaviour components** — `SerializeTransform` carries **eight**
+    `[SerializeMonoBehaviourField]`s of tween state, called by `TranslateGameObjectNode` and
+    `TweenGameObjectRotationNode`; `SerializeAnimation` plays the same role for `PlayAnimationNode`. Move it to a
+    small `Tweener` (and animation equivalent) with `[Save]` fields, **added on demand by the nodes**, which also
+    removes a setup step. The largest single item.
+  - [ ] `[Save]` attribute (rename of `[SerializeMonoBehaviourField]`).
+  - [ ] Migration tool converts `Serialize*` → `Saveable` toggles; migrate scene 4 (1× `SerializeTransform`,
+    3× `SerializeImage` — the only uses in shipped scenes/prefabs). Delete the nine `Serialize*` components.
+  - [ ] Tests, then the build smoke + patch test below.
+  - **Out of scope:** `SerializeNounInstanceReference` and `SerializableSpawner` stay components — neither saves
+    component state, and nodes depend on both.
 - [ ] **Re-run the Task Z build smoke** — **required, not optional**, and this is the one that covers M2, M3
   and M4 together. Repeat the full round-trip (run → suspend → save → close the app → reopen → load → resume)
   on a **WebGL build** at minimum, since it's IL2CPP-only and therefore covers AOT codegen + managed stripping
@@ -336,6 +350,10 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
   will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
   waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
+- [ ] **Decide whether `0. Sample Launcher` ships** — added 2026-10-27 so one build covers all four samples in
+  the release smoke. Lists Build Settings, persists across loads, resets the story on each switch. Probably
+  worth shipping: a buyer gets one build that shows everything. If it ships, give it a look that matches the
+  brand rather than default IMGUI.
 - [ ] **Rewrite the shipped `Getting Started.pdf`** — `Assets/Narramancer/Documentation/Getting Started.pdf`
   ships in the package and was last touched 2024-02-22, before the new serializer and `Saveable`. It almost
   certainly describes the old `Serialize*` workflow. Do it after M4b settles which components exist.
