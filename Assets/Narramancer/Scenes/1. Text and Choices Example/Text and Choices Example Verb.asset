@@ -32,7 +32,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -52,7 +51,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -72,7 +70,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -89,7 +86,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -99,6 +95,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 581
   height: 221
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0
@@ -142,7 +139,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -162,7 +158,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -201,7 +196,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -218,7 +212,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -238,7 +231,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -258,7 +250,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -268,6 +259,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 546
   height: 157
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0
@@ -307,7 +299,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -324,7 +315,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -344,7 +334,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -364,7 +353,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -374,6 +362,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 531
   height: 185
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0
@@ -413,7 +402,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -440,6 +428,7 @@ MonoBehaviour:
     - thenRunNode
     - enabled
     - displayText
+    - toolTip
     values:
     - _fieldName: thisChoice
       _node: {fileID: -2836213188982790046}
@@ -455,7 +444,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -475,7 +463,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -492,7 +479,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -509,7 +495,22 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: toolTip
+      _node: {fileID: -2836213188982790046}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -519,90 +520,11 @@ MonoBehaviour:
   thenRunNode: {fileID: 0}
   enabled: 1
   displayText: Take the Left Path
+  toolTip: 
   customColor:
     activated: 0
     value: {r: 1, g: 1, b: 1, a: 1}
   displayWhenDisabled: 0
---- !u!114 &-610666915042867751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20455aa0c4ee6434793b9a607f7baa21, type: 3}
-  m_Name: Get Instance
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: 1237.0469, y: 863.5918}
-  ports:
-    keys:
-    - noun
-    - instance
-    values:
-    - _fieldName: noun
-      _node: {fileID: -610666915042867751}
-      _typeQualifiedName: Narramancer.NounScriptableObject, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 0
-      _connectionType: 1
-      _typeConstraint: 1
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      _useTriangleHandle: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-    - _fieldName: instance
-      _node: {fileID: -610666915042867751}
-      _typeQualifiedName: Narramancer.NounInstance, Narramancer, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 1
-      _connectionType: 0
-      _typeConstraint: 0
-      _dynamic: 0
-      _sameLine: 0
-      _hideLabel: 0
-      _useTriangleHandle: 0
-      dynamicValueUnityObject: {fileID: 0}
-      dynamicValueBool: 0
-      dynamicValueString: 
-      dynamicValueInt: 0
-      dynamicValueFloat: 0
-  noun: {fileID: 0}
-  instance:
-    displayName: 
-    uid:
-      Value: 196b42d5-fffc-4408-a7d1-c6dfadbe8fb5
-    noun: {fileID: 0}
-    properties: []
-    stats: []
-    relationships: []
-    blackboard:
-      ints:
-        keys: []
-        values: 
-      bools:
-        keys: []
-        values: 
-      floats:
-        keys: []
-        values: []
-      strings:
-        keys: []
-        values: []
-      unityObjects:
-        keys: []
-        values: []
-      objects:
-        keys: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,7 +548,6 @@ MonoBehaviour:
   - {fileID: 7174570701863018112}
   - {fileID: -6599307873402723694}
   - {fileID: 7987809390068218156}
-  - {fileID: -610666915042867751}
   panOffset: {x: -1035.9587, y: -245.25046}
   inputs: []
   outputs: []
@@ -652,6 +573,7 @@ MonoBehaviour:
     - thenRunNode
     - enabled
     - displayText
+    - toolTip
     values:
     - _fieldName: thisChoice
       _node: {fileID: 1287217412670013276}
@@ -667,7 +589,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -687,7 +608,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -704,7 +624,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -721,7 +640,22 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
+    - _fieldName: toolTip
+      _node: {fileID: 1287217412670013276}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -731,6 +665,7 @@ MonoBehaviour:
   thenRunNode: {fileID: 0}
   enabled: 1
   displayText: Take the Right Path
+  toolTip: 
   customColor:
     activated: 0
     value: {r: 1, g: 1, b: 1, a: 1}
@@ -767,7 +702,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -787,7 +721,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -807,7 +740,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -824,7 +756,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -834,6 +765,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 552
   height: 236
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0
@@ -874,7 +806,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -891,7 +822,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -908,7 +838,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -928,7 +857,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -938,6 +866,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 589
   height: 144
+  simpleDisplay: 1
   clearPreviousText: 0
   waitForContinue: 1
   enableRichText: 0
@@ -975,7 +904,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -992,7 +920,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 0
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -1009,7 +936,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -1029,7 +955,6 @@ MonoBehaviour:
       _dynamic: 0
       _sameLine: 0
       _hideLabel: 0
-      _useTriangleHandle: 1
       dynamicValueUnityObject: {fileID: 0}
       dynamicValueBool: 0
       dynamicValueString: 
@@ -1039,6 +964,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 578
   height: 172
+  simpleDisplay: 1
   clearPreviousText: 0
   waitForContinue: 1
   enableRichText: 0

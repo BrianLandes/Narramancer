@@ -439,12 +439,6 @@ MonoBehaviour:
     asset: {fileID: 11400000, guid: da282cba2621ceb4da5e7bf70984f25e, type: 2}
   - id: df62a77842946a349ad3f4a25cf70219:11400000
     asset: {fileID: 11400000, guid: df62a77842946a349ad3f4a25cf70219, type: 2}
-  - id: edd8b4d427a23b8f68de90f5243bc422:-8007839401069389628
-    asset: {fileID: -8007839401069389628, guid: edd8b4d427a23b8f68de90f5243bc422, type: 2}
-  - id: edd8b4d427a23b8f68de90f5243bc422:-8052699096812412196
-    asset: {fileID: -8052699096812412196, guid: edd8b4d427a23b8f68de90f5243bc422, type: 2}
-  - id: edd8b4d427a23b8f68de90f5243bc422:11400000
-    asset: {fileID: 11400000, guid: edd8b4d427a23b8f68de90f5243bc422, type: 2}
   - id: f7484e51ac5102b42940b9b4691d04ab:11400000
     asset: {fileID: 11400000, guid: f7484e51ac5102b42940b9b4691d04ab, type: 2}
   additionalAssets: []

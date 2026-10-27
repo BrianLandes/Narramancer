@@ -457,6 +457,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -484,6 +490,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -509,6 +521,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -742,6 +760,8 @@ MonoBehaviour:
   displayNamePredicate: {fileID: 0}
   useValueVerbForEnabled: 0
   enabledPredicate: {fileID: 0}
+  useToolTip: 0
+  toolTipPredicate: {fileID: 0}
   showIfDisabled: 1
 --- !u!114 &4776062876269169353
 MonoBehaviour:
@@ -782,4 +802,5 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   mustHaveProperties: []
+  mustNotHaveProperties: []
   instances: []

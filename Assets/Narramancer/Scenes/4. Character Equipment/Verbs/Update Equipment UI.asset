@@ -160,6 +160,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -185,6 +191,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -353,6 +365,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -378,6 +396,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -737,6 +761,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -762,6 +792,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -1288,6 +1324,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:

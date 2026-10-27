@@ -115,6 +115,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 300
   height: 80
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0
@@ -256,6 +257,12 @@ MonoBehaviour:
       strings:
         keys: []
         values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
+        keys: []
+        values: []
       unityObjects:
         keys: []
         values: []
@@ -281,6 +288,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -536,6 +549,7 @@ MonoBehaviour:
     - thenRunNode
     - enabled
     - displayText
+    - toolTip
     values:
     - _fieldName: thisChoice
       _node: {fileID: -5473126680721510927}
@@ -607,10 +621,27 @@ MonoBehaviour:
       dynamicValueString: 
       dynamicValueInt: 0
       dynamicValueFloat: 0
+    - _fieldName: toolTip
+      _node: {fileID: -5473126680721510927}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
   thisChoice: {fileID: 0}
   thenRunNode: {fileID: 0}
   enabled: 1
   displayText: Create New Noun
+  toolTip: 
   customColor:
     activated: 0
     value: {r: 1, g: 1, b: 1, a: 1}
@@ -692,6 +723,7 @@ MonoBehaviour:
       dynamicValueInt: 0
       dynamicValueFloat: 0
   mustHaveProperties: []
+  mustNotHaveProperties: []
   instances: []
 --- !u!114 &-4408773414320687283
 MonoBehaviour:
@@ -789,6 +821,7 @@ MonoBehaviour:
     - thenRunNode
     - enabled
     - displayText
+    - toolTip
     values:
     - _fieldName: thisChoice
       _node: {fileID: -2100574797895878916}
@@ -860,10 +893,27 @@ MonoBehaviour:
       dynamicValueString: 
       dynamicValueInt: 0
       dynamicValueFloat: 0
+    - _fieldName: toolTip
+      _node: {fileID: -2100574797895878916}
+      _typeQualifiedName: System.String, mscorlib, Version=4.0.0.0, Culture=neutral,
+        PublicKeyToken=b77a5c561934e089
+      connections: []
+      _direction: 0
+      _connectionType: 1
+      _typeConstraint: 1
+      _dynamic: 0
+      _sameLine: 0
+      _hideLabel: 0
+      dynamicValueUnityObject: {fileID: 0}
+      dynamicValueBool: 0
+      dynamicValueString: 
+      dynamicValueInt: 0
+      dynamicValueFloat: 0
   thisChoice: {fileID: 0}
   thenRunNode: {fileID: 0}
   enabled: 1
   displayText: Destroy Noun
+  toolTip: 
   customColor:
     activated: 0
     value: {r: 1, g: 1, b: 1, a: 1}
@@ -1129,6 +1179,8 @@ MonoBehaviour:
   displayNamePredicate: {fileID: 0}
   useValueVerbForEnabled: 0
   enabledPredicate: {fileID: 0}
+  useToolTip: 0
+  toolTipPredicate: {fileID: 0}
   showIfDisabled: 1
 --- !u!114 &3963393208591951986
 MonoBehaviour:
@@ -1268,6 +1320,12 @@ MonoBehaviour:
         keys: []
         values: []
       strings:
+        keys: []
+        values: []
+      gameObjects:
+        keys: []
+        values: []
+      components:
         keys: []
         values: []
       unityObjects:
@@ -1592,6 +1650,7 @@ MonoBehaviour:
   textPrinter: {fileID: 0}
   width: 300
   height: 80
+  simpleDisplay: 1
   clearPreviousText: 1
   waitForContinue: 1
   enableRichText: 0

@@ -1,7 +1,6 @@
 ﻿<Solution>
-  <Project Path="Narramancer.OdinSerializer.csproj" />
   <Project Path="Narramancer.csproj" />
+  <Project Path="Tests.Editor.csproj" />
   <Project Path="Narramancer.Editor.csproj" />
   <Project Path="XNodeEditor.csproj" />
-  <Project Path="Tests.Editor.csproj" />
 </Solution>

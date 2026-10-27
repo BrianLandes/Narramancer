@@ -9,5 +9,8 @@ EditorBuildSettings:
     path: Assets/Narramancer/Scenes/1. Text and Choices Example/Text and Choices
       Example Scene.unity
     guid: e7502ed328a900f49bf2916cd3553fca
+  - enabled: 0
+    path: Assets/Narramancer/Scenes/4. Character Equipment/Character Equipment Scene.unity
+    guid: 626367c2f5fb9c94a93656165784bd93
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 12e2966de16cdcc43a3ccfbaf7456224, type: 2}
