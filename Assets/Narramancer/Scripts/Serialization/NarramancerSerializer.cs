@@ -58,8 +58,12 @@ namespace Narramancer.Serialization {
 		/// The version stamped into every envelope this serializer writes. Bump it whenever a change would
 		/// make an older save read incorrectly — a save that announces its version can be rejected with a
 		/// clear message or migrated, where an unversioned one can only be misread.
+		/// <para>
+		/// 2 (2026-10-27): components write a saved marker, and the save envelope records the scene, so a load
+		/// can reopen the scene before reading the story. A version-1 save has neither.
+		/// </para>
 		/// </summary>
-		public const int CurrentSchemaVersion = 1;
+		public const int CurrentSchemaVersion = 2;
 
 		private readonly IReferenceResolver references;
 

@@ -152,11 +152,40 @@ namespace Narramancer {
 		/// scene object: the id names the guid, and the object that currently holds it is found here.
 		/// </summary>
 		public static bool TryFind(string guid, out Saveable saveable) {
-			if (!guid.IsNullOrEmpty() && claimed.TryGetValue(guid, out saveable) && saveable != null) {
+			saveable = null;
+			if (guid.IsNullOrEmpty()) {
+				return false;
+			}
+			if (claimed.TryGetValue(guid, out saveable) && saveable != null) {
+				return true;
+			}
+
+			// Claims are made in Awake, and Unity never calls Awake on an object that starts inactive — a hidden
+			// panel, a door not yet opened — so such an object answers to nothing until it is first shown, and a
+			// save pointing at it fails to load. Look for it directly before giving up, claiming what turns up.
+			// Only reached on a miss, so the scan costs nothing on the normal path.
+			ClaimAllInLoadedScenes();
+			if (claimed.TryGetValue(guid, out saveable) && saveable != null) {
 				return true;
 			}
 			saveable = null;
 			return false;
+		}
+
+		private static void ClaimAllInLoadedScenes() {
+			for (var i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++) {
+				var scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+				if (!scene.isLoaded) {
+					continue;
+				}
+				foreach (var root in scene.GetRootGameObjects()) {
+					foreach (var saveable in root.GetComponentsInChildren<Saveable>(true)) {
+						if (saveable.HasGuid && !claimed.ContainsKey(saveable.Guid)) {
+							saveable.Claim();
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>The <see cref="Saveable"/> on this object, or null with an error naming what is missing.</summary>

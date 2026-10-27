@@ -22,8 +22,18 @@ namespace Narramancer {
 		public string data;
 		public string thumbnail;
 
+		/// <summary>
+		/// The build index of the scene the save was made in. Kept out here, beside <see cref="data"/> rather than
+		/// inside it, because a load has to reopen that scene <em>before</em> reading the story: the story can name
+		/// scene objects, and those only resolve once their scene is loaded.
+		/// </summary>
+		public int sceneIndex = -1;
+
 		/// <summary>The format written before 1.0, by OdinSerializer. No longer readable.</summary>
 		public const int OdinVersion = 0;
+
+		/// <summary>The oldest format this build reads. Format 1 predates <see cref="sceneIndex"/> and the saved marker.</summary>
+		public const int MinimumReadableVersion = 2;
 	}
 
 	public static class SaveLoadUtilities {
@@ -107,6 +117,9 @@ namespace Narramancer {
 			wrapper.title = DateTime.Now.ToString("dddd MMMM d yyyy, hh:mm tt");
 
 			wrapper.data = SerializePayload(data);
+			if (data is StoryInstance story) {
+				wrapper.sceneIndex = story.sceneIndex;
+			}
 
 			var thumbnailTexture = Screenshot();
 			wrapper.thumbnail = Convert.ToBase64String(thumbnailTexture.EncodeToJPG());
@@ -127,6 +140,13 @@ namespace Narramancer {
 			return saveGameWrapper;
 		}
 
+		/// <summary>Reads a save file's envelope and checks this build can read it, without reading the story.</summary>
+		public static SaveDataWrapper ReadSaveWrapper(string saveName) {
+			var wrapper = DeserializeWrapper(ReadSaveData(saveName));
+			RequireReadableVersion(wrapper);
+			return wrapper;
+		}
+
 		public static T DeserializeData<T>(string jsonData) {
 			var saveGameWrapper = JsonUtility.FromJson<SaveDataWrapper>(jsonData);
 			RequireReadableVersion(saveGameWrapper);
@@ -138,13 +158,17 @@ namespace Narramancer {
 		/// OdinSerializer payload would surface as a type-resolution failure deep in the reader — true, but no
 		/// help to anyone reading the log.
 		/// </summary>
-		private static void RequireReadableVersion(SaveDataWrapper wrapper) {
+		public static void RequireReadableVersion(SaveDataWrapper wrapper) {
 			if (wrapper == null) {
 				throw new Serialization.SerializationException("The save file could not be read at all — it is not a Narramancer save.");
 			}
 			if (wrapper.version == SaveDataWrapper.OdinVersion) {
 				throw new Serialization.SerializationException(
 					$"'{wrapper.title}' was written by a pre-1.0 version of Narramancer, which used a different save format. It cannot be loaded by this build.");
+			}
+			if (wrapper.version < SaveDataWrapper.MinimumReadableVersion) {
+				throw new Serialization.SerializationException(
+					$"'{wrapper.title}' was written by an earlier pre-release build (save format {wrapper.version}); this build reads formats {SaveDataWrapper.MinimumReadableVersion} to {NarramancerSerializer.CurrentSchemaVersion}.");
 			}
 			if (wrapper.version > NarramancerSerializer.CurrentSchemaVersion) {
 				throw new Serialization.SerializationException(

@@ -6,10 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Narramancer/Scenes/1. Text and Choices Example/Text and Choices
-      Example Scene.unity
+    path: Assets/Narramancer/Scenes/0. Sample Launcher/Sample Launcher.unity
+    guid: 9bde3ebb2ece487da11162df04a4cb6d
+  - enabled: 1
+    path: Assets/Narramancer/Scenes/1. Text and Choices Example/Text and Choices Example Scene.unity
     guid: e7502ed328a900f49bf2916cd3553fca
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Narramancer/Scenes/2. Noun Creation and Destruction/Noun Creation and Destruction.unity
+    guid: 8afaa5dc7bafee6429bd7324cd222b5a
+  - enabled: 1
+    path: Assets/Narramancer/Scenes/3. Adding and Removing Properties/Adding and Removing Properties Scene.unity
+    guid: 7af3994e491e72a4ebe9b65f968fbab8
+  - enabled: 1
     path: Assets/Narramancer/Scenes/4. Character Equipment/Character Equipment Scene.unity
     guid: 626367c2f5fb9c94a93656165784bd93
   m_configObjects:

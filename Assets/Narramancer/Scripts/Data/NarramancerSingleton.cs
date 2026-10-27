@@ -62,15 +62,20 @@ namespace Narramancer {
 		public override void OnGameStart() {
 
 			if (runOnGameStart) {
-				storyInstance = new StoryInstance(Nouns);
+				StartNewStory();
+			}
+		}
 
-				globalVariables.ApplyAssignmentsToBlackboard(storyInstance.Blackboard);
+		/// <summary>Replaces the story with a fresh one, as at game start: global nouns, variables, and run-at-start verbs.</summary>
+		public void StartNewStory() {
+			storyInstance = new StoryInstance(Nouns);
 
-				foreach (var verb in runAtStart.list) {
-					if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
-						var runner = CreateNodeRunner(verb.name);
-						runner.Start(runnableNode);
-					}
+			globalVariables.ApplyAssignmentsToBlackboard(storyInstance.Blackboard);
+
+			foreach (var verb in runAtStart.list) {
+				if (verb.TryGetFirstRunnableNodeAfterRootNode(out var runnableNode)) {
+					var runner = CreateNodeRunner(verb.name);
+					runner.Start(runnableNode);
 				}
 			}
 		}
@@ -353,23 +358,53 @@ namespace Narramancer {
 			storyInstance.SaveTable = null;
 		}
 
-		public void LoadStory(StoryInstance storyInstance) {
+		/// <summary>
+		/// Loads a save: reopens the scene it was made in, <em>then</em> reads the story into it.
+		/// <para>
+		/// The order is the point. A save can name scene objects (<c>scene:&lt;guid&gt;</c>), and those resolve
+		/// only against the scene holding them. This used to read the whole story first and reload the scene
+		/// after, so a scene reference either failed outright — loading from any other scene — or resolved to an
+		/// object of the scene about to be destroyed, leaving the story holding dead references that did nothing.
+		/// </para>
+		/// </summary>
+		public void LoadStory(SaveDataWrapper save) {
+			// Refuse an unreadable save while the player is still where they were, rather than after leaving.
+			SaveLoadUtilities.RequireReadableVersion(save);
+
 			PreUpdateActions += () => {
+				// Nothing ticks while the scene changes: the old story's runners point at objects being destroyed.
 				this.storyInstance = null;
 
-				if (storyInstance.sceneIndex >= 0) {
-					var asyncOperation = SceneManager.LoadSceneAsync(storyInstance.sceneIndex, LoadSceneMode.Single);
-					asyncOperation.completed += _ => {
-						foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
-							monoBehaviour.Deserialize(storyInstance);
-						}
-
-						storyInstance.SaveTable = null;
-						ClearQueryInstancesTable();
-						this.storyInstance = storyInstance;
-					};
+				if (save.sceneIndex < 0) {
+					ApplyLoadedStory(save);
+					return;
 				}
+				var asyncOperation = SceneManager.LoadSceneAsync(save.sceneIndex, LoadSceneMode.Single);
+				asyncOperation.completed += _ => ApplyLoadedStory(save);
 			};
+		}
+
+		private void ApplyLoadedStory(SaveDataWrapper save) {
+			StoryInstance story;
+			try {
+				story = SaveLoadUtilities.DeserializePayload<StoryInstance>(save.data);
+			}
+			catch (Exception exception) {
+				// The scene has already been left by now, so there is no going back to where the player was. A
+				// fresh start of the saved scene is the least-bad place to land, and far better than a null story.
+				Debug.LogException(exception);
+				Debug.LogError($"'{save.title}' could not be loaded, so its scene starts fresh instead.");
+				StartNewStory();
+				return;
+			}
+
+			foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
+				monoBehaviour.Deserialize(story);
+			}
+
+			story.SaveTable = null;
+			ClearQueryInstancesTable();
+			this.storyInstance = story;
 		}
 
 	}

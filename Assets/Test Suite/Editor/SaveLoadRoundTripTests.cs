@@ -239,6 +239,43 @@ public class SaveLoadRoundTripTests {
 		StringAssert.Contains("newer version", exception.Message);
 	}
 
+	/// <summary>
+	/// Format 1 has no saved markers and no scene index on the envelope, so it would load as "nothing was saved
+	/// for anything" — every component at its scene defaults, with no error. Refuse it by name instead.
+	/// </summary>
+	[Test]
+	public void AFormatOneSaveIsRejectedRatherThanLoadedAsEmpty() {
+		var formatOne = "{\"version\":1,\"title\":\"Early\",\"data\":\"{}\",\"thumbnail\":\"\"}";
+
+		var exception = Assert.Throws<Narramancer.Serialization.SerializationException>(
+			() => SaveLoadUtilities.DeserializeData<StoryInstance>(formatOne));
+
+		StringAssert.Contains("Early", exception.Message);
+		StringAssert.Contains("pre-release", exception.Message);
+	}
+
+	/// <summary>
+	/// Loading reopens the save's scene before reading the story, so an unreadable save has to be refused up
+	/// front — while the player is still where they were — not after the scene has already been left.
+	/// </summary>
+	[Test]
+	public void LoadingAnUnreadableSaveFailsBeforeLeavingTheScene() {
+		var formatOne = SaveLoadUtilities.DeserializeWrapper(
+			"{\"version\":1,\"title\":\"Early\",\"data\":\"{}\",\"thumbnail\":\"\",\"sceneIndex\":0}");
+
+		Assert.Throws<Narramancer.Serialization.SerializationException>(
+			() => NarramancerSingleton.Instance.LoadStory(formatOne),
+			"the refusal must happen synchronously, before any scene load is queued");
+	}
+
+	/// <summary>An envelope written before the scene index existed reads as "no scene", not as scene 0.</summary>
+	[Test]
+	public void AMissingSceneIndexReadsAsNone() {
+		var wrapper = SaveLoadUtilities.DeserializeWrapper("{\"version\":2,\"title\":\"t\",\"data\":\"{}\",\"thumbnail\":\"\"}");
+
+		Assert.AreEqual(-1, wrapper.sceneIndex);
+	}
+
 	#endregion
 
 	#region Unity asset references

@@ -90,7 +90,7 @@ cost nothing and don't make the product any more purchasable.
   build smoke + patch test. Design and corrections:
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
   *Re-verified against the code 2026-10-27 after a ~7-week gap; the remaining code items landed the same day
-  (see `done.md`). 530/530 EditMode tests passing.*
+  (see `done.md`). 534/534 EditMode tests passing.*
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
   dead code (it is load-bearing), and timer cancellation being cosmetic (it was not). Treat the remaining
@@ -132,7 +132,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 530
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 534
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -151,7 +151,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **530 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **534 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -336,6 +336,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [ ] Migration tool converts `Serialize*` → `Saveable` toggles; migrate scene 4 (1× `SerializeTransform`,
     3× `SerializeImage` — the only uses in shipped scenes/prefabs). Delete the nine `Serialize*` components.
   - [ ] Tests, then the build smoke + patch test below.
+  - [ ] ⚠️ **A saver on an object that starts inactive is never saved or loaded.** `SerializableMonoBehaviour`
+    registers with the singleton in `Awake`, which Unity never calls on an inactive object — so a hidden panel
+    with a `SerializeActive` (whose whole job is active state) is invisible to the save until first shown.
+    Same root cause as the inactive-claim bug fixed 2026-10-27; `Saveable` as the single registrant is the
+    natural place to fix it — register from a scene scan on load, not from `Awake`.
   - **Out of scope:** `SerializeNounInstanceReference` and `SerializableSpawner` stay components — neither saves
     component state, and nodes depend on both.
 - [ ] **Re-run the Task Z build smoke** — **required, not optional**, and this is the one that covers M2, M3

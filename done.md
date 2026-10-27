@@ -19,6 +19,24 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-10-27
 
+- [x] **Loading a save that points at a scene object failed in a real build** — found in the 2026-10-27 WebGL
+  smoke, scene 4: `The save refers to the asset 'scene:…' … which could not be found`. Two causes, both fixed:
+  - **Wrong order.** `LoadMenu` deserialized the whole story, *then* `LoadStory` reloaded the scene. Scene
+    references resolve only against the scene holding them, so loading from any other scene threw, and loading
+    from the same scene was worse: references resolved to the objects about to be destroyed, and the story
+    held dead references that silently did nothing. The envelope now records `sceneIndex`, and
+    `LoadStory(SaveDataWrapper)` reopens the scene first and reads the story after. The version check still
+    runs before leaving the scene; a payload that fails after that lands on a fresh start of the saved scene
+    (`StartNewStory`) instead of a null story. `LoadStory(StoryInstance)` is gone — it could not be made safe.
+  - **Inactive objects never claimed their guid.** Claims happen in `Awake`, which Unity never calls on an
+    object that starts inactive. `Saveable.TryFind` now scans loaded scenes, inactive objects included, on a
+    miss. `AReferenceToAnObjectThatNeverWokeStillResolves` fails with the build's exact error without it.
+  - Save format → **2**; format 1 is refused by name rather than loading as "nothing saved".
+  - The EditMode tests passed throughout because they resolve references in one live session — the class of
+    bug the runbook says only a build catches.
+- [x] **`0. Sample Launcher`** — one build covers all four samples: lists Build Settings, persists across
+  loads, **◀ Samples** goes back, and each switch starts a fresh story (`StartNewStory`).
+
 - [x] **A load no longer resets — or crashes on — a component the save knew nothing about.** Found while
   proving the new spawner tests could fail: with no saved entry, `SerializeTransform` threw a
   `NullReferenceException`, which inside `LoadStory`'s loop **abandoned the load for every component after
@@ -50,7 +68,7 @@ Archive of completed tasks and finished phases, moved here from
 - [x] **Test coverage for the scene components** — `SceneComponentSaveTests` (12) plus 3 in `BlackboardTests`:
   the spawner putting guids back on re-spawn (one and two spawns), runner identity for `NarramancerScene` and
   `RunActionVerbMonoBehaviour`, missing-state handling, printer keys, noun init order. Each fix was reverted
-  individually and its test seen to fail with the original symptom. 530/530 passing.
+  individually and its test seen to fail with the original symptom. 530/530 passing (534 after the load-order fix above).
 
 ## Completed 2026-09-04
 

@@ -292,6 +292,29 @@ public class SaveableIdentityTests {
 	}
 
 	/// <summary>
+	/// Found in the 2026-10-27 WebGL build: a save pointing at a scene object refused to load because the object
+	/// "could not be found". Claims are made in <c>Awake</c>, and Unity never calls <c>Awake</c> on an object
+	/// that starts inactive, so a freshly loaded scene's hidden objects answered to nothing. Clearing the claims
+	/// after saving stands in for that fresh load.
+	/// </summary>
+	[Test]
+	public void AReferenceToAnObjectThatNeverWokeStillResolves() {
+		var saveable = Object_("Hidden Panel");
+		saveable.gameObject.SetActive(false);
+		var story = new StoryInstance();
+		story.Blackboard.Set("panel", saveable.gameObject);
+
+		var serializer = new NarramancerSerializer(new UnityReferenceResolver(null));
+		var json = serializer.Serialize(story);
+		Saveable.ClearClaims();
+
+		var restored = serializer.Deserialize<StoryInstance>(json);
+
+		Assert.AreSame(saveable.gameObject, restored.Blackboard.Get<GameObject>("panel"),
+			"an inactive object has never claimed its guid, and must still be found");
+	}
+
+	/// <summary>
 	/// A scene object with no <see cref="Saveable"/> still cannot be named — and now says so, instead of the
 	/// reference quietly disappearing.
 	/// </summary>

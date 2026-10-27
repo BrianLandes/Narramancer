@@ -73,9 +73,10 @@ namespace Narramancer {
 		}
 		public void Load(string saveName) {
 
-			var story = SaveLoadUtilities.ReadAndDeserializeSaveData<StoryInstance>(saveName);
+			// The envelope only: the story is read after its scene reopens. See NarramancerSingleton.LoadStory.
+			var save = SaveLoadUtilities.ReadSaveWrapper(saveName);
 
-			NarramancerSingleton.Instance.LoadStory(story);
+			NarramancerSingleton.Instance.LoadStory(save);
 		}
 
 
