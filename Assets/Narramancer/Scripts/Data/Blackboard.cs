@@ -439,6 +439,18 @@ namespace Narramancer {
 		#region Complex Set and Get
 
 		public void Set(string key, object value) {
+			if (value == null) {
+				// A null carries no type, so there is no telling which table it belongs in — this used to be a
+				// NullReferenceException on value.GetType(), reachable from any unconnected object input. Clear
+				// the key from every table a reference can live in instead: whatever type it is read back as, it
+				// reads back as nothing. Use Set(key, null, type) to record a null under one specific type.
+				RemoveGameObject(key);
+				RemoveComponent(key);
+				RemoveUnityObject(key);
+				RemoveString(key);
+				RemoveObject(key);
+				return;
+			}
 			var type = value.GetType();
 			Set(key, value, type);
 		}
@@ -553,7 +565,8 @@ namespace Narramancer {
 				RemoveUnityObject(key);
 			}
 			else
-			if (typeof(int).IsAssignableFrom(type)) {
+			if (typeof(int).IsAssignableFrom(type) || typeof(Enum).IsAssignableFrom(type)) {
+				// Set and Get file an enum as an int, so Remove has to look for it there too.
 				RemoveInt(key);
 			}
 			else
@@ -576,6 +589,40 @@ namespace Narramancer {
 				throw new System.NotImplementedException(type.ToString());
 			}
 			return true;
+		}
+
+		public bool Contains<T>(string key) {
+			return Contains(key, typeof(T));
+		}
+
+		/// <summary>
+		/// Whether <paramref name="key"/> holds a value of <paramref name="type"/>, looked up in the same table
+		/// <see cref="Set(string, object, Type)"/> would have filed it in. <see cref="Get"/> cannot answer this:
+		/// a missing key reads back as the type's default, indistinguishable from a saved default.
+		/// </summary>
+		public bool Contains(string key, Type type) {
+			if (typeof(GameObject).IsAssignableFrom(type)) {
+				return gameObjects?.ContainsKey(key) ?? false;
+			}
+			if (typeof(Component).IsAssignableFrom(type)) {
+				return components?.ContainsKey(key) ?? false;
+			}
+			if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
+				return unityObjects?.ContainsKey(key) ?? false;
+			}
+			if (typeof(int).IsAssignableFrom(type) || typeof(Enum).IsAssignableFrom(type)) {
+				return ints?.ContainsKey(key) ?? false;
+			}
+			if (typeof(float).IsAssignableFrom(type)) {
+				return floats?.ContainsKey(key) ?? false;
+			}
+			if (typeof(bool).IsAssignableFrom(type)) {
+				return bools?.ContainsKey(key) ?? false;
+			}
+			if (typeof(string).IsAssignableFrom(type)) {
+				return strings?.ContainsKey(key) ?? false;
+			}
+			return objects?.ContainsKey(key) ?? false;
 		}
 
 		public T GetAndRemove<T>(string key) {

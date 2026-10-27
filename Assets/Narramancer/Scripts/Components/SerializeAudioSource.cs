@@ -32,6 +32,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			audioSource = gameObject.GetComponent<AudioSource>();
 
 			audioSource.volume = map.SaveTable.GetAndRemove<float>(Key("volume"));

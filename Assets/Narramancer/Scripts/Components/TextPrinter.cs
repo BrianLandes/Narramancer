@@ -173,6 +173,9 @@ namespace Narramancer {
 			SkipTextReveal();
 
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 
 			if (targetText.IsNotNullOrEmpty()) {
 				textField.text = targetText;

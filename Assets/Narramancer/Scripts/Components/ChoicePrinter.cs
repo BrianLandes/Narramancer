@@ -129,7 +129,7 @@ namespace Narramancer {
 		public override void Serialize(StoryInstance map) {
 			base.Serialize(map);
 			if (showingChoices) {
-				map.SaveTable.SetObject("choices", choices);
+				map.SaveTable.SetObject(Key(nameof(choices)), choices);
 			}
 		}
 
@@ -137,9 +137,12 @@ namespace Narramancer {
 			ClearChoices();
 
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 
 			if (showingChoices) {
-				choices = map.SaveTable.GetObject("choices") as List<VisibleChoice>;
+				choices = map.SaveTable.GetObject(Key(nameof(choices))) as List<VisibleChoice>;
 				ShowChoices();
 			}
 		}

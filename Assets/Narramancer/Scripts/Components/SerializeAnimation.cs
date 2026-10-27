@@ -70,6 +70,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			animationComponent = gameObject.GetComponent<Animation>();
 
 			if (playing) {

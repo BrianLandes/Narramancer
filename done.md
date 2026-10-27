@@ -17,6 +17,41 @@ Archive of completed tasks and finished phases, moved here from
 
 ---
 
+## Completed 2026-10-27
+
+- [x] **A load no longer resets — or crashes on — a component the save knew nothing about.** Found while
+  proving the new spawner tests could fail: with no saved entry, `SerializeTransform` threw a
+  `NullReferenceException`, which inside `LoadStory`'s loop **abandoned the load for every component after
+  it**. The siblings failed quieter: `SerializeActive` hid its object (a missing bool reads back `false`),
+  `SerializeText` blanked its text, `SerializeAudioSource` zeroed volume and pitch, `SerializeImage` went
+  transparent, `CreateNounForGameObject` threw too. This is the **patch case** — an object added to a scene
+  after a save was written — so it sat directly under the feature the patch test exists to prove.
+  - Fixed once, in `SerializableMonoBehaviour`: `Serialize` writes a `$saved` marker, and
+    `valuesOverwrittenByDeserialize` is only set when `Deserialize` finds it. Every override returns early
+    without it, so the object keeps its scene state and initializes as on a fresh start. Base-class fields
+    missing from the save now keep their initializers instead of becoming their type's default.
+  - New `Blackboard.Contains(key, type)` — `Get` cannot tell "saved as the default" from "never saved".
+  - ⚠️ **Format break, deliberately free:** saves written before this have no marker, so they restore no
+    scene-component state. Zero users; only local test saves are affected.
+- [x] **`ChoicePrinter` / `TextAndChoicePrinter` filed choices under the literal key `"choices"`** — not
+  `Key(...)`, so M4a's identity work never reached them. Any two printers overwrote each other's saved choices,
+  and the two types shared the literal, so they collided with each other too. Now guid-keyed.
+- [x] **`Blackboard.Set(key, null)` no longer throws** — reachable from any unconnected object input via
+  `NarramancerPort.AssignValueFromNodePort`. A typeless null now clears the key from every reference table.
+  Also `Remove<TEnum>` looked for enums among objects although `Set`/`Get` file them as ints, so it never
+  removed one.
+- [x] **Noun-instance init order (Tier B8)** — `CreateNounForGameObject` is `[DefaultExecutionOrder(-100)]` and
+  gains an idempotent `EnsureInstance()`; `SerializeNounInstanceReference.GetInstance()` creates the noun
+  instead of answering null when asked before `Start`. Skipped the fork's `randomizeUid` (a feature, not the fix).
+- [x] **`NarramancerScene` runner keys — not a bug after all.** The 2026-10-27 docs pass filed it as one;
+  a test showed otherwise. Its runners are named by verb name, but that name is a label (`CreateNodeRunner`
+  de-duplicates it), and the scene's list and the story's runner table come back as the *same* objects after
+  a round trip. Nothing looks a runner up by that name.
+- [x] **Test coverage for the scene components** — `SceneComponentSaveTests` (12) plus 3 in `BlackboardTests`:
+  the spawner putting guids back on re-spawn (one and two spawns), runner identity for `NarramancerScene` and
+  `RunActionVerbMonoBehaviour`, missing-state handling, printer keys, noun init order. Each fix was reverted
+  individually and its test seen to fail with the original symptom. 530/530 passing.
+
 ## Completed 2026-09-04
 
 - [x] **Serialized closures replaced with a `Continuation` record (M3).** A suspended verb's continuation was a

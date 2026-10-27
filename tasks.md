@@ -86,9 +86,11 @@ cost nothing and don't make the product any more purchasable.
 - [ ] **Finish M4a — scene objects get a durable identity.** M1, M2 and M3 are all done as of 2026-09-04, each
   verified on a real WebGL player. M4 is the last of the breaking work before §3, split in two: **M4a is the
   bug** (path-based save keys), **M4b is the feature** (one component + drivers). M4a is most of the way there —
-  what's left is listed under §2 M4a below, ending in the build smoke + patch test. Design and corrections:
+  what's left is committing the migrated sample scenes (needs your review — see §2 M4a) and then the WebGL
+  build smoke + patch test. Design and corrections:
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
-  *Status re-verified against the code 2026-10-27, after a ~7-week gap: 518/518 EditMode tests passing.*
+  *Re-verified against the code 2026-10-27 after a ~7-week gap; the remaining code items landed the same day
+  (see `done.md`). 530/530 EditMode tests passing.*
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
   dead code (it is load-bearing), and timer cancellation being cosmetic (it was not). Treat the remaining
@@ -130,7 +132,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 518
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 530
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -149,7 +151,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **518 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **530 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -266,18 +268,7 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [x] **`SerializableSpawner` reassigns guids on re-spawn** *(2026-09-04)* — records every `Saveable` in
     each spawn's hierarchy and puts the ids back before reading state, and warns if the prefab's shape changed
     since the save. Was filed as deferrable step 5; doing the key switch without it would have silently broken
-    every spawned object. It currently
-    restores identity with `newSpawn.name = name`, which works *only* because keys contain `FullPath()`. Switch
-    to guids without this and every spawned object's state silently stops loading. The plan files it as
-    deferrable step 5; it is not.
-  - [ ] **`NarramancerScene` still names its runners by `verb.name`** (`NarramancerScene.cs:71`).
-    `RunActionVerbMonoBehaviour` is already done — it inherits the guid `Key()` and names its runner
-    `Key(nameof(runner))`. `NarramancerScene`'s run-on-start runners are keyed by bare verb name, so two scenes
-    (or a scene and anything else) running the same verb share one runner-table entry.
-  - [ ] **Fold in the fork's noun-instance init-order fixes** — `[DefaultExecutionOrder(-100)]` and an
-    idempotence guard on `CreateNounForGameObject.Start()`, plus lazy creation in
-    `SerializeNounInstanceReference.GetInstance()`. Fixes a real race, and overlaps this task's identity work.
-    *(from inbox 2026-08-11 — Tier B8)*
+    every spawned object. Now covered by `SceneComponentSaveTests` *(2026-10-27)*.
   - [x] EditMode tests *(2026-09-04)* — 10 in `SaveableIdentityTests`, verified against the old key: rename,
     reparent and same-named siblings all fail without the fix, and two siblings genuinely produced the
     *identical* key `"position /Parent/Item[2]"`, which is the silent-overwrite case.
@@ -315,8 +306,6 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
       blackboard, those references were dropped on save, and `SetTextNode` then found null and did nothing —
       labels at their scene defaults, nothing in the log. A scene object that still has no `Saveable` is now
       reported rather than dropped.
-  - [ ] **No test covers `SerializableSpawner` putting guids back on re-spawn** — the riskiest part of M4a,
-    and the one where a regression is silent (every spawned object's state just stops loading).
   - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
     [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
 - [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
@@ -347,9 +336,6 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
   will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
   waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
-- [ ] **`Blackboard.Set(key, null)` throws a `NullReferenceException`** — the two-argument overload derives the
-  type from the value (`Blackboard.cs:442`), so a null has nothing to derive from. The three-argument
-  `Set(key, value, type)` handles null. *(from inbox 2026-10-27; found 2026-09-04)*
 - [ ] **Rewrite the shipped `Getting Started.pdf`** — `Assets/Narramancer/Documentation/Getting Started.pdf`
   ships in the package and was last touched 2024-02-22, before the new serializer and `Saveable`. It almost
   certainly describes the old `Serialize*` workflow. Do it after M4b settles which components exist.

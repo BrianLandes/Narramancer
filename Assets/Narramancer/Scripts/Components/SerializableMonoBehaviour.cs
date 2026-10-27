@@ -8,7 +8,22 @@ namespace Narramancer {
 
 	public abstract class SerializableMonoBehaviour : MonoBehaviour, ISerializableMonoBehaviour {
 
+		/// <summary>
+		/// True once <see cref="Deserialize"/> has found state saved for this component. Stays false when the
+		/// save holds nothing for it — an object added to the scene by a later patch, say — so the component
+		/// initializes from the scene as if the game had just started, rather than being reset to defaults.
+		/// Overrides of <see cref="Deserialize"/> should return early when it is false.
+		/// </summary>
 		protected bool valuesOverwrittenByDeserialize = false;
+
+		/// <summary>
+		/// Written by every <see cref="Serialize"/>, so a load can tell "saved, and the value was the default"
+		/// from "never saved at all". Without it, a component the save knew nothing about read every value back
+		/// as its type's default: a <see cref="SerializeActive"/> hid its object, <see cref="SerializeText"/>
+		/// blanked its text, and <see cref="SerializeTransform"/> threw — which, inside the load loop, abandoned
+		/// the load for every component after it.
+		/// </summary>
+		private const string SavedMarker = "$saved";
 
 		public virtual void Awake() {
 			NarramancerSingleton.Instance.Register(this);
@@ -61,6 +76,8 @@ namespace Narramancer {
 		}
 
 		public virtual void Serialize(StoryInstance story) {
+			story.SaveTable.SetBool(Key(SavedMarker), true);
+
 			var type = this.GetType();
 
 			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
@@ -94,6 +111,11 @@ namespace Narramancer {
 
 		public virtual void Deserialize(StoryInstance story) {
 
+			if (!story.SaveTable.HasBool(Key(SavedMarker))) {
+				return;
+			}
+			story.SaveTable.RemoveBool(Key(SavedMarker));
+
 			valuesOverwrittenByDeserialize = true;
 
 			var type = this.GetType();
@@ -115,7 +137,9 @@ namespace Narramancer {
 								field.SetValue(this, runner);
 							}
 						}
-						else {
+						else
+						if (story.SaveTable.Contains(Key(field.Name), field.FieldType)) {
+							// A field added since the save was written keeps its initializer rather than its type's default.
 							var value = story.SaveTable.GetAndRemove(Key(field.Name), field.FieldType);
 							field.SetValue(this, value);
 						}

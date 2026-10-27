@@ -100,6 +100,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var serializedTransform = story.SaveTable.GetAndRemove<SerializedTransform>(Key("transform"));
 			transform.position = serializedTransform.position;
 			transform.rotation = serializedTransform.rotation;

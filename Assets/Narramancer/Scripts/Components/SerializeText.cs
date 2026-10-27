@@ -15,6 +15,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var component = GetComponent<Text>();
 			component.text = map.SaveTable.GetAndRemove<string>(Key("text"));
 		}

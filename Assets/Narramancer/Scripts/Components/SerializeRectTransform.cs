@@ -62,6 +62,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance story) {
 			base.Deserialize(story);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var serializedTransform = story.SaveTable.GetAndRemove<SerializedRectTransform>(Key("transform"));
 			if (serializedTransform != null) {
 				var rectTransform = GetComponent<RectTransform>();

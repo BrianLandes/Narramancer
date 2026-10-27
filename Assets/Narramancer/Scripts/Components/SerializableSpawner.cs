@@ -227,9 +227,12 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance story) {
 
-			DestroyAll();
-
 			base.Deserialize(story);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
+
+			DestroyAll();
 
 			var records = story.SaveTable.GetAndRemove<List<SpawnRecord>>(Key("spawns"));
 			if (records == null) {

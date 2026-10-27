@@ -300,4 +300,46 @@ public class BlackboardTests {
 	}
 
 	#endregion
+
+	#region Nulls and presence
+
+	/// <summary>
+	/// A null has no type to file it under, so this used to throw a NullReferenceException — reachable from any
+	/// unconnected object input, since <c>NarramancerPort.AssignValueFromNodePort</c> passes the port's value
+	/// straight through.
+	/// </summary>
+	[Test]
+	public void SettingNullClearsTheKeyInsteadOfThrowing() {
+		var blackboard = new Blackboard();
+		blackboard.Set("list", new List<int> { 1, 2, 3 });
+
+		Assert.DoesNotThrow(() => blackboard.Set("list", null));
+
+		Assert.IsNull(blackboard.Get<List<int>>("list"), "a key set to null should read back as nothing");
+		Assert.IsFalse(blackboard.Contains<List<int>>("list"));
+	}
+
+	[Test]
+	public void ContainsTellsAMissingKeyFromASavedDefault() {
+		var blackboard = new Blackboard();
+		blackboard.Set("flag", false);
+
+		Assert.IsTrue(blackboard.Contains<bool>("flag"), "false was saved — that is a value, not an absence");
+		Assert.IsFalse(blackboard.Contains<bool>("missing"));
+		Assert.IsFalse(blackboard.Contains<int>("flag"), "presence is per type, matching where Set files it");
+	}
+
+	/// <summary>Set and Get file an enum as an int; Remove used to look for it among objects and miss it.</summary>
+	[Test]
+	public void AnEnumCanBeRemoved() {
+		var blackboard = new Blackboard();
+		blackboard.Set("enum", MyEnum.Blue);
+		Assert.IsTrue(blackboard.Contains<MyEnum>("enum"), "precondition");
+
+		blackboard.Remove<MyEnum>("enum");
+
+		Assert.IsFalse(blackboard.Contains<MyEnum>("enum"));
+	}
+
+	#endregion
 }

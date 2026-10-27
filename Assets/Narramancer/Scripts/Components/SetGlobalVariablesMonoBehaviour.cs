@@ -51,6 +51,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 
 			// apply CERTAIN types of values (that are specifically NOT serialized/desiralized)
 			var blackboard = NarramancerSingleton.Instance.StoryInstance.Blackboard;

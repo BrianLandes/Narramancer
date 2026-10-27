@@ -25,6 +25,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var image = GetComponent<Image>();
 			if (image != null) {
 				var hasSprite = map.SaveTable.GetAndRemove<bool>(Key("hasSprite"));

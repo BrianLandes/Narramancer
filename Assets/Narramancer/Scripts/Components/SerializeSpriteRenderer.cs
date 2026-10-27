@@ -17,6 +17,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var texture = map.SaveTable.GetAndRemove<Texture2D>(Key("texture"));
 			var rect = map.SaveTable.GetAndRemove<Rect>(Key("rect"));
 			var pivot = map.SaveTable.GetAndRemove<Vector2>(Key("pivot"));

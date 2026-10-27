@@ -9,6 +9,9 @@ namespace Narramancer {
 
 		public override void Deserialize(StoryInstance map) {
 			base.Deserialize(map);
+			if (!valuesOverwrittenByDeserialize) {
+				return;
+			}
 			var active = map.SaveTable.GetAndRemove<bool>(Key("active"));
 			gameObject.SetActive(active);
 		}
