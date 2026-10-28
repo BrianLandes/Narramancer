@@ -239,6 +239,13 @@ namespace Narramancer {
 				}
 
 
+				// A load replaces the story's runners with freshly read ones, and a scene change replaces the object
+				// that owned them. Keeping the old reference showed the graph a runner nothing ticks any more, so the
+				// highlight froze on the pre-load node at exactly the moment it should show the resume.
+				if (selectedNodeRunner != null && !GetPossibleNodeRunners().Contains(selectedNodeRunner)) {
+					selectedNodeRunner = null;
+				}
+
 				if (selectedNodeRunner == null) {
 					selectedNodeRunner = GetPossibleNodeRunners().FirstOrDefault();
 					window.selectedContext = selectedNodeRunner?.Blackboard;

@@ -445,7 +445,11 @@ see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
   actions, each with its own effect graph. `UpdatePorts()` has to build the union of their inputs and decide
   what happens when two expose same-named inputs of different types — a design decision.
   *(from inbox 2026-08-11 — Tier B7; sizing note from inbox 2026-10-27)*
-- [ ] **Graph editor navigation** — a History dropdown beside Back listing the recently-opened stack, and a
+- [ ] **Graph editor navigation** — *partial fix 2026-10-28:* after a load the graph highlighted the
+  pre-load runner forever. The window kept the runner it was showing until you picked another, and a load
+  replaces every runner. It now drops a runner that is no longer on offer. This matters because it is the
+  demo video's key shot. Checked in play mode by saving, carrying on and loading; it was seen stale without the
+  fix. The rest of this item is still open. a History dropdown beside Back listing the recently-opened stack, and a
   corrected Back stack (the current one mutates the stack in `OnOpen()` and loses position). Plus live
   `NodeRunner` inspection of `NarramancerSingleton` during play, which fills the two in-code
   `// TODO: include NarramancerSingleton` comments in `VerbGraphEditor.cs` and is directly useful when
