@@ -84,7 +84,7 @@ cost nothing and don't make the product any more purchasable.
 ## Now / In progress
 
 - [ ] **The patch test for M2–M4 — then §3.** M4a and M4b are done and merged to `main`, and the WebGL build
-  smoke passed on 2026-10-28 (567/567 EditMode tests). Scene objects have a durable identity, `Saveable` is the
+  smoke passed on 2026-10-28 (573/573 EditMode tests). Scene objects have a durable identity, `Saveable` is the
   one component that saves an object, and eight of the nine `Serialize*` components are gone
   (`SerializeNounInstanceReference` stays). The patch test is all that stands between here and the relaunch
   work (§2, "Re-run the Task Z build smoke").
@@ -130,7 +130,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 567
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 573
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -149,7 +149,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **567 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **573 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -356,7 +356,7 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
   will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
   waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
-- [ ] **Decide whether `0. Sample Launcher` ships** — added 2026-10-27 so one build covers all four samples in
+- [ ] **`0. Sample Launcher` ships** *(decided 2026-10-28)* — still to do: give it a look that matches the brand rather than default IMGUI. Added 2026-10-27 so one build covers all four samples in
   the release smoke. Lists Build Settings, persists across loads, resets the story on each switch. Probably
   worth shipping: a buyer gets one build that shows everything. If it ships, give it a look that matches the
   brand rather than default IMGUI.
@@ -407,7 +407,14 @@ see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
   or name (with a type match) and repair the stale half. Pure authoring-quality fix. Optionally ships with the
   `VariableAssignmentList` + drawer that wraps the same logic for reuse. *(needs the nested-path work above)*
   *(from inbox 2026-08-11 — Tier B5)*
-- [ ] **`ChooseRankedWeightedActionNode` doesn't forward graph inputs** — missing both `UpdatePorts()` (so the
+- [x] **`ChooseRankedWeightedActionNode` doesn't forward graph inputs** — done 2026-10-28. The node now grows
+  one input port per input its actions' effect graphs need beyond the instance, and assigns the chosen action's
+  inputs before running it. **Decided:** inputs with the same name and type share a port; the same name with
+  different types gets a port each, named with its type (`speed (Int32)`, `speed (Single)`), and so does an
+  input named like one of the node's own ports. Ports refresh on the node editor's Layout pass, because the
+  actions are separate assets whose edits never reach the node by themselves. Rank and weight graphs still
+  receive only the instance. 6 tests in `ChooseRankedWeightedActionNodeTests`; the run-time port lookup was
+  seen to fail when port names came from the chosen action alone. Original note: missing both `UpdatePorts()` (so the
   node never grows ports for its actions' verb inputs) and `AssignGraphVariableInputs()` (so the chosen effect
   graph runs with unassigned inputs). Effectively only usable with zero-input action verbs today.
   ⚠️ **Not a straight port — size it first:** the single-graph reference cases
