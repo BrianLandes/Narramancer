@@ -1,0 +1,23 @@
+# gitleaks configuration: the default rules, minus two known false positives.
+# Triaged 2026-10-28 — the first full-history scan reported 435 findings, every one of them one of these.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known non-secrets in a Unity project"
+regexTarget = "line"
+regexes = [
+	# .NET strong-name tokens inside assembly-qualified type names, e.g.
+	# "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089". Public identifiers that
+	# every serialized Unity type reference carries — 434 of the 435 findings. Matched on the whole line because
+	# gitleaks' match starts at "KeyToken="; the cost is that a real secret on the same line would be skipped,
+	# which a YAML type-name line never holds.
+	'''PublicKeyToken=[0-9a-fA-F]{16}''',
+]
+paths = [
+	# Unity's Asset Store Tools package, committed in "Initial Project Setup" and removed in 7098846. The match is
+	# its hardcoded UnauthSessionId constant, which ships identically in every copy; the real session id lives in
+	# EditorPrefs and was never in the repo.
+	'''^Packages/com\.unity\.asset-store-tools/''',
+]

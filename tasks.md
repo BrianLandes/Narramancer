@@ -450,13 +450,12 @@ Everything here goes out together, on a build that already has the new serialize
   - ⚠️ **Say "source-available," never "open source"** — here, on the listing, on narramancer.com, and in any
     forum post. PolyForm Noncommercial is not OSI-approved, and the distinction gets policed hard in developer
     communities. Getting it wrong turns a selling point into an argument.
-- [ ] **Content-level secret scan of git history** — **partial pass 2026-10-28:** a grep over every diff in
-  all 344 commits for AWS, GitHub, Slack, OpenAI/Anthropic and Google key formats, private-key headers and
-  `key|secret|password|token = <value>` was clean, after filtering out .NET `PublicKeyToken` noise. Still run
-  `gitleaks detect` yourself: running it from a Claude session through Docker was blocked by the permission
-  check, and it adds entropy and far more rules than a grep. Original note: a filename scan across all history came back clean (no
-  `.env`, `.pem`, `*key*`, `*token*`, `*credential*` ever added). Run `gitleaks` or `trufflehog` for a content
-  pass before leaning on the repo as a channel.
+- [x] **Content-level secret scan of git history** — done 2026-10-28. `gitleaks detect` over all 330 commits
+  reported 435 findings, all from the entropy-based `generic-api-key` rule and **none of them secrets**: 434 are
+  .NET `PublicKeyToken=…` values inside serialized type names, and one is the hardcoded `UnauthSessionId`
+  constant in Unity's own Asset Store Tools package, which was committed at setup and removed in `7098846`.
+  `.gitleaks.toml` allowlists exactly those two, so a scan is now clean. Planted fake keys are still caught,
+  including one on a line next to a type name.
 - [ ] **narramancer.com: move the Naninovel recommendation** — it currently talks visual-novel devs out of the
   product inside the pitch paragraph, at the moment of decision. Keep the honesty; relocate to a comparison
   page further down the funnel.
