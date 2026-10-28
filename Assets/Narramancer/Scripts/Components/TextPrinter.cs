@@ -141,7 +141,9 @@ namespace Narramancer {
 				}
 				#endregion
 
-				var subText = $"{visibleText}<color=black>{invisibleText}</color>";
+				// The unrevealed rest is laid out but transparent, so lines do not reflow as they reveal. It was
+				// <color=black>, which only disappeared against a white background; on a dark panel it read as grey.
+				var subText = $"{visibleText}<color=#00000000>{invisibleText}</color>";
 
 				textField.text = seenText + subText;
 

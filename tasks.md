@@ -379,6 +379,24 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   `NodeEditorWindow.cs:196` (`InstanceIDToObject` → `EntityIdToObject`). *(from inbox 2026-10-27)* **Read [`docs/V1_ROADMAP.md`](docs/V1_ROADMAP.md) §4/B6 before starting** — it has the
   file:line breakdown.
 
+- [x] **UI pass on the samples and shipped prefabs** — done 2026-10-28, in the icon's palette.
+  - **What changed:**
+    - Navy surfaces, slate text and `#EF476F` for hover and focus.
+    - Open Sans throughout (it already shipped), plus three new 9-slice sprites in `Sprites/UI`.
+    - All six prefabs restyled. The two the samples use, **Text and Choice Printer Canvas** and **Overlay
+      Buttons Manager Canvas**, were checked in play mode at 1600×900. The other four were checked as
+      instances in a scratch scene.
+    - The Log / Save / Load buttons moved to a top-right row with **Close**, and no longer collide with the
+      menu titles.
+    - Save and load slots are cards with a thumbnail.
+    - Cameras clear to navy, not the white skybox.
+    - Scene 4's equipment UI restyled.
+    - Samples 1–3 have a title card on the left saying what they show and what to try.
+  - **Bug fixed on the way:** `TextPrinter` hid unrevealed text with `<color=black>`, which only disappeared on
+    a white background. On a dark panel it showed as grey text. It is now transparent.
+  - **Not done:** the samples' prefab instances still carry layout-driven RectTransform overrides; they are
+    harmless. The active menu's button is not highlighted.
+
 ### Editor & authoring quality — non-breaking riders
 
 No save-format impact, so these gate nothing and can run in parallel with the work above. Do them in the
