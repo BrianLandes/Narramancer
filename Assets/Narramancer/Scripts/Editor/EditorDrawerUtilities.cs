@@ -14,57 +14,113 @@ using XNode;
 namespace Narramancer {
 	public static class EditorDrawerUtilities {
 
-		private static Regex propertyArrayRegex = new Regex(@"([\w\d]*).Array.data\[(\d*)\].([\w\d]*)");
+		private static readonly Regex arrayElementRegex = new Regex(@"^data\[(\d+)\]$");
 
-		public static T GetTargetObject<T>(this SerializedProperty property) where T : class {
-
-			var match = propertyArrayRegex.Match(property.propertyPath);
-			if (match.Success) {
-				var listFieldName = match.Groups[1].Value;
-				var index = int.Parse(match.Groups[2].Value);
-				var elementFieldName = match.Groups[3].Value;
-
-				var targetObject = property.serializedObject.targetObject;
-				var listType = targetObject.GetType();
-
-				var listFieldInfo = listType.GetFieldInfo(listFieldName);
-
-				var targetListObject = listFieldInfo?.GetValue(targetObject);
-
-				var targetList = AssemblyUtilities.ToListOfObjects(targetListObject);
-				var targetElement = targetList[index];
-
-				var elementType = targetElement.GetType();
-				var elementFieldInfo = elementType.GetFieldInfo(elementFieldName);
-
-				var elementObject = elementFieldInfo?.GetValue(targetElement);
-
-				return elementObject as T;
-
-			}
-			else {
-				var fieldInfo = property.GetFieldInfo();
-				var targetObject = property.serializedObject.targetObject;
-				var targetProperty = fieldInfo?.GetValue(targetObject);
-				return targetProperty as T;
-			}
-
+		/// <summary>Where a <see cref="SerializedProperty"/> lands in the actual object graph.</summary>
+		private struct PropertyLocation {
+			/// <summary>The last <em>named</em> field on the path — for a list element, the list's field.</summary>
+			public FieldInfo field;
+			/// <summary>The object that declares <see cref="field"/>.</summary>
+			public object parent;
+			/// <summary>What the whole path points at: the field's value, or the list element.</summary>
+			public object value;
+			/// <summary>The declared type of <see cref="value"/> — for a list element, the element type.</summary>
+			public Type valueType;
 		}
 
+		/// <summary>
+		/// Walks a property path from the target object, segment by segment: through fields of nested
+		/// serializable classes, into list and array elements (<c>items.Array.data[2]</c>), and up base classes
+		/// for private fields. Each step looks fields up on the <em>runtime</em> type of the object it is in, so a
+		/// <c>[SerializeReference]</c> subclass resolves its own fields.
+		/// <para>
+		/// The helpers this replaced only understood a top-level field or one <c>list.Array.data[i].field</c>
+		/// hop, so any drawer used one level deeper silently resolved nothing.
+		/// </para>
+		/// </summary>
+		private static bool TryLocate(SerializedProperty property, out PropertyLocation location) {
+			location = default;
+			object current = property.serializedObject.targetObject;
+			var currentType = current.GetType();
+			var parts = property.propertyPath.Split('.');
 
+			for (var ii = 0; ii < parts.Length; ii++) {
+				if (parts[ii] == "Array") {
+					var element = ii + 1 < parts.Length ? arrayElementRegex.Match(parts[ii + 1]) : Match.Empty;
+					if (!element.Success) {
+						// "Array.size" — the list itself is as far as a field path goes.
+						return location.field != null;
+					}
+					ii++;
+					var index = int.Parse(element.Groups[1].Value);
+					var list = current as System.Collections.IList;
+					current = list != null && index < list.Count ? list[index] : null;
+					location.value = current;
+					location.valueType = ElementType(currentType);
+					currentType = current?.GetType() ?? location.valueType;
+					continue;
+				}
+
+				var owner = current;
+				var field = (owner?.GetType() ?? currentType).GetFieldInfo(parts[ii]);
+				if (field == null) {
+					return false;
+				}
+				current = owner == null ? null : field.GetValue(owner);
+				currentType = current?.GetType() ?? field.FieldType;
+				location.field = field;
+				location.parent = owner;
+				location.value = current;
+				location.valueType = field.FieldType;
+			}
+			return location.field != null;
+		}
+
+		private static Type ElementType(Type listType) {
+			if (listType.IsArray) {
+				return listType.GetElementType();
+			}
+			if (listType.IsGenericType) {
+				return listType.GetGenericArguments()[0];
+			}
+			return typeof(object);
+		}
+
+		/// <summary>The object the property points at, or null if it is not a <typeparamref name="T"/>.</summary>
+		public static T GetTargetObject<T>(this SerializedProperty property) where T : class {
+			return TryLocate(property, out var location) ? location.value as T : null;
+		}
+
+		/// <summary>The field the property is drawn from — for a list element, the list's field.</summary>
 		public static FieldInfo GetFieldInfo(this SerializedProperty property) {
-			var propertyPath = property.propertyPath;
-			if (propertyPath.Contains(".Array.")) {
-				propertyPath = propertyPath.Split(".")[0];
+			return TryLocate(property, out var location) ? location.field : null;
+		}
+
+		/// <summary>The declared type of what the property points at — for a list element, the element type.</summary>
+		public static Type GetPropertyTargetType(this SerializedProperty property) {
+			return TryLocate(property, out var location) ? location.valueType : null;
+		}
+
+		/// <summary>The object that declares the property's field: the target object, or a nested one.</summary>
+		public static object GetTargetObjectParent(this SerializedProperty property) {
+			return TryLocate(property, out var location) ? location.parent : null;
+		}
+
+		/// <summary>The runtime type of <see cref="GetTargetObjectParent"/>, which is where its attributes live.</summary>
+		public static Type GetParentType(this SerializedProperty property) {
+			return TryLocate(property, out var location) ? location.parent?.GetType() ?? location.field.DeclaringType : null;
+		}
+
+		/// <summary>The name of the first field on <paramref name="targetObject"/> holding a <typeparamref name="T"/>, or null.</summary>
+		public static string GetFirstFieldWithType<T>(this object targetObject) {
+			for (var type = targetObject.GetType(); type != null; type = type.BaseType) {
+				foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+					if (typeof(T).IsAssignableFrom(field.FieldType)) {
+						return field.Name;
+					}
+				}
 			}
-			var targetObject = property.serializedObject.targetObject;
-			var parentType = targetObject.GetType();
-			var fieldInfo = parentType.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-			while (fieldInfo == null && parentType.BaseType != null) {
-				parentType = parentType.BaseType;
-				fieldInfo = parentType.GetField(propertyPath, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-			}
-			return fieldInfo;
+			return null;
 		}
 
 		public static FieldInfo GetFieldInfo(this Type type, string fieldName) {

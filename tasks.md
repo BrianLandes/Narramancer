@@ -84,7 +84,7 @@ cost nothing and don't make the product any more purchasable.
 ## Now / In progress
 
 - [ ] **The patch test for M2–M4 — then §3.** M4a and M4b are done and merged to `main`, and the WebGL build
-  smoke passed on 2026-10-28 (555/555 EditMode tests). Scene objects have a durable identity, `Saveable` is the
+  smoke passed on 2026-10-28 (561/561 EditMode tests). Scene objects have a durable identity, `Saveable` is the
   one component that saves an object, and eight of the nine `Serialize*` components are gone
   (`SerializeNounInstanceReference` stays). The patch test is all that stands between here and the relaunch
   work (§2, "Re-run the Task Z build smoke").
@@ -130,7 +130,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 555
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 561
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -149,7 +149,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **555 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **561 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -380,7 +380,16 @@ No save-format impact, so these gate nothing and can run in parallel with the wo
 order listed: the first is infrastructure the next two depend on. All four are ports —
 see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
 
-- [ ] **`EditorDrawerUtilities`: resolve nested `SerializedProperty` paths** — `GetTargetObject`/`GetFieldInfo`
+- [x] **`EditorDrawerUtilities`: resolve nested `SerializedProperty` paths** — done 2026-10-28. One private
+  walker follows the whole path: nested classes, list elements (by runtime type, so `[SerializeReference]`
+  subclasses resolve), and private fields declared in a base class. Every public helper is now a view of the
+  walker's result. Not ported from the fork. Its version broke on a list partway down a path and on base-class
+  privates, and its top-level `GetTargetObjectParent` returned the field's value rather than its parent.
+  `VerbGraphDrawer` threw on a nested or listed verb field (xNode's by-name attribute lookup dereferences a
+  missing field), and created a `List<…>`-typed graph for a verb in a list; both are fixed. 6 tests in
+  `EditorDrawerUtilitiesTests`, the four deep-path ones seen to fail against a top-level-only walker. Swept
+  every serialized property of the sample assets and scene 4: 0 throw, 0 unresolved. Original note:
+  `GetTargetObject`/`GetFieldInfo`
   only handle top-level fields, so any drawer used on a field *inside* a serializable class silently fails.
   Walk dotted property paths, and add `GetParentType()`, `GetPropertyTargetType()`, `GetTargetObjectParent()`,
   `GetFirstFieldWithType<T>()`. Then fix `VerbGraphDrawer`, which resolves its attribute lookup against the
@@ -433,7 +442,11 @@ Everything here goes out together, on a build that already has the new serialize
   - ⚠️ **Say "source-available," never "open source"** — here, on the listing, on narramancer.com, and in any
     forum post. PolyForm Noncommercial is not OSI-approved, and the distinction gets policed hard in developer
     communities. Getting it wrong turns a selling point into an argument.
-- [ ] **Content-level secret scan of git history** — a filename scan across all history came back clean (no
+- [ ] **Content-level secret scan of git history** — **partial pass 2026-10-28:** a grep over every diff in
+  all 344 commits for AWS, GitHub, Slack, OpenAI/Anthropic and Google key formats, private-key headers and
+  `key|secret|password|token = <value>` was clean, after filtering out .NET `PublicKeyToken` noise. Still run
+  `gitleaks detect` yourself: running it from a Claude session through Docker was blocked by the permission
+  check, and it adds entropy and far more rules than a grep. Original note: a filename scan across all history came back clean (no
   `.env`, `.pem`, `*key*`, `*token*`, `*credential*` ever added). Run `gitleaks` or `trufflehog` for a content
   pass before leaning on the repo as a channel.
 - [ ] **narramancer.com: move the Naninovel recommendation** — it currently talks visual-novel devs out of the

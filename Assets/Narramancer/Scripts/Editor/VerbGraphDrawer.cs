@@ -48,8 +48,9 @@ namespace Narramancer {
 
 			position.height = EditorGUIUtility.singleLineHeight;
 
-			var propertyAttributes = NodeEditorUtilities.GetCachedPropertyAttribs(property.serializedObject.targetObject.GetType(), property.name);
-			var hideLabel = propertyAttributes.Any(attribute => attribute is HideLabelInNodeAttribute);
+			// Asked of the resolved field, not looked up by name on the target object: a verb field inside a nested
+			// class, or in a list, is not a field of the target object, and the by-name lookup threw on it.
+			var hideLabel = property.GetFieldInfo()?.IsDefined(typeof(HideLabelInNodeAttribute), true) ?? false;
 			var labelWidth = EditorGUIUtility.labelWidth;
 			if (hideLabel) {
 				label = GUIContent.none;
@@ -73,7 +74,8 @@ namespace Narramancer {
 					EditorGUI.EndProperty();
 
 					var fieldInfo = property.GetFieldInfo();
-					var fieldType = fieldInfo.FieldType;
+					// The element type for a verb in a list, where the field's own type is the list.
+					var fieldType = property.GetPropertyTargetType();
 					VerbGraph newVerbGraph = null;
 					if (PseudoEditorUtilities.IsObjectAnAsset(property.serializedObject.targetObject)) {
 						newVerbGraph = PseudoEditorUtilities.CreateAndAddChild(fieldType, property.serializedObject.targetObject, property.propertyPath.Nicify()) as VerbGraph;
@@ -216,7 +218,9 @@ namespace Narramancer {
 		}
 
 		private Type GetTypeFromSerializableTypeField(SerializedProperty property, string fieldName) {
-			var targetObject = property.serializedObject.targetObject;
+			// The type field is a sibling of the verb field, so it lives on whatever object declares that — the
+			// target object only when the verb field is top-level.
+			var targetObject = property.GetTargetObjectParent() ?? property.serializedObject.targetObject;
 			var parentType = targetObject.GetType();
 			FieldInfo typeFieldInfo;
 			if (fieldName.IsNotNullOrEmpty()) {
