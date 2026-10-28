@@ -15,9 +15,9 @@ namespace Narramancer.Serialization {
 	/// <para>
 	/// What it collects is everything a save can point at: any asset whose type comes from Narramancer's own
 	/// assembly — nouns, adjectives, flags, verb graphs and, importantly, the nodes stored as sub-assets
-	/// inside those graphs — plus whatever the author listed in <see cref="AssetManifest.AdditionalAssets"/>.
-	/// A game that stores its own sprites or clips in a blackboard has to add them there; nothing can
-	/// discover those by scanning.
+	/// inside those graphs — plus every asset that content references, everything under <c>Resources</c>, and
+	/// whatever the author listed in <see cref="AssetManifest.AdditionalAssets"/>. A sprite or clip that only
+	/// game code or a scene references has to be added there; nothing can discover those by scanning.
 	/// </para>
 	/// </summary>
 	public static class AssetManifestBuilder {
@@ -88,13 +88,26 @@ namespace Narramancer.Serialization {
 				.Distinct()
 				.OrderBy(path => path, System.StringComparer.Ordinal);
 
+			var narramancerAssets = new List<UnityEngine.Object>();
 			foreach (var path in paths) {
 				// LoadAllAssetsAtPath rather than LoadAssetAtPath: the nodes of a verb graph are sub-assets
 				// of it, and they are exactly what a suspended runner points at.
 				foreach (var asset in AssetDatabase.LoadAllAssetsAtPath(path)) {
 					if (asset != null && IsNarramancerAsset(asset)) {
-						collected.Add(asset);
+						narramancerAssets.Add(asset);
 					}
+				}
+			}
+			collected.AddRange(narramancerAssets);
+
+			// Whatever that content points at: the sprite in an equipment noun's blackboard, the clip a node
+			// plays. A verb hands these to scene components, so a save has to be able to name them — and they
+			// cost nothing in build size, since they ship because the content referencing them does. Without
+			// this, a sprite a verb put on an Image saved fine in the editor and silently fell back to the scene's
+			// sprite in a build.
+			foreach (var dependency in EditorUtility.CollectDependencies(narramancerAssets.ToArray())) {
+				if (IsNameableDependency(dependency)) {
+					collected.Add(dependency);
 				}
 			}
 
@@ -165,6 +178,20 @@ namespace Narramancer.Serialization {
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// True for a dependency a save could hold: a project asset, but not a script, not the inside of a prefab,
+		/// and not the manifest or a singleton.
+		/// </summary>
+		private static bool IsNameableDependency(UnityEngine.Object asset) {
+			if (asset == null || !AssetDatabase.Contains(asset) || asset is MonoScript) {
+				return false;
+			}
+			if (!AssetDatabase.IsMainAsset(asset) && (asset is GameObject || asset is Component)) {
+				return false;
+			}
+			return !(asset is AssetManifest || asset is SingletonBase);
 		}
 
 		private static AssetManifest FindOrCreate() {

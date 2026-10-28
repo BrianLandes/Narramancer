@@ -83,7 +83,7 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **The final build check for M2–M4 — then §3.** M4a and M4b are done in code as of 2026-10-27 (548/548
+- [ ] **The final build check for M2–M4 — then §3.** M4a and M4b are done in code as of 2026-10-27 (549/549
   EditMode tests): scene objects have a durable identity, `Saveable` is the one component that saves an object,
   and eight of the nine `Serialize*` components are gone (`SerializeNounInstanceReference` stays). What stands between here and the relaunch work is the last
   WebGL build smoke + patch test (§2, "Re-run the Task Z build smoke"), which is the first to cover M4b.
@@ -129,7 +129,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 548
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 549
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -148,7 +148,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **548 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **549 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -309,12 +309,29 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [ ] **No node drives `NavMeshMover` yet** — it is usable from game code (`NavMeshMover.On(agent).MoveTo(...)`),
     as the fork's was. A "Move NavMesh Agent" node next to `TranslateGameObjectNode` would make it authorable.
     Small; a natural rider.
+  - [ ] **A node can write to a component nothing saves, and nothing says so.** Scene 4 hit this: a verb set
+    text on objects with no `Saveable`, or with an identity-only one, and the text quietly reverted on load. A
+    play-mode warning would have to tell deliberate transient UI apart from a mistake, so it is likely too noisy.
+    An editor-side check, "this verb writes to X, and X doesn't save text", can't see objects found at runtime
+    by `FindChildTransform`. No good answer yet; worth a paragraph in the docs at minimum.
   - [ ] **A project upgrading from 0.5.x would open with missing scripts** where the `Serialize*` components
     were — there is no converter, because the conversion was done by hand on the one sample that used them.
     Accepted at ~0 users; worth one line in the release notes, and a converter keyed on the old script GUIDs
     (recorded in `done.md`) if anyone asks.
 - [ ] **Re-run the Task Z build smoke, and the patch test** — **required, not optional**, and this is the one
-  that covers M2, M3 and M4 together. For M4b, confirm scene 4's sprites come back after a reload.
+  that covers M2, M3 and M4 together. For M4b, confirm scene 4's sprites **and** texts come back after a reload.
+  - **First M4b run, 2026-10-28: scene 4's sprites and texts did not come back.** Two causes, both fixed:
+    - **The sprites could not be named in a build.** The manifest held only Narramancer's own assets and
+      `Resources`, so the equipment sprites (which live in the nouns' blackboards) saved fine in the editor and
+      were silently dropped in a player. The bake now also collects everything Narramancer content references.
+      This costs no build size, because those assets ship with the content anyway.
+    - **The texts were never saved.** *Update Equipment UI* writes each slot's `Description` and `Row/Title`
+      text, `Display`'s active state and the two character texts, but only the sprites were saved. The
+      blackboard-reference fix above made `SetTextNode` *find* the labels, not save what it wrote. Scene 4 now
+      saves all of it.
+    - Still expected: saving with an empty slot logs a "cannot be saved" warning in a build for the
+      `Narramancer Icon` placeholder, which only the scene references. It loads as the scene has it, which is
+      correct. Silencing it means teaching the bake about build scenes' dependencies; leave it unless it bothers someone.
   ⚠️ **No sample tweens, animates or nav-moves anything**, so no build can exercise a `Tweener` being re-added
   on load — the M4b path most exposed to IL2CPP, since it finds the type by name. Either add a short tween to a
   sample (a "walk on" in scene 4 would also be demo-video material) and save mid-move, or accept the EditMode

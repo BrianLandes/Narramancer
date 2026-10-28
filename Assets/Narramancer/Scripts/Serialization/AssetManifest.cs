@@ -11,9 +11,10 @@ namespace Narramancer.Serialization {
 	/// a build has no way to turn the GUID in a save back into the asset it names.
 	/// <para>
 	/// It doubles as the list of assets a save is allowed to point at. Everything Narramancer authors —
-	/// nouns, adjectives, flags, verb graphs and the nodes inside them — is collected automatically;
-	/// <see cref="AdditionalAssets"/> is for anything else a game puts in a blackboard, a sprite or a clip,
-	/// which nothing can discover by scanning for Narramancer types. An asset in neither place fails at
+	/// nouns, adjectives, flags, verb graphs and the nodes inside them — is collected automatically, along
+	/// with every asset that content references and everything under <c>Resources</c>;
+	/// <see cref="AdditionalAssets"/> is for a sprite or clip that only game code or a scene references,
+	/// which nothing can discover by scanning. An asset in none of these fails at
 	/// <em>save</em> time with a message naming it, which is a problem the author can see and fix, rather
 	/// than at load time in a shipped build, which is not.
 	/// </para>

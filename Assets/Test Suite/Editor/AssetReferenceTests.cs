@@ -245,6 +245,30 @@ public class AssetReferenceTests {
 		}
 	}
 
+	[Test]
+	public void TheBakeIncludesWhatNarramancerContentReferences() {
+		// The sample's equipment sprites: outside Resources, not a Narramancer type, but handed to an Image by a
+		// verb. Missing from the manifest, a build could not name them, so their Images loaded as the scene had them.
+		var texture = new Texture2D(2, 2) { name = "Portrait" };
+		AssetDatabase.CreateAsset(texture, $"{TestDirectory}/Portrait.asset");
+		var unreferenced = new Texture2D(2, 2) { name = "Unused" };
+		AssetDatabase.CreateAsset(unreferenced, $"{TestDirectory}/Unused.asset");
+		var graph = CreateAsset<ActionVerb>("Verb");
+		AddSubAsset<UnityObjectNode>(graph, "portrait").SetObject(texture);
+		AssetDatabase.SaveAssets();
+		var manifest = ScriptableObject.CreateInstance<AssetManifest>();
+
+		try {
+			AssetManifestBuilder.Populate(manifest);
+
+			Assert.IsTrue(manifest.TryGetId(texture, out _), "an asset a verb references must be nameable in a build");
+			Assert.IsFalse(manifest.TryGetId(unreferenced, out _), "an asset nothing references stays out of the manifest");
+		}
+		finally {
+			Object.DestroyImmediate(manifest);
+		}
+	}
+
 	#endregion
 
 	#region The runtime registry — the last resort
