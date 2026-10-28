@@ -47,7 +47,7 @@ The codebase is built around a deliberate metaphor; matching it matters when nam
 | Save orchestration | `Scripts/Data/NarramancerSingleton.cs` | `PrepareStoryForSave()` / `LoadStory()`; a registry of `ISerializableMonoBehaviour` |
 | Scene-object identity + saving | `Scripts/Components/Saveable.cs`, `Scripts/Saving/` | One `Saveable` per object: a minted guid, the component drivers (`IComponentSaver`) it ticks, and `[Save]` fields on behaviour components |
 | Execution | `Scripts/Data/NodeRunner.cs`, `Promise.cs`, `Continuation` | Flag-based suspend/resume, not coroutines. Never serialize a closure — use a `Continuation` |
-| Tests | `Assets/Test Suite/Editor/` (`Tests.Editor.asmdef`) | ~520 EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`) |
+| Tests | `Assets/Test Suite/Editor/` (`Tests.Editor.asmdef`) | ~570 EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`) |
 
 **Vendored dependency (modifiable source, no DLLs):**
 - **xNode** — `Scripts/Plugins/xNode/`. Graph editor + the `Node`/`NodePort` model. Modified in place; changes
@@ -66,6 +66,10 @@ nodes out of Unity has drifted into the paused v2 rewrite. The xNode boundary is
   convention. v1 uses bare names (`Blackboard`, `NodeRunner`) or the full word (`NarramancerScene`,
   `NarramancerSingleton`).
 - Prefer the `GameObjectExtensions` `Find*` wrappers over calling Unity's `Find*` APIs directly.
+- **Shipped UI uses the brand palette** (samples, prefabs, launcher): backdrop `#0B1A26`, navy `#0F2130`,
+  surface `#162232`, raised `#1E2E42` / hover `#2A3F58`, accent `#EF476F` / pressed `#C93A5C`, ink `#E4EBF2`,
+  slate `#AEBECF`. Open Sans (`Fonts/Open_Sans`) and the 9-slice sprites in `Sprites/UI`. Buttons use a
+  ColorTint over a white Image, so the colours live in the ColorBlock.
 
 ## Working notes
 

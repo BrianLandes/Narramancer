@@ -17,6 +17,114 @@ Archive of completed tasks and finished phases, moved here from
 
 ---
 
+## Completed 2026-10-28
+
+The pre-launch pass on branch `prelaunch`: the build-reported fixes, the Tier B authoring riders, and the
+launch-facing polish (launcher, guide, UI theme, secret scan). 573/573 EditMode tests at the end of it.
+
+- [x] **M4b build smoke, first run (2026-10-28): scene 4's sprites and texts did not come back.** Two causes, both fixed:
+  - **The sprites could not be named in a build.** The manifest held only Narramancer's own assets and
+    `Resources`, so the equipment sprites (which live in the nouns' blackboards) saved fine in the editor and
+    were silently dropped in a player. The bake now also collects everything Narramancer content references.
+    This costs no build size, because those assets ship with the content anyway.
+  - **The texts were never saved.** *Update Equipment UI* writes each slot's `Description` and `Row/Title`
+    text, `Display`'s active state and the two character texts, but only the sprites were saved. The
+    blackboard-reference fix above made `SetTextNode` *find* the labels, not save what it wrote. Scene 4 now
+    saves all of it.
+  - Still expected: saving with an empty slot logs a "cannot be saved" warning in a build for the
+    `Narramancer Icon` placeholder, which only the scene references. It loads as the scene has it, which is
+    correct. Silencing it means teaching the bake about build scenes' dependencies; leave it unless it bothers someone.
+- [x] **The continue indicator shows while a `Wait` is running after a load** — fixed 2026-10-28. The printers
+  showed the indicator whenever text was on screen. They now show it only while a click is what the story is
+  waiting for, which is whether a promise is pending. The text-and-choice printer was the common case, because
+  it keeps its text up after a click. `SkipTextReveal` had the same blind spot within a single session. 4 tests in
+  `PrinterSaveTests`, the three negative ones seen to fail against the old code. Original report: reloading into a suspended
+  `WaitNode` displays `TextPrinter`'s continue indicator, so it looks like it wants a click when it is actually
+  waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
+  will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
+  waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
+- [x] **`0. Sample Launcher` ships** *(decided and restyled 2026-10-28)* — in the icon's colours (navy, slate, the `#EF476F` accent the editor already uses), with the icon, numbered rows and a matching back button. Still IMGUI, so it cannot collide with a sample's UI. It now also scales *down* to fit a short or narrow screen; before, a small WebGL canvas clipped the list. Checked in the editor's Game view; the back button has only been seen in code. Added 2026-10-27 so one build covers all four samples in
+  the release smoke. Lists Build Settings, persists across loads, resets the story on each switch. Probably
+  worth shipping: a buyer gets one build that shows everything. If it ships, give it a look that matches the
+  brand rather than default IMGUI.
+- [x] **Rewrite the shipped `Getting Started.pdf`** — done 2026-10-28: 10 pages, rebuilt from
+  `docs/getting-started/guide.html` (the rebuild command is in its header). It drops the .NET 4.x / Odin step.
+  New material: a saving-and-loading chapter (what saves automatically, `Saveable` and its toggles, `[Save]`,
+  the asset manifest, the "if a verb changes it, save it" warning), the launcher and samples, and a 0.5 →
+  1.0 upgrade table. The Naninovel aside is gone. Unlike the old guide it has **no editor screenshots**; worth
+  adding a few once the demo video is shot. Original note: `Assets/Narramancer/Documentation/Getting Started.pdf`
+  ships in the package and was last touched 2024-02-22, before the new serializer and `Saveable`. It almost
+  certainly describes the old `Serialize*` workflow. Do it after M4b settles which components exist.
+
+---
+- [x] **UI pass on the samples and shipped prefabs** — done 2026-10-28, in the icon's palette.
+  - **What changed:**
+    - Navy surfaces, slate text and `#EF476F` for hover and focus.
+    - Open Sans throughout (it already shipped), plus three new 9-slice sprites in `Sprites/UI`.
+    - All six prefabs restyled. The two the samples use, **Text and Choice Printer Canvas** and **Overlay
+      Buttons Manager Canvas**, were checked in play mode at 1600×900. The other four were checked as
+      instances in a scratch scene.
+    - The Log / Save / Load buttons moved to a top-right row with **Close**, and no longer collide with the
+      menu titles.
+    - Save and load slots are cards with a thumbnail.
+    - Cameras clear to navy, not the white skybox.
+    - Scene 4's equipment UI restyled.
+    - Samples 1–3 have a title card on the left saying what they show and what to try.
+  - **Bug fixed on the way:** `TextPrinter` hid unrevealed text with `<color=black>`, which only disappeared on
+    a white background. On a dark panel it showed as grey text. It is now transparent.
+  - **Not done:** the samples' prefab instances still carry layout-driven RectTransform overrides; they are
+    harmless. The active menu's button is not highlighted.
+- [x] **`EditorDrawerUtilities`: resolve nested `SerializedProperty` paths** — done 2026-10-28. One private
+  walker follows the whole path: nested classes, list elements (by runtime type, so `[SerializeReference]`
+  subclasses resolve), and private fields declared in a base class. Every public helper is now a view of the
+  walker's result. Not ported from the fork. Its version broke on a list partway down a path and on base-class
+  privates, and its top-level `GetTargetObjectParent` returned the field's value rather than its parent.
+  `VerbGraphDrawer` threw on a nested or listed verb field (xNode's by-name attribute lookup dereferences a
+  missing field), and created a `List<…>`-typed graph for a verb in a list; both are fixed. 6 tests in
+  `EditorDrawerUtilitiesTests`, the four deep-path ones seen to fail against a top-level-only walker. Swept
+  every serialized property of the sample assets and scene 4: 0 throw, 0 unresolved. Original note:
+  `GetTargetObject`/`GetFieldInfo`
+  only handle top-level fields, so any drawer used on a field *inside* a serializable class silently fails.
+  Walk dotted property paths, and add `GetParentType()`, `GetPropertyTargetType()`, `GetTargetObjectParent()`,
+  `GetFirstFieldWithType<T>()`. Then fix `VerbGraphDrawer`, which resolves its attribute lookup against the
+  wrong type. **Infrastructure — do this first.** *(from inbox 2026-08-11 — Tier B4)*
+- [x] **`VariableAssignment` partial-match recovery** — done 2026-10-28. An assignment now follows its input
+  through a rename, or a delete-and-re-add that mints a new id, as long as the type still matches, and its
+  stale half is repaired. It matches in passes (exact, then id, then name), each taking only assignments not
+  yet claimed. **Not the fork's version:** its single "id or name" check let a new input that took a renamed
+  input's old name claim that input's value whenever it came first in the list. 6 tests in
+  `VariableAssignmentTests`; exact-only matching and the fork's check were each run and seen to fail them.
+  Also fixed: the two **Update Assignments** buttons edited the component without `Undo.RecordObject`, so the
+  re-match neither dirtied the scene nor could be undone. The optional `VariableAssignmentList` + drawer was
+  not done. Original note: renaming a verb input currently **wipes** every
+  assignment bound to it, silently, across every graph and component that referenced it. Match on *either* id
+  or name (with a type match) and repair the stale half. Pure authoring-quality fix. Optionally ships with the
+  `VariableAssignmentList` + drawer that wraps the same logic for reuse. *(needs the nested-path work above)*
+  *(from inbox 2026-08-11 — Tier B5)*
+- [x] **`ChooseRankedWeightedActionNode` doesn't forward graph inputs** — done 2026-10-28. The node now grows
+  one input port per input its actions' effect graphs need beyond the instance, and assigns the chosen action's
+  inputs before running it. **Decided:** inputs with the same name and type share a port; the same name with
+  different types gets a port each, named with its type (`speed (Int32)`, `speed (Single)`), and so does an
+  input named like one of the node's own ports. Ports refresh on the node editor's Layout pass, because the
+  actions are separate assets whose edits never reach the node by themselves. Rank and weight graphs still
+  receive only the instance. 6 tests in `ChooseRankedWeightedActionNodeTests`; the run-time port lookup was
+  seen to fail when port names came from the chosen action alone. Original note: missing both `UpdatePorts()` (so the
+  node never grows ports for its actions' verb inputs) and `AssignGraphVariableInputs()` (so the chosen effect
+  graph runs with unassigned inputs). Effectively only usable with zero-input action verbs today.
+  ⚠️ **Not a straight port — size it first:** the single-graph reference cases
+  (`OfferObjectsAsChoicesNode`/`ListFilterNode`) don't transfer cleanly, because this node holds a *list* of
+  actions, each with its own effect graph. `UpdatePorts()` has to build the union of their inputs and decide
+  what happens when two expose same-named inputs of different types — a design decision.
+  *(from inbox 2026-08-11 — Tier B7; sizing note from inbox 2026-10-27)*
+- [x] **Content-level secret scan of git history** — done 2026-10-28. `gitleaks detect` over all 330 commits
+  reported 435 findings, all from the entropy-based `generic-api-key` rule and **none of them secrets**: 434 are
+  .NET `PublicKeyToken=…` values inside serialized type names, and one is the hardcoded `UnauthSessionId`
+  constant in Unity's own Asset Store Tools package, which was committed at setup and removed in `7098846`.
+  `.gitleaks.toml` allowlists exactly those two, so a scan is now clean. Planted fake keys are still caught,
+  including one on a line next to a type name.
+
+---
+
 ## Completed 2026-10-27
 
 - [x] **M4b — `Saveable` is the one component that saves an object.** Decisions in

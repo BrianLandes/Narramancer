@@ -22,12 +22,13 @@
 | Unity 6 upgrade | ✅ Done — `6000.4.12f1`, compiles clean |
 | WebGL save persistence | ✅ Done — `SaveFileSync.jslib` + `SaveFileSync.cs` + the flush in `SaveLoadUtilities.WriteSaveData` |
 | B1 safe wins (TypeCache scanner, `FindObjectsOfType` cleanup) | ✅ Done 2026-08-11 — see `done.md` |
-| B2 test net | ✅ Done — 518 EditMode tests, all passing as of 2026-10-27, incl. suspend → save → load → resume |
+| B2 test net | ✅ Done — 573 EditMode tests, all passing as of 2026-10-28, incl. suspend → save → load → resume |
 | B3 Odin removal | ✅ Done 2026-09-04 (**M1**) — `NarramancerSerializer`, GUID-keyed references, vendored OdinSerializer deleted. WebGL smoke + patch test passed |
 | Execution-model correctness | ✅ Done 2026-09-04 (**M2**) — sub-runner ownership, durable blackboard keys, owned timers |
 | Serialized closures | ✅ Done 2026-09-04 (**M3**) — `Continuation` record, WebGL smoke passed |
 | B4 Saveable — identity half | ✅ **M4a, done** — WebGL build smoke passed 2026-10-27 |
-| B4 Saveable — driver half | ✅ **M4b, done in code 2026-10-27** — drivers, `[Save]`, eight of the nine `Serialize*` components deleted. Awaiting the final build check |
+| B4 Saveable — driver half | ✅ **M4b, done 2026-10-27** — drivers, `[Save]`, eight of the nine `Serialize*` components deleted. WebGL build smoke passed 2026-10-28; the patch test is still to run |
+| Pre-launch polish | ✅ Done 2026-10-28 — sample launcher, Getting Started guide rewritten for 1.0, samples and prefabs themed in the brand palette, Tier B4/B5/B7 authoring fixes, gitleaks history scan clean. See `done.md` |
 | Odin Inspector coexistence check | ❌ Not run — needs a copy of Odin Inspector |
 | #2 Core extraction | ❌ Not started — gated on the post-launch measurement |
 | #4 Multi-window xNode | ❌ Not started — sized, see §4 B6 |
@@ -138,6 +139,9 @@ So: build them during the quiet window so they are *ready to ship* the day measu
   "will this be abandoned" objection, which is the load-bearing objection for a *save system*.
 
 ### A3. Demo video — **recommend pulling this forward into the launch bundle**
+
+**Shot list and edit plan written 2026-10-28:** [`DEMO_VIDEO_PLAN.md`](DEMO_VIDEO_PLAN.md).
+
 The handoff defers this to Priority 5 ("after traffic improves"). I'd move it into the launch bundle:
 
 - It requires **zero new engineering** — the feature already exists, and Task Z is literally a rehearsal of the
@@ -153,9 +157,9 @@ cost is small; the cost of launching a save-system listing with no proof-of-conc
 ### A4. Repo as landing page
 - README is currently feature documentation. Rewrite it as a landing page: demo GIF at the top, one paragraph,
   link to the store listing. Repos rank in Google for queries the Asset Store page never will.
-- **Audit git history for secrets.** A filename scan across all history came back clean (no `.env`, `.pem`,
-  `*key*`, `*token*`, `*credential*` ever added). Still worth a content-level pass with `gitleaks` or
-  `trufflehog` before leaning on the repo as a marketing channel.
+- ~~**Audit git history for secrets.**~~ **Done 2026-10-28.** A filename scan came back clean, and a
+  content-level `gitleaks` pass over all 330 commits found no real secrets; `.gitleaks.toml` allowlists the
+  two false-positive patterns, so a scan is now clean.
 - **License decision — see §6.** This one needs your call before you promote the repo.
 
 ### A5. narramancer.com
@@ -307,9 +311,9 @@ blocker 1's fix gives you for free). Keying the cache by `(target, window)` is t
 | 4 | ~~**B2 test net** (save/load round-trip first)~~ | B | ✅ done 2026-08-27 |
 | 5 | ~~B3 Odin removal → `NarramancerSerializer`~~ | B | ✅ done 2026-09-04 (M1) |
 | 6 | ~~B4 Saveable + GUID identity~~ | B | ✅ done in code 2026-10-27 (M4a + M4b) |
-| 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization |
+| 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization. Smoke ✅ passed 2026-10-28; patch test still to run |
 | 8 | B6 multi-window xNode | B | independent; optional before launch, don't let it delay 10 |
-| 9 | Record demo video | A | after B4, so inspector footage doesn't go stale |
+| 9 | Record demo video | A | after B4, so inspector footage doesn't go stale. Plan: [`DEMO_VIDEO_PLAN.md`](DEMO_VIDEO_PLAN.md) |
 | 10 | **Republish 1.0.0** w/ Unity 6 + listing rewrite + video + README | A | **the launch** |
 | 11 | ← 30-day measurement window; nothing ships → | | |
 | 12 | Measure; compare to the step-1 baseline | A | 30 days after step 10 |
