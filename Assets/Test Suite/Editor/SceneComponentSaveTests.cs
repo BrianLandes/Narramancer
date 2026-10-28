@@ -146,8 +146,9 @@ public class SceneComponentSaveTests {
 		var template = Object_(name);
 		var child = new GameObject("Child");
 		child.transform.SetParent(template.transform);
-		child.AddComponent<Saveable>().EnsureGuid();
-		child.AddComponent<SerializeTransform>();
+		var childSaveable = child.AddComponent<Saveable>();
+		childSaveable.EnsureGuid();
+		childSaveable.SaveEverythingDetected();
 		return template;
 	}
 
@@ -190,7 +191,7 @@ public class SceneComponentSaveTests {
 
 		var story = NewStoryForSave();
 		spawner.Serialize(story);
-		child.GetComponent<SerializeTransform>().Serialize(story);
+		child.GetComponent<Saveable>().Serialize(story);
 
 		var restored = RoundTrip(story);
 		UnloadScene();
@@ -223,8 +224,8 @@ public class SceneComponentSaveTests {
 
 		var story = NewStoryForSave();
 		spawner.Serialize(story);
-		first.GetComponent<SerializeTransform>().Serialize(story);
-		second.GetComponent<SerializeTransform>().Serialize(story);
+		first.GetComponent<Saveable>().Serialize(story);
+		second.GetComponent<Saveable>().Serialize(story);
 
 		var restored = RoundTrip(story);
 		UnloadScene();
@@ -251,19 +252,21 @@ public class SceneComponentSaveTests {
 	public void ATransformTheSaveNeverSawKeepsItsSceneState() {
 		var restored = RoundTrip(NewStoryForSave());
 
-		var added = Object_("Added In A Patch").AddComponent<SerializeTransform>();
+		var added = Object_("Added In A Patch").GetComponent<Saveable>();
+		added.SaveEverythingDetected();
 		added.transform.position = new Vector3(1, 2, 3);
 
 		Assert.DoesNotThrow(() => added.Deserialize(restored));
 		Assert.AreEqual(new Vector3(1, 2, 3), added.transform.position);
 	}
 
-	/// <summary>A missing bool reads back as false, so this used to hide the object.</summary>
+	/// <summary>A missing bool reads back as false, so <c>SerializeActive</c> used to hide the object.</summary>
 	[Test]
 	public void AnObjectTheSaveNeverSawStaysActive() {
 		var restored = RoundTrip(NewStoryForSave());
 
-		var added = Object_("Added In A Patch").AddComponent<SerializeActive>();
+		var added = Object_("Added In A Patch").GetComponent<Saveable>();
+		added.SaveEverythingDetected();
 		added.Deserialize(restored);
 
 		Assert.IsTrue(added.gameObject.activeSelf, "nothing was saved for it, so nothing should change");
@@ -275,8 +278,9 @@ public class SceneComponentSaveTests {
 	/// </summary>
 	[Test]
 	public void AStateSavedAsTheDefaultIsStillRestored() {
-		var saver = Object_("Hidden Door").AddComponent<SerializeActive>();
-		var guid = saver.GetComponent<Saveable>().Guid;
+		var saver = Object_("Hidden Door").GetComponent<Saveable>();
+		saver.SaveEverythingDetected();
+		var guid = saver.Guid;
 		saver.gameObject.SetActive(false);
 
 		var story = NewStoryForSave();
@@ -284,7 +288,8 @@ public class SceneComponentSaveTests {
 		var restored = RoundTrip(story);
 		UnloadScene();
 
-		var loaded = Object_("Hidden Door", guid).AddComponent<SerializeActive>();
+		var loaded = Object_("Hidden Door", guid).GetComponent<Saveable>();
+		loaded.SaveEverythingDetected();
 		Assert.IsTrue(loaded.gameObject.activeSelf, "precondition: the scene builds it active");
 		loaded.Deserialize(restored);
 

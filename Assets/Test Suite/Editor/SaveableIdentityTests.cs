@@ -62,8 +62,9 @@ public class SaveableIdentityTests {
 
 	private static string KeyOf(SerializableMonoBehaviour component, string field) => component.Key(field);
 
-	private SerializeTransform Saver(Saveable saveable) {
-		return saveable.gameObject.AddComponent<SerializeTransform>();
+	/// <summary>Any <see cref="SerializableMonoBehaviour"/> will do; this one has no setup of its own.</summary>
+	private SerializeNounInstanceReference Saver(Saveable saveable) {
+		return saveable.gameObject.AddComponent<SerializeNounInstanceReference>();
 	}
 
 	#region The guid itself
@@ -138,8 +139,14 @@ public class SaveableIdentityTests {
 
 		Assume.That(UnityEditorInternal.ComponentUtility.MoveComponentUp(saver), Is.True,
 			"precondition: the component actually moved");
+		var after = KeyOf(saver, "position");
 
-		Assert.AreEqual(before, KeyOf(saver, "position"));
+		// MoveComponentUp is undoable, and the test runner reverts undo after a run — which rebuilt this object,
+		// already destroyed, into whatever scene was open. Forget the undo step so there is nothing to replay.
+		Undo.ClearUndo(saver);
+		Undo.ClearUndo(saveable.gameObject);
+
+		Assert.AreEqual(before, after);
 	}
 
 	[Test]
@@ -165,7 +172,7 @@ public class SaveableIdentityTests {
 		var key = KeyOf(saver, "position");
 
 		StringAssert.Contains(saveable.Guid, key);
-		StringAssert.Contains(nameof(SerializeTransform), key,
+		StringAssert.Contains(nameof(SerializeNounInstanceReference), key,
 			"two different savers on one object must not collide");
 		StringAssert.DoesNotContain("Hero", key, "the name must not be part of the identity any more");
 	}
@@ -173,10 +180,10 @@ public class SaveableIdentityTests {
 	[Test]
 	public void TwoDifferentSaversOnOneObjectDoNotCollide() {
 		var saveable = Object_("Hero");
-		var transformSaver = saveable.gameObject.AddComponent<SerializeTransform>();
-		var activeSaver = saveable.gameObject.AddComponent<SerializeActive>();
+		var nounSaver = saveable.gameObject.AddComponent<SerializeNounInstanceReference>();
+		var verbSaver = saveable.gameObject.AddComponent<RunActionVerbMonoBehaviour>();
 
-		Assert.AreNotEqual(KeyOf(transformSaver, "state"), KeyOf(activeSaver, "state"));
+		Assert.AreNotEqual(KeyOf(nounSaver, "state"), KeyOf(verbSaver, "state"));
 	}
 
 	#endregion
@@ -345,8 +352,8 @@ public class SaveableIdentityTests {
 		var second = new GameObject("Orphan B");
 		created.Add(first);
 		created.Add(second);
-		var firstSaver = first.AddComponent<SerializeTransform>();
-		var secondSaver = second.AddComponent<SerializeTransform>();
+		var firstSaver = first.AddComponent<SerializeNounInstanceReference>();
+		var secondSaver = second.AddComponent<SerializeNounInstanceReference>();
 
 		UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
 			new System.Text.RegularExpressions.Regex("Orphan A.*Saveable"));

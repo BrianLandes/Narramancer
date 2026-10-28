@@ -20,7 +20,7 @@ namespace Narramancer {
 		[SerializeField]
 		private bool stopOnDestroy = true;
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		private NodeRunner runner = default;
 		public NodeRunner Runner => runner;
 

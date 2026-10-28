@@ -83,14 +83,11 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **Finish M4a — scene objects get a durable identity.** M1, M2 and M3 are all done as of 2026-09-04, each
-  verified on a real WebGL player. M4 is the last of the breaking work before §3, split in two: **M4a is the
-  bug** (path-based save keys), **M4b is the feature** (one component + drivers). M4a is most of the way there —
-  what's left is committing the migrated sample scenes (needs your review — see §2 M4a) and then the WebGL
-  build smoke + patch test. Design and corrections:
-  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
-  *Re-verified against the code 2026-10-27 after a ~7-week gap; the remaining code items landed the same day
-  (see `done.md`). 534/534 EditMode tests passing.*
+- [ ] **The final build check for M2–M4 — then §3.** M4a and M4b are done in code as of 2026-10-27 (548/548
+  EditMode tests): scene objects have a durable identity, `Saveable` is the one component that saves an object,
+  and eight of the nine `Serialize*` components are gone (`SerializeNounInstanceReference` stays). What stands between here and the relaunch work is the last
+  WebGL build smoke + patch test (§2, "Re-run the Task Z build smoke"), which is the first to cover M4b.
+  Design record: [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
   dead code (it is load-bearing), and timer cancellation being cosmetic (it was not). Treat the remaining
@@ -132,7 +129,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 534
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 548
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -151,7 +148,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **534 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **548 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -291,7 +288,7 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [x] Prefabs migrated *(2026-09-04)* — the three printer canvases (`ChoicePrinter`, `TextAndChoicePrinter`,
     `TextPrinter`) now carry a `Saveable` with **no id**, verified in the asset files. Those are the text and
     choice UI whose state resumes a story after a load.
-  - [~] **Migrate the 4 sample scenes — run, but not committed.** As of 2026-10-27 the working tree has
+  - [x] **Migrate the 4 sample scenes** — committed 2026-10-27 (`ea60727`). Original note: As of 2026-10-27 the working tree has
     minted `Saveable`s in all four (1 each in scenes 1–3 plus a prefab-instance override in scene 1; 16 in
     scene 4). **Review before committing:** scene 1's diff also carries RectTransform layout overrides on the
     printer prefab — possibly the "unsaved smoke-test changes" this task was waiting on — and scene 4 has 16
@@ -306,45 +303,22 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
       blackboard, those references were dropped on save, and `SetTextNode` then found null and did nothing —
       labels at their scene defaults, nothing in the log. A scene object that still has no `Saveable` is now
       reported rather than dropped.
-  - [ ] **Build smoke + the patch test** — identity changed, so both are owed.
-    [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md).
-- [ ] **M4b — `Saveable` + driver registry (the ergonomics)** — one component per object driving a registry of
-  savers, so adding an object is "drop one component" and supporting a new component type is "write one
-  driver". **In, before launch — decided 2026-10-27.** The reason is the *public API*, not the save format:
-  drivers could reuse today's keys, but once a buyer places `SerializeTransform` in a scene, removing it is a
-  breaking change to their project. The demo video and the `Getting Started.pdf` rewrite both wait on it.
-  ~4½–6 evenings. All design decisions are settled — see **Decisions (2026-10-27)** at the top of
-  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md). Build order:
-  - [ ] `IComponentSaver` + `ComponentSaverRegistry` (explicit built-in list + public `Register`, no reflection
-    discovery) + `Saveable` driving them, with an inspector list of detected components and a toggle each.
-  - [ ] Drivers: Transform, RectTransform, Active, AudioSource, Image, SpriteRenderer, Text, **NavMeshAgent**.
-    - [ ] **Sprites are saved by reference** — `SerializeImage` / `SerializeSpriteRenderer` rebuild a sprite with
-      `Sprite.Create(...)` on load: a *new* sprite every load, losing border, pixelsPerUnit and atlas packing,
-      and breaking anything that compares sprites by reference. Save the sprite when it has a durable id; fall
-      back to texture/rect/pivot for sprites built at runtime (save-slot thumbnails). *(from inbox 2026-10-27)*
-    - [ ] **NavMeshAgent driver** — port the fork's `SerializeNavMeshAgent`, the best real-world save driver in
-      either tree. Pulled into M4b on 2026-10-27 (was a post-launch sample). `NavMeshAgent` lives in the
-      built-in AI module, which a project can disable — so it must not break compilation when the module is
-      absent (separate asmdef with a `versionDefines` on `com.unity.modules.ai`, or equivalent).
-      *(from inbox 2026-08-11 — Tier C)*
-  - [ ] **Tween and animation state moves to behaviour components** — `SerializeTransform` carries **eight**
-    `[SerializeMonoBehaviourField]`s of tween state, called by `TranslateGameObjectNode` and
-    `TweenGameObjectRotationNode`; `SerializeAnimation` plays the same role for `PlayAnimationNode`. Move it to a
-    small `Tweener` (and animation equivalent) with `[Save]` fields, **added on demand by the nodes**, which also
-    removes a setup step. The largest single item.
-  - [ ] `[Save]` attribute (rename of `[SerializeMonoBehaviourField]`).
-  - [ ] Migration tool converts `Serialize*` → `Saveable` toggles; migrate scene 4 (1× `SerializeTransform`,
-    3× `SerializeImage` — the only uses in shipped scenes/prefabs). Delete the nine `Serialize*` components.
-  - [ ] Tests, then the build smoke + patch test below.
-  - [ ] ⚠️ **A saver on an object that starts inactive is never saved or loaded.** `SerializableMonoBehaviour`
-    registers with the singleton in `Awake`, which Unity never calls on an inactive object — so a hidden panel
-    with a `SerializeActive` (whose whole job is active state) is invisible to the save until first shown.
-    Same root cause as the inactive-claim bug fixed 2026-10-27; `Saveable` as the single registrant is the
-    natural place to fix it — register from a scene scan on load, not from `Awake`.
-  - **Out of scope:** `SerializeNounInstanceReference` and `SerializableSpawner` stay components — neither saves
-    component state, and nodes depend on both.
-- [ ] **Re-run the Task Z build smoke** — **required, not optional**, and this is the one that covers M2, M3
-  and M4 together. Repeat the full round-trip (run → suspend → save → close the app → reopen → load → resume)
+  - [x] **Build smoke** — passed 2026-10-27 on WebGL, all four samples through the launcher, after the
+    load-order fix. The **patch test** is folded into the final build check below rather than run twice.
+- [x] **M4b — `Saveable` + driver registry** — done 2026-10-27, archived to [`done.md`](done.md). Left over:
+  - [ ] **No node drives `NavMeshMover` yet** — it is usable from game code (`NavMeshMover.On(agent).MoveTo(...)`),
+    as the fork's was. A "Move NavMesh Agent" node next to `TranslateGameObjectNode` would make it authorable.
+    Small; a natural rider.
+  - [ ] **A project upgrading from 0.5.x would open with missing scripts** where the `Serialize*` components
+    were — there is no converter, because the conversion was done by hand on the one sample that used them.
+    Accepted at ~0 users; worth one line in the release notes, and a converter keyed on the old script GUIDs
+    (recorded in `done.md`) if anyone asks.
+- [ ] **Re-run the Task Z build smoke, and the patch test** — **required, not optional**, and this is the one
+  that covers M2, M3 and M4 together. For M4b, confirm scene 4's sprites come back after a reload.
+  ⚠️ **No sample tweens, animates or nav-moves anything**, so no build can exercise a `Tweener` being re-added
+  on load — the M4b path most exposed to IL2CPP, since it finds the type by name. Either add a short tween to a
+  sample (a "walk on" in scene 4 would also be demo-video material) and save mid-move, or accept the EditMode
+  coverage for now. Repeat the full round-trip (run → suspend → save → close the app → reopen → load → resume)
   on a **WebGL build** at minimum, since it's IL2CPP-only and therefore covers AOT codegen + managed stripping
   in one shot. See `done.md` for why WebGL is the decisive build.
 

@@ -1,5 +1,7 @@
 # Handoff: single `Saveable` component + drivers (port the v2 model to v1)
 
+> **Status, 2026-10-27: M4a and M4b are both built** — see `done.md`. This doc is now the design record.
+>
 > ## Decisions, 2026-10-27 — M4b is settled; read this, then the Reassessment, then the plan
 >
 > M4a is done in code (identity, spawner reassignment, runner savers, `scene:<guid>` references, and a saved

@@ -36,7 +36,7 @@ namespace Narramancer {
 		[SerializeField]
 		List<VisibleChoice> choices = new List<VisibleChoice>();
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		bool showingChoices = false;
 
 		List<GameObject> choiceGameObjects = new List<GameObject>();

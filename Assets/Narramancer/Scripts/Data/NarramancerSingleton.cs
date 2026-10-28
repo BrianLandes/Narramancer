@@ -335,6 +335,31 @@ namespace Narramancer {
 			monoBehaviourTable.Remove(monoBehaviour);
 		}
 
+		/// <summary>
+		/// Registers every saver in the loaded scenes, inactive objects included, and forgets any that have
+		/// been destroyed.
+		/// <para>
+		/// Savers register themselves in <c>Awake</c>, and Unity never calls <c>Awake</c> on an object that
+		/// starts inactive — so a hidden panel was invisible to the save until it had first been shown, even one
+		/// whose whole job was saving whether it was shown. Such an object can also be destroyed without
+		/// <c>OnDestroy</c> ever running, which would leave a dead entry behind; hence the pruning.
+		/// </para>
+		/// </summary>
+		private void RegisterAllInLoadedScenes() {
+			monoBehaviourTable.RemoveWhere(monoBehaviour => monoBehaviour is UnityEngine.Object unityObject && unityObject == null);
+			for (var i = 0; i < SceneManager.sceneCount; i++) {
+				var scene = SceneManager.GetSceneAt(i);
+				if (!scene.isLoaded) {
+					continue;
+				}
+				foreach (var root in scene.GetRootGameObjects()) {
+					foreach (var monoBehaviour in root.GetComponentsInChildren<ISerializableMonoBehaviour>(true)) {
+						monoBehaviourTable.Add(monoBehaviour);
+					}
+				}
+			}
+		}
+
 		public void Clear() {
 			storyInstance.Clear();
 			monoBehaviourTable.Clear();
@@ -347,6 +372,7 @@ namespace Narramancer {
 
 			storyInstance.SaveTable = new Blackboard();
 
+			RegisterAllInLoadedScenes();
 			foreach (var monoBehaviour in monoBehaviourTable) {
 				monoBehaviour.Serialize(storyInstance);
 			}
@@ -398,6 +424,7 @@ namespace Narramancer {
 				return;
 			}
 
+			RegisterAllInLoadedScenes();
 			foreach (var monoBehaviour in monoBehaviourTable.ToArray()) {
 				monoBehaviour.Deserialize(story);
 			}

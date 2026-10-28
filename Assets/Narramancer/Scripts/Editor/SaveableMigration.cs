@@ -40,6 +40,9 @@ namespace Narramancer {
 						var saveable = saver.GetComponent<Saveable>();
 						if (saveable == null) {
 							saveable = Undo.AddComponent<Saveable>(saver.gameObject);
+							// Identity only: the object's existing savers already save what it needs, and Reset —
+							// which AddComponent fires — would otherwise tick every component it can see.
+							saveable.SaveIdentityOnly();
 							added.Add($"{scene.name}: {Path(saver.transform)} ({saver.GetType().Name})");
 						}
 						else {
@@ -96,7 +99,7 @@ namespace Narramancer {
 							continue;
 						}
 						// Deliberately not EnsureGuid: the asset must stay id-less.
-						saver.gameObject.AddComponent<Saveable>();
+						saver.gameObject.AddComponent<Saveable>().SaveIdentityOnly();
 						changed = true;
 						added.Add($"{System.IO.Path.GetFileName(path)}: {Path(saver.transform)} ({saver.GetType().Name})");
 					}
@@ -152,6 +155,8 @@ namespace Narramancer {
 							var saveable = targetObject.GetComponent<Saveable>();
 							if (saveable == null) {
 								saveable = Undo.AddComponent<Saveable>(targetObject);
+								// Wired up so a save can name it, not so its transform starts being restored.
+								saveable.SaveIdentityOnly();
 								added.Add($"{scene.name}: {Path(targetObject.transform)} (wired to {behaviour.GetType().Name} on {behaviour.gameObject.name})");
 								changed = true;
 							}

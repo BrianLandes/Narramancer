@@ -197,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: d1559bbea35f433e8d04dbfa941e2dd3
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &58571472
 GameObject:
   m_ObjectHideFlags: 0
@@ -453,6 +455,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 20f18a89fe124fbda765219e84d31f16
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &136371099
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,7 +468,6 @@ GameObject:
   - component: {fileID: 136371100}
   - component: {fileID: 136371102}
   - component: {fileID: 136371101}
-  - component: {fileID: 136371103}
   - component: {fileID: 136371104}
   m_Layer: 5
   m_Name: Sprite
@@ -530,19 +533,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136371099}
   m_CullTransparentMesh: 1
---- !u!114 &136371103
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 136371099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveable: {fileID: 0}
 --- !u!114 &136371104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -556,6 +546,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: b4a7aafc8bae4de4ad1e7951cefd4829
+  saveActive: 0
+  savedComponents:
+  - image
 --- !u!1 &148121190
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,6 +1025,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 21c54e78b8b343718eef0cb2874bb8f1
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &337783117
 GameObject:
   m_ObjectHideFlags: 0
@@ -1296,6 +1291,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 527f56b15f7046d29adceadabfcb5f8c
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &463129825
 GameObject:
   m_ObjectHideFlags: 0
@@ -1559,6 +1556,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 2e192e1fe2414ca6adb39c4eeecaa140
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &582622490
 GameObject:
   m_ObjectHideFlags: 0
@@ -1660,6 +1659,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 036027c335764623ba404e6b20288f50
+  saveActive: 0
+  savedComponents: []
 --- !u!1001 &633314637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2010,6 +2011,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 785a82f922f445318ae115b65874a2ce
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &672533848
 GameObject:
   m_ObjectHideFlags: 0
@@ -2175,7 +2178,6 @@ GameObject:
   - component: {fileID: 782143593}
   - component: {fileID: 782143595}
   - component: {fileID: 782143594}
-  - component: {fileID: 782143596}
   - component: {fileID: 782143597}
   m_Layer: 5
   m_Name: Sprite
@@ -2241,19 +2243,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 782143592}
   m_CullTransparentMesh: 1
---- !u!114 &782143596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 782143592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveable: {fileID: 0}
 --- !u!114 &782143597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2267,6 +2256,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: e8507c8ba68d4d8d865397fb00e7258a
+  saveActive: 0
+  savedComponents:
+  - image
 --- !u!1 &784560171
 GameObject:
   m_ObjectHideFlags: 0
@@ -3018,6 +3010,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 34e5133595aa431487592b3cc0edb947
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &961181716
 GameObject:
   m_ObjectHideFlags: 0
@@ -3642,6 +3636,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 4a0f8d8c7ca74d28969690716f75e9de
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &1122201380
 GameObject:
   m_ObjectHideFlags: 0
@@ -3914,7 +3910,6 @@ GameObject:
   - component: {fileID: 1322376837}
   - component: {fileID: 1322376839}
   - component: {fileID: 1322376838}
-  - component: {fileID: 1322376840}
   - component: {fileID: 1322376841}
   m_Layer: 5
   m_Name: Sprite
@@ -3980,19 +3975,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1322376836}
   m_CullTransparentMesh: 1
---- !u!114 &1322376840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1322376836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c884ba584a0b75a45b32a18b57d1f3c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  saveable: {fileID: 0}
 --- !u!114 &1322376841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4006,6 +3988,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 3ca86abfd586474ab75d511f2f96ae01
+  saveActive: 0
+  savedComponents:
+  - image
 --- !u!1 &1345425360
 GameObject:
   m_ObjectHideFlags: 0
@@ -4089,7 +4074,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1659040200}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.32260573
+  m_Size: 0.2721914
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4158,7 +4143,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2029240389515801784, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 569.17236
+      value: 945.50525
       objectReference: {fileID: 0}
     - target: {fileID: 2029240389515801784, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -4166,7 +4151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2029240389515801784, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 296.58618
+      value: 484.75262
       objectReference: {fileID: 0}
     - target: {fileID: 2029240389515801784, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4226,7 +4211,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2370178574868622511, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000031128307
+      value: 1880.1697
       objectReference: {fileID: 0}
     - target: {fileID: 2370178575217732292, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4426,7 +4411,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 913.1416
+      value: 1311.784
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_SizeDelta.y
@@ -4434,7 +4419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 462.5708
+      value: 661.892
       objectReference: {fileID: 0}
     - target: {fileID: 4105382938267482798, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4448,6 +4433,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4478785557227892472, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6266370282923814840, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: guid
       value: c73e551908904b36bd0f5a48f87c5e26
@@ -4458,7 +4447,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7219837553588509386, guid: 98894c3335267434f93be278ee64ea5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000060521957
+      value: 298.6065
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4558,6 +4547,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: d54ea6e6803e4edf8a0518b448952009
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &1561308500
 GameObject:
   m_ObjectHideFlags: 0
@@ -4676,7 +4667,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 672533850}
   m_HandleRect: {fileID: 672533849}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5132,7 +5123,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1828920731}
   - component: {fileID: 1828920730}
-  - component: {fileID: 1828920729}
   m_Layer: 0
   m_Name: Hero
   m_TagString: Untagged
@@ -5140,19 +5130,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1828920729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828920728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b48f11b579512ab4cb3d65c2b84f2368, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Narramancer::Narramancer.SerializeTransform
-  saveable: {fileID: 1828920730}
 --- !u!114 &1828920730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5166,6 +5143,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 5859a8f91f9a4874ad91882bd445e06a
+  saveActive: 0
+  savedComponents:
+  - transform
 --- !u!4 &1828920731
 Transform:
   m_ObjectHideFlags: 0
@@ -5358,6 +5338,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: 0fecedc1dbb4455f88dd7e59f3072ec2
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &1889603529
 GameObject:
   m_ObjectHideFlags: 0
@@ -5539,6 +5521,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Narramancer::Narramancer.Saveable
   guid: b44117993e624b0683b0a8389a2d78a4
+  saveActive: 0
+  savedComponents: []
 --- !u!1 &1992776067
 GameObject:
   m_ObjectHideFlags: 0

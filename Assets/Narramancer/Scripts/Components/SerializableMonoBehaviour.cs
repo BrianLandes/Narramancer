@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace Narramancer {
@@ -19,8 +18,8 @@ namespace Narramancer {
 		/// <summary>
 		/// Written by every <see cref="Serialize"/>, so a load can tell "saved, and the value was the default"
 		/// from "never saved at all". Without it, a component the save knew nothing about read every value back
-		/// as its type's default: a <see cref="SerializeActive"/> hid its object, <see cref="SerializeText"/>
-		/// blanked its text, and <see cref="SerializeTransform"/> threw — which, inside the load loop, abandoned
+		/// as its type's default: a <c>SerializeActive</c> hid its object, <c>SerializeText</c>
+		/// blanked its text, and <c>SerializeTransform</c> threw — which, inside the load loop, abandoned
 		/// the load for every component after it.
 		/// </summary>
 		private const string SavedMarker = "$saved";
@@ -78,35 +77,7 @@ namespace Narramancer {
 		public virtual void Serialize(StoryInstance story) {
 			story.SaveTable.SetBool(Key(SavedMarker), true);
 
-			var type = this.GetType();
-
-			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-
-			foreach (var field in fields) {
-				foreach (var attribute in field.GetCustomAttributes()) {
-					if (attribute is SerializeMonoBehaviourFieldAttribute) {
-
-						if (field.FieldType == typeof(Promise)) {
-							var value = (Promise)field.GetValue(this);
-							if (value != null) {
-								story.Promises[Key(field.Name)] = value;
-							}
-						}
-						else
-						if (field.FieldType == typeof(NodeRunner)) {
-							var value = (NodeRunner)field.GetValue(this);
-							if (value != null) {
-								story.NodeRunners[Key(field.Name)] = value;
-							}
-						}
-						else {
-							var value = field.GetValue(this);
-							story.SaveTable.Set(Key(field.Name), value, field.FieldType);
-
-						}
-					}
-				}
-			}
+			SavedFields.Capture(this, Key, story);
 		}
 
 		public virtual void Deserialize(StoryInstance story) {
@@ -118,34 +89,7 @@ namespace Narramancer {
 
 			valuesOverwrittenByDeserialize = true;
 
-			var type = this.GetType();
-
-			var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-
-			foreach (var field in fields) {
-				foreach (var attribute in field.GetCustomAttributes()) {
-					if (attribute is SerializeMonoBehaviourFieldAttribute) {
-
-						if (field.FieldType == typeof(Promise)) {
-							if (story.Promises.TryGetValue(Key(field.Name), out var promise)) {
-								field.SetValue(this, promise);
-							}
-						}
-						else
-						if (field.FieldType == typeof(NodeRunner)) {
-							if (story.NodeRunners.TryGetValue(Key(field.Name), out var runner)) {
-								field.SetValue(this, runner);
-							}
-						}
-						else
-						if (story.SaveTable.Contains(Key(field.Name), field.FieldType)) {
-							// A field added since the save was written keeps its initializer rather than its type's default.
-							var value = story.SaveTable.GetAndRemove(Key(field.Name), field.FieldType);
-							field.SetValue(this, value);
-						}
-					}
-				}
-			}
+			SavedFields.Restore(this, Key, story);
 		}
 	}
 }

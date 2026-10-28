@@ -20,9 +20,8 @@ namespace Narramancer {
 			var animationComponent = GetInputValue(runner.Blackboard, nameof(this.animationComponent), this.animationComponent);
 			var animationClip = GetInputValue(runner.Blackboard, nameof(this.animationClip), this.animationClip);
 
-			var serializeAnimation = animationComponent.gameObject.GetComponent<SerializeAnimation>();
-			if (serializeAnimation != null) {
-				var promise = serializeAnimation.Play(animationClip);
+			if (animationClip != null) {
+				var promise = AnimationPlayer.On(animationComponent).Play(animationClip);
 				if (wait) {
 					runner.Suspend();
 					promise.WhenDone(Continuation.Resume(runner));

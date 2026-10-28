@@ -4,7 +4,7 @@ namespace Narramancer {
 
 	public class SerializeNounInstanceReference : SerializableMonoBehaviour {
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		private NounInstance instance;
 
 		public NounInstance GetInstance() {

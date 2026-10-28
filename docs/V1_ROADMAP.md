@@ -26,8 +26,8 @@
 | B3 Odin removal | ✅ Done 2026-09-04 (**M1**) — `NarramancerSerializer`, GUID-keyed references, vendored OdinSerializer deleted. WebGL smoke + patch test passed |
 | Execution-model correctness | ✅ Done 2026-09-04 (**M2**) — sub-runner ownership, durable blackboard keys, owned timers |
 | Serialized closures | ✅ Done 2026-09-04 (**M3**) — `Continuation` record, WebGL smoke passed |
-| B4 Saveable — identity half | 🟡 **M4a, mostly done** — `Saveable` guid, guid-keyed `SerializableMonoBehaviour.Key`, spawner reassignment, `scene:<guid>` references, migration tool. Open items in `tasks.md` |
-| B4 Saveable — driver half | ❌ **M4b, not started** — confirmed in, pre-launch (2026-10-27); design settled in `SAVEABLE_REFACTOR_HANDOFF.md` |
+| B4 Saveable — identity half | ✅ **M4a, done** — WebGL build smoke passed 2026-10-27 |
+| B4 Saveable — driver half | ✅ **M4b, done in code 2026-10-27** — drivers, `[Save]`, eight of the nine `Serialize*` components deleted. Awaiting the final build check |
 | Odin Inspector coexistence check | ❌ Not run — needs a copy of Odin Inspector |
 | #2 Core extraction | ❌ Not started — gated on the post-launch measurement |
 | #4 Multi-window xNode | ❌ Not started — sized, see §4 B6 |
@@ -226,7 +226,7 @@ handles, save envelope, no Reflection.Emit) behind those two calls, then delete 
 Ship a `schemaVersion` in the envelope from day one, and fail with a clear "incompatible save" message rather
 than a crash.
 
-### B4. Saveable refactor — one component + drivers 🟡 *(identity half = M4a, mostly done; drivers = M4b, not started)*
+### B4. Saveable refactor — one component + drivers ✅ *(M4a + M4b done in code 2026-10-27)*
 Full design in `SAVEABLE_REFACTOR_HANDOFF.md`. Worth doing, and worth doing **adjacent to B3** since both touch
 the save format and both are free only in the zero-user window.
 
@@ -306,7 +306,7 @@ blocker 1's fix gives you for free). Keying the cache by `(target, window)` is t
 | 3 | ~~B1 safe wins (deprecations + TypeCache)~~ | B | ✅ done 2026-08-11 |
 | 4 | ~~**B2 test net** (save/load round-trip first)~~ | B | ✅ done 2026-08-27 |
 | 5 | ~~B3 Odin removal → `NarramancerSerializer`~~ | B | ✅ done 2026-09-04 (M1) |
-| 6 | B4 Saveable + GUID identity | B | 🟡 **in progress** — M4a mostly done, M4b not started |
+| 6 | ~~B4 Saveable + GUID identity~~ | B | ✅ done in code 2026-10-27 (M4a + M4b) |
 | 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization |
 | 8 | B6 multi-window xNode | B | independent; optional before launch, don't let it delay 10 |
 | 9 | Record demo video | A | after B4, so inspector footage doesn't go stale |

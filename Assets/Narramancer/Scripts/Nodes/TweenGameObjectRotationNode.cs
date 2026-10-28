@@ -65,24 +65,9 @@ namespace Narramancer {
 				}
 
 				if (speed > 0) {
-					Promise promise = null;
+					var promise = Tweener.On(inputGameObject).RotateTo(targetRotation, speed);
 
-					var serializeTransform = inputGameObject.GetComponent<SerializeTransform>();
-					if (serializeTransform != null) {
-						promise = serializeTransform.TweenTo(targetRotation, speed);
-					}
-					else {
-						//var serializeRectTransform = inputGameObject.GetComponent<SerializeRectTransform>();
-						//if (serializeRectTransform != null) {
-						//	promise = serializeRectTransform.TweenTo(targetRotation, speed);
-						//}
-						//else {
-							Debug.LogWarning("Target GameObject has no way to translate it: " + inputGameObject.name);
-						//	// TODO: animate the object still
-						//}
-					}
-
-					if (promise != null && wait) {
+					if (wait) {
 						runner.Suspend();
 						promise.WhenDone(Continuation.Resume(runner));
 					}

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Narramancer {
@@ -15,10 +17,16 @@ namespace Narramancer {
 	/// One per GameObject. Every <see cref="SerializableMonoBehaviour"/> on the object keys its state off this
 	/// component's <see cref="Guid"/>, so they share one identity rather than each inventing their own.
 	/// </para>
+	/// <para>
+	/// It is also what saves the object: the components ticked in its inspector, through their drivers
+	/// (<see cref="IComponentSaver"/>), and every <see cref="SaveAttribute"/> field on its behaviour components.
+	/// Added by hand, it saves everything it can; added by the migration tool purely for identity, it saves
+	/// nothing until told to.
+	/// </para>
 	/// </summary>
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Narramancer/Saveable")]
-	public class Saveable : MonoBehaviour {
+	public class Saveable : MonoBehaviour, ISerializableMonoBehaviour {
 
 		[SerializeField]
 		[Tooltip("Identifies this object in save files. Minted automatically; changing it orphans existing saves.")]
@@ -92,6 +100,7 @@ namespace Narramancer {
 		/// <summary>Called when the component is first added, which is the normal way an object gets its id.</summary>
 		private void Reset() {
 			EnsureGuid();
+			SaveEverythingDetected();
 		}
 
 		private void OnValidate() {
@@ -100,11 +109,17 @@ namespace Narramancer {
 
 		private void Awake() {
 			EnsureGuid();
+			if (Application.isPlaying && !IsPrefabAsset()) {
+				NarramancerSingleton.Instance.Register(this);
+			}
 		}
 
 		private void OnDestroy() {
 			if (HasGuid && claimed.TryGetValue(guid, out var holder) && holder == this) {
 				claimed.Remove(guid);
+			}
+			if (Application.isPlaying) {
+				NarramancerSingleton.Instance?.Unregister(this);
 			}
 		}
 
@@ -204,5 +219,157 @@ namespace Narramancer {
 		/// destroy Saveables outside the normal scene lifecycle; the table maintains itself otherwise.
 		/// </summary>
 		public static void ClearClaims() => claimed.Clear();
+
+		#region Saving
+
+		[SerializeField]
+		[Tooltip("Save whether this object is active.")]
+		private bool saveActive = false;
+
+		[SerializeField]
+		[Tooltip("The drivers, by key, whose components on this object are saved.")]
+		private List<string> savedComponents = new List<string>();
+
+		public bool SavesActive { get => saveActive; set => saveActive = value; }
+
+		public bool Saves(IComponentSaver saver) => savedComponents.Contains(saver.Key);
+
+		public void SetSaved(IComponentSaver saver, bool saved) {
+			if (saved && !Saves(saver)) {
+				savedComponents.Add(saver.Key);
+			}
+			else
+			if (!saved) {
+				savedComponents.Remove(saver.Key);
+			}
+		}
+
+		/// <summary>Ticks every component that has a driver, and active state. What adding the component by hand does.</summary>
+		public void SaveEverythingDetected() {
+			saveActive = true;
+			foreach (var (_, saver, _) in DetectedComponents()) {
+				SetSaved(saver, true);
+			}
+		}
+
+		/// <summary>Saves nothing but the guid. What the migration tool wants when it adds one only so the object can be named.</summary>
+		public void SaveIdentityOnly() {
+			saveActive = false;
+			savedComponents.Clear();
+		}
+
+		/// <summary>
+		/// Every component on this object that has a driver, with its index among components using the same
+		/// driver — so two AudioSources on one object get two save entries rather than one overwriting the other.
+		/// </summary>
+		public IEnumerable<(Component component, IComponentSaver saver, int index)> DetectedComponents() {
+			var counts = new Dictionary<IComponentSaver, int>();
+			foreach (var component in GetComponents<Component>()) {
+				if (component == null || !ComponentSaverRegistry.TryFind(component.GetType(), out var saver)) {
+					continue;
+				}
+				counts.TryGetValue(saver, out var index);
+				counts[saver] = index + 1;
+				yield return (component, saver, index);
+			}
+		}
+
+		/// <summary>
+		/// The behaviour components whose <see cref="SaveAttribute"/> fields this saves. A component that saves
+		/// itself — every <see cref="ISerializableMonoBehaviour"/>, the printers and verb runners among them — is
+		/// left to do so, or its fields would be written twice.
+		/// </summary>
+		private IEnumerable<(MonoBehaviour behaviour, int index)> SavedBehaviours() {
+			var counts = new Dictionary<Type, int>();
+			foreach (var behaviour in GetComponents<MonoBehaviour>()) {
+				if (behaviour == null || behaviour is ISerializableMonoBehaviour || !SavedFields.HasAny(behaviour.GetType())) {
+					continue;
+				}
+				var type = behaviour.GetType();
+				counts.TryGetValue(type, out var index);
+				counts[type] = index + 1;
+				yield return (behaviour, index);
+			}
+		}
+
+		private string Key(string name) => $"{EnsureGuid()}:{name}";
+
+		private static string Slot(string name, int index) => index == 0 ? name : $"{name}#{index}";
+
+		private const string SavedMarker = "$saved";
+		private const string ActiveKey = "$active";
+		private const string BehavioursKey = "$behaviours";
+
+		public void Serialize(StoryInstance story) {
+			story.SaveTable.SetBool(Key(SavedMarker), true);
+
+			foreach (var (component, saver, index) in DetectedComponents()) {
+				if (Saves(saver)) {
+					story.SaveTable.Set(Key(Slot(saver.Key, index)), saver.Capture(component), saver.StateType);
+				}
+			}
+
+			// Which behaviours were saved, by type, so a load can re-add any that were added at runtime — a
+			// Tweener a node attached mid-story is not in the scene file, and its state has nowhere to go otherwise.
+			var behaviourTypes = new List<string>();
+			foreach (var (behaviour, index) in SavedBehaviours()) {
+				var name = Slot(behaviour.GetType().Name, index);
+				SavedFields.Capture(behaviour, field => Key($"{name}:{field}"), story);
+				behaviourTypes.Add(Serialization.TypeNames.Write(behaviour.GetType()));
+			}
+			if (behaviourTypes.Count > 0) {
+				story.SaveTable.SetObject(Key(BehavioursKey), behaviourTypes);
+			}
+
+			if (saveActive) {
+				story.SaveTable.SetBool(Key(ActiveKey), gameObject.activeSelf);
+			}
+		}
+
+		public void Deserialize(StoryInstance story) {
+			if (!story.SaveTable.HasBool(Key(SavedMarker))) {
+				// The save knew nothing of this object — it was added since. Leave it as the scene built it.
+				return;
+			}
+			story.SaveTable.RemoveBool(Key(SavedMarker));
+
+			foreach (var (component, saver, index) in DetectedComponents().ToList()) {
+				var key = Key(Slot(saver.Key, index));
+				if (Saves(saver) && story.SaveTable.Contains(key, saver.StateType)) {
+					saver.Apply(component, story.SaveTable.GetAndRemove(key, saver.StateType));
+				}
+			}
+
+			if (story.SaveTable.GetObject(Key(BehavioursKey)) is List<string> behaviourTypes) {
+				story.SaveTable.RemoveObject(Key(BehavioursKey));
+				RestoreMissingBehaviours(behaviourTypes);
+			}
+			foreach (var (behaviour, index) in SavedBehaviours().ToList()) {
+				var name = Slot(behaviour.GetType().Name, index);
+				SavedFields.Restore(behaviour, field => Key($"{name}:{field}"), story);
+			}
+
+			// Last, because activating wakes the object, and its components should wake into their saved state.
+			if (story.SaveTable.HasBool(Key(ActiveKey))) {
+				gameObject.SetActive(story.SaveTable.GetBool(Key(ActiveKey)));
+				story.SaveTable.RemoveBool(Key(ActiveKey));
+			}
+		}
+
+		private void RestoreMissingBehaviours(List<string> typeNames) {
+			// Counted, not just checked for presence: two Tweeners saved means two wanted.
+			foreach (var group in typeNames.GroupBy(name => name)) {
+				if (!Serialization.TypeNames.TryRead(group.Key, out var type) || !typeof(MonoBehaviour).IsAssignableFrom(type)) {
+					Debug.LogWarning($"'{name}' was saved with a '{group.Key}' component that this build does not have, so its state cannot be restored.", this);
+					continue;
+				}
+				var missing = group.Count() - GetComponents(type).Length;
+				for (var i = 0; i < missing; i++) {
+					gameObject.AddComponent(type);
+				}
+			}
+		}
+
+		#endregion
 	}
 }

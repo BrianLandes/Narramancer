@@ -45,7 +45,7 @@ The codebase is built around a deliberate metaphor; matching it matters when nam
 | Serializer | `Scripts/Serialization/` | `NarramancerSerializer` — in-house, reflection-based JSON. Unity objects are saved by durable id (asset GUID, Resources path, runtime registry key, or `scene:<guid>`), never by instanceID |
 | Save/load entry points | `Scripts/Utilities/SaveLoadUtilities.cs` | `SerializePayload` / `DeserializePayload` are the **only** serializer call sites |
 | Save orchestration | `Scripts/Data/NarramancerSingleton.cs` | `PrepareStoryForSave()` / `LoadStory()`; a registry of `ISerializableMonoBehaviour` |
-| Scene-object identity | `Scripts/Components/Saveable.cs` | A minted guid per GameObject; every `SerializableMonoBehaviour` keys its state off it |
+| Scene-object identity + saving | `Scripts/Components/Saveable.cs`, `Scripts/Saving/` | One `Saveable` per object: a minted guid, the component drivers (`IComponentSaver`) it ticks, and `[Save]` fields on behaviour components |
 | Execution | `Scripts/Data/NodeRunner.cs`, `Promise.cs`, `Continuation` | Flag-based suspend/resume, not coroutines. Never serialize a closure — use a `Continuation` |
 | Tests | `Assets/Test Suite/Editor/` (`Tests.Editor.asmdef`) | ~520 EditMode tests; run with `run_tests` (EditMode, assembly `Tests.Editor`) |
 

@@ -28,7 +28,7 @@ namespace Narramancer {
 		private ActionVerbList runOnStartVerbs = new ActionVerbList();
 		public static string RunOnStartVerbs => nameof(runOnStartVerbs);
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		private List<NodeRunner> nodeRunners = new List<NodeRunner>();
 		public List<NodeRunner> NodeRunners => nodeRunners;
 

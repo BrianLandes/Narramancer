@@ -19,6 +19,54 @@ Archive of completed tasks and finished phases, moved here from
 
 ## Completed 2026-10-27
 
+- [x] **M4b — `Saveable` is the one component that saves an object.** Decisions in
+  [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md) ("Decisions, 2026-10-27").
+  - **Drivers** (`Scripts/Saving/`): `IComponentSaver` / `ComponentSaver<TComponent, TState>`, and
+    `ComponentSaverRegistry` with an explicit built-in list plus a public `Register` — no reflection discovery,
+    because a type reached only by reflection is what IL2CPP strips. Built-ins: Transform (now **local**, not
+    world), RectTransform, AudioSource, **Animation** (not in the plan — deleting `SerializeAnimation` would
+    otherwise have dropped the clip and playhead), Image, SpriteRenderer, Text, **NavMeshAgent** (compiled only
+    with the AI module, via a `versionDefines` → `NARRAMANCER_AI_MODULE` on the runtime asmdef). Lookup walks
+    base types, so RectTransform beats Transform and a game's `Image` subclass gets the Image driver.
+  - **`Saveable`** runs the drivers its inspector ticks (`SaveableEditor`), saves active state as an option of
+    its own (it belongs to the object, not a component), and saves every `[Save]` field on behaviour components
+    — **re-adding any that are missing on load**, since one a node added mid-story is not in the scene file.
+    Components that save themselves (`ISerializableMonoBehaviour`) are skipped; without the skip a Saveable
+    wrote `RunActionVerbMonoBehaviour`'s runner under the *same key* the component uses, so the two would have
+    overwritten each other.
+  - Ticked by default when added by hand (`Reset` — which, confirmed, `AddComponent` fires in the editor);
+    identity-only when the migration tool adds it, so the printers and verb-wired `Text`s did not quietly start
+    restoring their transforms.
+  - **`[Save]`** replaces `[SerializeMonoBehaviourField]`; `SavedFields` is the one implementation, shared with
+    `SerializableMonoBehaviour`.
+  - **Behaviour components, added on demand by the nodes:** `Tweener` (`TranslateGameObjectNode`,
+    `TweenGameObjectRotationNode` — no more "has no way to translate it" when `SerializeTransform` was missing),
+    `AnimationPlayer` (`PlayAnimationNode`, which used to ignore its clip input without a `SerializeAnimation`),
+    `NavMeshMover` (the fork's move-and-wait, with its target saved as a reference instead of a hierarchy path
+    found by `GameObject.Find`). A replaced tween now resolves its old promise rather than leaving its waiter hung.
+  - **Bug fixed in passing:** a rotation tween finished when `Quaternion.Dot ≈ 0` — 90° *apart*, not arrived — so
+    it practically never finished and a verb waiting on it hung. `ARotationTweenFinishes` fails on the old check.
+  - **Sprites saved by reference** when they have an id; rebuilt from texture otherwise, now keeping border and
+    pixels-per-unit. A sprite, clip or texture that cannot be named is skipped with a warning instead of failing
+    the whole save.
+  - **Inactive savers are registered**: `PrepareStoryForSave` and the load scan the loaded scenes, inactive
+    objects included, and prune destroyed entries. An object that starts hidden used to be invisible to saves.
+  - **Deleted:** `SerializeTransform`, `SerializeRectTransform`, `SerializeActive`, `SerializeText`,
+    `SerializeImage`, `SerializeSpriteRenderer`, `SerializeAudioSource`, `SerializeAnimation`. Scene 4, the only
+    asset using any, was converted in place (Hero → `transform`, three portraits → `image`). Their script GUIDs,
+    for a converter if an upgrading project ever needs one: Transform `b48f11b579512ab4cb3d65c2b84f2368`,
+    RectTransform `69c985d87606bfb438a60dc93140fa2e`, Active `19fd824f685d8f34f87dc1179a8d5f14`,
+    Text `9cfe3bb777010a84ebc1143c214970e8`, Image `c884ba584a0b75a45b32a18b57d1f3c5`,
+    SpriteRenderer `4843a59560f1e8c4c8515493499ad824`, AudioSource `8bac184a9ee6d6c43987ea8d8cde8457`,
+    Animation `8351ce64f35c1764393b7ec38900ae1b`.
+  - **Tests:** 14 in `SaveableDriverTests`; `SceneComponentSaveTests` and `SaveableIdentityTests` ported off the
+    deleted components. Re-adding behaviours, the rotation fix and the self-saver skip were each reverted and
+    seen to fail. 548/548.
+  - **A test was leaking a GameObject into whatever scene was open** — `ReorderingComponentsDoesNotChangeTheKey`
+    uses the undoable `MoveComponentUp`, and the runner's undo revert rebuilt the destroyed object. It never
+    reached a scene file (the scene was not dirtied), but saving at the wrong moment would have baked a stray
+    "Hero" into scene 4. The test now clears that undo history.
+
 - [x] **Loading a save that points at a scene object failed in a real build** — found in the 2026-10-27 WebGL
   smoke, scene 4: `The save refers to the asset 'scene:…' … which could not be found`. Two causes, both fixed:
   - **Wrong order.** `LoadMenu` deserialized the whole story, *then* `LoadStory` reloaded the scene. Scene

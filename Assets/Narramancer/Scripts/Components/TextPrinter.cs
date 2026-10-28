@@ -28,10 +28,10 @@ namespace Narramancer {
 		float fadeParentSpeed = 10f;
 
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		protected string targetText = "";
 
-		[SerializeMonoBehaviourField]
+		[Save]
 		protected Promise promise = default;
 
 		protected Coroutine revealTextCoroutine = default;
