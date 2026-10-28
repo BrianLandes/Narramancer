@@ -29,6 +29,9 @@ namespace Narramancer {
 		public static NavMeshMover On(NavMeshAgent agent) {
 			if (!agent.TryGetComponent<NavMeshMover>(out var mover)) {
 				mover = agent.gameObject.AddComponent<NavMeshMover>();
+				if (!agent.TryGetComponent<Saveable>(out _)) {
+					Debug.LogWarning($"'{agent.name}' has no {nameof(Saveable)}, so a save made while it is walking will not resume the walk.", agent);
+				}
 			}
 			return mover;
 		}

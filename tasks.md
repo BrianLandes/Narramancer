@@ -83,10 +83,11 @@ cost nothing and don't make the product any more purchasable.
 
 ## Now / In progress
 
-- [ ] **The final build check for M2–M4 — then §3.** M4a and M4b are done in code as of 2026-10-27 (549/549
-  EditMode tests): scene objects have a durable identity, `Saveable` is the one component that saves an object,
-  and eight of the nine `Serialize*` components are gone (`SerializeNounInstanceReference` stays). What stands between here and the relaunch work is the last
-  WebGL build smoke + patch test (§2, "Re-run the Task Z build smoke"), which is the first to cover M4b.
+- [ ] **The patch test for M2–M4 — then §3.** M4a and M4b are done and merged to `main`, and the WebGL build
+  smoke passed on 2026-10-28 (555/555 EditMode tests). Scene objects have a durable identity, `Saveable` is the
+  one component that saves an object, and eight of the nine `Serialize*` components are gone
+  (`SerializeNounInstanceReference` stays). The patch test is all that stands between here and the relaunch
+  work (§2, "Re-run the Task Z build smoke").
   Design record: [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
   ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale — `Cancel`
   "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
@@ -129,7 +130,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 549
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 555
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -148,7 +149,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **549 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **555 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -247,7 +248,7 @@ ergonomics feature.** Both belong in the zero-user window, but M4a is independen
 that must ship if anything gets time-boxed. Full reasoning in the Reassessment at the top of
 [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md).
 
-- [ ] **M4a — guid identity (the correctness bug)** — see the **Reassessment** at the top of
+- [x] **M4a — guid identity (the correctness bug)** — see the **Reassessment** at the top of
   [`docs/SAVEABLE_REFACTOR_HANDOFF.md`](docs/SAVEABLE_REFACTOR_HANDOFF.md), which corrects the plan below it.
   A scene object's save key is `$"{field} {transform.FullPath()}[{componentIndex}]"`
   (`SerializableMonoBehaviour.cs:22`), so renaming an object, reparenting it, reordering its components, or two
@@ -306,9 +307,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   - [x] **Build smoke** — passed 2026-10-27 on WebGL, all four samples through the launcher, after the
     load-order fix. The **patch test** is folded into the final build check below rather than run twice.
 - [x] **M4b — `Saveable` + driver registry** — done 2026-10-27, archived to [`done.md`](done.md). Left over:
-  - [ ] **No node drives `NavMeshMover` yet** — it is usable from game code (`NavMeshMover.On(agent).MoveTo(...)`),
-    as the fork's was. A "Move NavMesh Agent" node next to `TranslateGameObjectNode` would make it authorable.
-    Small; a natural rider.
+  - [x] **A node drives `NavMeshMover`** *(2026-10-28)* — `MoveNavMeshAgentNode` (*GameObject/Move NavMesh
+    Agent*): a destination, or a transform to follow, and an optional wait for arrival. Compiled out without the
+    AI module, like the mover. ⚠️ **No automated coverage**: an agent only paths inside the play-mode loop, and
+    the suite is EditMode only. The node is thin glue over the mover, but nothing has run it yet. Covered the day
+    a sample walks something, or a PlayMode assembly exists.
   - [ ] **A node can write to a component nothing saves, and nothing says so.** Scene 4 hit this: a verb set
     text on objects with no `Saveable`, or with an identity-only one, and the text quietly reverted on load. A
     play-mode warning would have to tell deliberate transient UI apart from a mistake, so it is likely too noisy.
@@ -320,6 +323,9 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     (recorded in `done.md`) if anyone asks.
 - [ ] **Re-run the Task Z build smoke, and the patch test** — **required, not optional**, and this is the one
   that covers M2, M3 and M4 together. For M4b, confirm scene 4's sprites **and** texts come back after a reload.
+  - [x] **Build smoke passed 2026-10-28** on WebGL, all four samples through the launcher, after the two fixes
+    below. Merged to `main`.
+  - [ ] **Patch test** — not yet recorded as run against M4: save, change the assets, rebuild, load.
   - **First M4b run, 2026-10-28: scene 4's sprites and texts did not come back.** Two causes, both fixed:
     - **The sprites could not be named in a build.** The manifest held only Narramancer's own assets and
       `Resources`, so the equipment sprites (which live in the nouns' blackboards) saved fine in the editor and
@@ -341,7 +347,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
 
 ### Pre-launch fixes — small, non-breaking
 
-- [ ] **The continue indicator shows while a `Wait` is running after a load** — reloading into a suspended
+- [x] **The continue indicator shows while a `Wait` is running after a load** — fixed 2026-10-28. The printers
+  showed the indicator whenever text was on screen. They now show it only while a click is what the story is
+  waiting for, which is whether a promise is pending. The text-and-choice printer was the common case, because
+  it keeps its text up after a click. `SkipTextReveal` had the same blind spot within a single session. 4 tests in
+  `PrinterSaveTests`, the three negative ones seen to fail against the old code. Original report: reloading into a suspended
   `WaitNode` displays `TextPrinter`'s continue indicator, so it looks like it wants a click when it is actually
   waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
   will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is

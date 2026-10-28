@@ -39,6 +39,13 @@ namespace Narramancer {
 
 		public bool IsRevealingText { get; set; }
 
+		/// <summary>
+		/// True while a click is what the story is waiting for. Text on screen is not enough: text printed without
+		/// waiting, or left up after a continue, can sit there while a <c>Wait</c> runs, and showing the continue
+		/// indicator then asks for a click that does nothing.
+		/// </summary>
+		protected bool IsWaitingForContinue => promise != null;
+
 		void Start() {
 			if (!valuesOverwrittenByDeserialize) {
 				if (revealTextCoroutine == null) {
@@ -158,6 +165,8 @@ namespace Narramancer {
 				continueIndicator?.SetActive(false);
 				HideParentCanvas();
 				targetText = null;
+				var promise = this.promise;
+				this.promise = null;
 				promise?.Resolve();
 			}
 		}
@@ -165,7 +174,7 @@ namespace Narramancer {
 		public void SkipTextReveal() {
 			this.StopCoroutineMaybe(revealTextCoroutine);
 			textField.text = targetText;
-			continueIndicator?.SetActive(true);
+			continueIndicator?.SetActive(IsWaitingForContinue);
 			IsRevealingText = false;
 		}
 
@@ -179,7 +188,7 @@ namespace Narramancer {
 
 			if (targetText.IsNotNullOrEmpty()) {
 				textField.text = targetText;
-				continueIndicator?.SetActive(true);
+				continueIndicator?.SetActive(IsWaitingForContinue);
 				parentCanvasGroup.gameObject.SetActive(true);
 			}
 			else {
