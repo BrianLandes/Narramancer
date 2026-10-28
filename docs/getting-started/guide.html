@@ -1,0 +1,373 @@
+<!doctype html>
+<!--
+  Source of Assets/Narramancer/Documentation/Getting Started.pdf, which ships in the package.
+  Rebuild after editing (from the repo root):
+    google-chrome --headless=new --no-pdf-header-footer --print-to-pdf="Assets/Narramancer/Documentation/Getting Started.pdf" "file://$PWD/docs/getting-started/guide.html"
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Narramancer — Getting Started</title>
+<style>
+	@page { size: Letter; margin: 0.8in 0.85in 0.85in 0.85in; }
+	:root {
+		--navy: #0F2130;
+		--panel: #162232;
+		--slate: #AEBECF;
+		--accent: #EF476F;
+		--ink: #1B2533;
+		--muted: #5B6878;
+		--rule: #D9E0E8;
+		--tint: #F3F6F9;
+	}
+	html { font-family: "Noto Sans", "DejaVu Sans", sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; }
+	body { margin: 0; }
+	h1, h2, h3 { color: var(--navy); line-height: 1.25; }
+	h1 { font-size: 21pt; margin: 0 0 4pt; padding-bottom: 6pt; border-bottom: 2.5pt solid var(--accent); break-after: avoid; }
+	h2 { font-size: 13.5pt; margin: 18pt 0 4pt; break-after: avoid; }
+	h3 { font-size: 11pt; margin: 12pt 0 2pt; break-after: avoid; }
+	p { margin: 0 0 7pt; }
+	ul, ol { margin: 0 0 8pt; padding-left: 18pt; }
+	li { margin-bottom: 3pt; }
+	code, .mono { font-family: "Noto Sans Mono", "DejaVu Sans Mono", monospace; font-size: 9pt; }
+	p code, li code, td code { background: var(--tint); padding: 0 2.5pt; border-radius: 2pt; }
+	pre { font-family: "Noto Sans Mono", "DejaVu Sans Mono", monospace; font-size: 8.6pt; line-height: 1.45; background: var(--navy); color: #E4EBF2; padding: 9pt 11pt; border-radius: 4pt; margin: 4pt 0 10pt; white-space: pre-wrap; break-inside: avoid; }
+	pre .c { color: #8FA3B8; }
+	pre .k { color: #F78DA7; }
+	.path { font-weight: 600; color: var(--navy); }
+	table { width: 100%; border-collapse: collapse; margin: 4pt 0 10pt; font-size: 9.6pt; break-inside: avoid; }
+	th { text-align: left; background: var(--navy); color: #fff; font-weight: 600; padding: 5pt 7pt; }
+	td { padding: 5pt 7pt; border-bottom: 0.75pt solid var(--rule); vertical-align: top; }
+	tr:nth-child(even) td { background: var(--tint); }
+	.note { border-left: 3pt solid var(--accent); background: #FDF1F4; padding: 7pt 10pt; margin: 6pt 0 10pt; break-inside: avoid; }
+	.note.info { border-left-color: var(--navy); background: var(--tint); }
+	.note b:first-child { color: var(--navy); }
+	.chapter { break-before: page; }
+	.lede { font-size: 11.5pt; color: var(--muted); margin-bottom: 10pt; }
+
+	/* Cover */
+	.cover { height: 9.2in; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; break-after: page; }
+	.cover img { width: 1.25in; height: 1.25in; margin-bottom: 22pt; }
+	.cover .title { font-size: 34pt; font-weight: 700; color: var(--navy); line-height: 1.1; }
+	.cover .subtitle { font-size: 15pt; color: var(--accent); font-weight: 600; margin-top: 6pt; }
+	.cover .meta { margin-top: 26pt; color: var(--muted); font-size: 10pt; border-top: 1pt solid var(--rule); padding-top: 10pt; width: 100%; }
+
+	/* Contents */
+	.toc { list-style: none; padding: 0; margin: 8pt 0 0; }
+	.toc li { display: flex; padding: 5pt 0; border-bottom: 0.75pt solid var(--rule); margin: 0; }
+	.toc .n { color: var(--accent); font-weight: 700; width: 22pt; }
+	.toc .s { color: var(--muted); margin-left: auto; font-size: 9.5pt; }
+
+	/* "What a save holds" figure */
+	.figure { display: flex; gap: 8pt; margin: 6pt 0 12pt; break-inside: avoid; }
+	.figure .box { flex: 1; border: 1pt solid var(--rule); border-top: 3pt solid var(--navy); border-radius: 3pt; padding: 7pt 9pt; font-size: 9.3pt; }
+	.figure .box.you { border-top-color: var(--accent); }
+	.figure .box h4 { margin: 0 0 3pt; font-size: 9.8pt; color: var(--navy); }
+	.figure .box ul { margin: 0; padding-left: 12pt; }
+	.figure .box li { margin-bottom: 1.5pt; }
+	.figure .box .who { font-size: 8.5pt; color: var(--muted); margin-bottom: 4pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+	<img src="../../Assets/Narramancer/Sprites/Narramancer Icon 160x160.png" alt="">
+	<div class="title">Narramancer<br>Getting Started</div>
+	<div class="subtitle">Node graphs with save and load built in</div>
+	<div class="meta">
+		Version 1.0 &nbsp;·&nbsp; Unity 6 &nbsp;·&nbsp; Full documentation at <b>narramancer.com</b>
+	</div>
+</section>
+
+<section>
+	<h1>Contents</h1>
+	<ol class="toc">
+		<li><span class="n">1</span>What Narramancer is</li>
+		<li><span class="n">2</span>Installing</li>
+		<li><span class="n">3</span>The samples</li>
+		<li><span class="n">4</span>The building blocks</li>
+		<li><span class="n">5</span>The Narramancer window</li>
+		<li><span class="n">6</span>Saving and loading<span class="s">the part to read twice</span></li>
+		<li><span class="n">7</span>Upgrading from 0.5</li>
+	</ol>
+
+	<h2>1. What Narramancer is</h2>
+	<p class="lede">Narramancer lets you build a game's story and logic as node graphs. Its main feature is that a
+	save can be made <b>at any moment</b>: a graph halfway through an action is saved, loaded back, and carries
+	on from exactly where it stopped.</p>
+	<p>Use it for branching dialogue, quest and story flow, NPC behaviour, or the overall loop of your game.
+	Each graph is a chain of small steps: show this text, wait for a click, offer these choices, move this
+	character, wait two seconds. Some steps finish at once and some take time. Narramancer can save a graph
+	while it is waiting on any of them.</p>
+	<p>Most scripting tools can't do that. Unity Visual Scripting and Fungus have no way to save which step is
+	running, so saving mid-sequence is something you would build yourself. In Narramancer it is how graphs run.</p>
+	<h3>Why use it</h3>
+	<ul>
+		<li><b>Save anywhere, from day one.</b> Saving is not bolted on later. Every graph is saveable from the start.</li>
+		<li><b>Logic you can see.</b> The flow of a scene is laid out in a graph, not spread across scripts.</li>
+		<li><b>A built-in database of things.</b> People, places and items, with their properties, stats and
+			relationships, all saved for you.</li>
+		<li><b>Little or no code.</b> Over 150 node types cover text, choices, variables, lists and scene objects.</li>
+		<li><b>Iterate in Play Mode.</b> Edit graphs and test ideas without recompiling.</li>
+	</ul>
+</section>
+
+<section class="chapter">
+	<h1>2. Installing</h1>
+	<ol>
+		<li>In Unity, open <span class="path">Window → Package Manager</span>, choose <b>My Assets</b>, find
+			Narramancer and click <b>Import</b>.</li>
+		<li>Open <span class="path">Window → Narramancer</span> once. This creates the <b>Narramancer</b> settings
+			asset in <code>Assets/Resources</code>, which every other part of the system reads from.</li>
+	</ol>
+	<p>That is all the setup there is. Narramancer has no other package dependencies and needs no Player Settings
+	changes.</p>
+
+	<table>
+		<tr><th style="width:32%">Requirement</th><th>Details</th></tr>
+		<tr><td>Unity version</td><td>Unity 6. Built and tested on 6000.4.</td></tr>
+		<tr><td>UI</td><td>The sample printers and menus use Unity UI (uGUI) with legacy <code>Text</code>.</td></tr>
+		<tr><td>Navigation (optional)</td><td>The NavMesh features, such as the <b>Move NavMesh Agent</b> node, need
+			the built-in <b>AI</b> module. It is on by default; if you turn it off, those features are left out
+			of the build and everything else keeps working.</td></tr>
+		<tr><td>Odin Inspector</td><td>Not required, and it no longer conflicts. Narramancer has its own serializer
+			and ships no copy of Odin.</td></tr>
+	</table>
+
+	<div class="note info"><b>Upgrading from 0.5?</b> The ".NET 4.x API compatibility" step in older guides is no
+	longer needed. Chapter 7 covers what else changed.</div>
+
+	<h1 class="chapter">3. The samples</h1>
+	<p>The samples are in <code>Narramancer/Scenes</code>, one folder each. Open any scene and press Play.</p>
+	<table>
+		<tr><th style="width:36%">Sample</th><th>What it shows</th></tr>
+		<tr><td><b>0. Sample Launcher</b></td><td>A menu that opens the other four, so a single build can show
+			all of them. Each sample gets a <b>◀ Samples</b> button to come back.</td></tr>
+		<tr><td><b>1. Text and Choices Example</b></td><td>Text revealed a line at a time, waiting for a click,
+			then a choice that branches the story. Start here.</td></tr>
+		<tr><td><b>2. Noun Creation and Destruction</b></td><td>Creating and destroying nouns while the game
+			runs.</td></tr>
+		<tr><td><b>3. Adding and Removing Properties</b></td><td>Changing a noun's properties at runtime and
+			reacting to them.</td></tr>
+		<tr><td><b>4. Character Equipment</b></td><td>Equipment slots built from relationships and stats, with
+			UI that verbs update: sprites, titles and descriptions, all saved.</td></tr>
+	</table>
+	<p>Every sample has <b>Save</b> and <b>Load</b> buttons in the corner. Try saving halfway through a
+	conversation, then loading: the text, the choices and the graph all pick up where they were.</p>
+
+	<h3>Running the samples in a build</h3>
+	<p>Build Settings belong to your project, not to the package, so add the scenes yourself. Open
+	<span class="path">File → Build Profiles</span> and add <b>0. Sample Launcher</b> first, then samples 1 to 4.
+	The launcher lists whatever else is in the build, so a sample shows up in it by being added there.</p>
+
+	<h3>How sample 1 is put together</h3>
+	<p>Select the <b>Narramancer Scene</b> object in the hierarchy. Its <b>Run on Start Verbs</b> list holds one
+	ActionVerb, <i>Text and Choices Example Verb</i>, and that one graph is the whole sample. Double-click it to
+	open it in the graph editor. The text box and the choice buttons come from the <b>Text and Choice Printer
+	Canvas</b> prefab, and the save and load buttons from <b>Overlay Buttons Manager Canvas</b>. Copy both
+	prefabs into your own scene to get the same UI.</p>
+</section>
+
+<section class="chapter">
+	<h1>4. The building blocks</h1>
+	<p>Narramancer names its parts after grammar. Once that clicks, the rest of the system follows.</p>
+	<table>
+		<tr><th style="width:22%">Part</th><th>What it is</th></tr>
+		<tr><td><b>Nouns</b></td><td>The things in your game: characters, items, places, ideas. A noun asset is
+			the template; at runtime each one becomes a <i>noun instance</i> with its own values.</td></tr>
+		<tr><td><b>Verbs</b></td><td>What things <i>do</i>, authored as node graphs. An <b>ActionVerb</b> runs over
+			time and can wait (for a click, a choice, a timer). A <b>ValueVerb</b> answers a question instantly
+			and returns a value. ActionVerbs can use ValueVerbs, but not the other way round.</td></tr>
+		<tr><td><b>Adjectives</b></td><td>Data attached to nouns: <b>Properties</b> are tags (<i>Poisoned</i>,
+			<i>Armor</i>), <b>Stats</b> are numbers (<i>Health</i>, <i>Damage</i>), and <b>Relationships</b> are
+			one-way links from one noun to another (<i>equipped by</i>, <i>friend of</i>).</td></tr>
+		<tr><td><b>Variables</b></td><td>Named, typed values that graphs read and write.</td></tr>
+	</table>
+
+	<h2>Variables</h2>
+	<p>A variable has a name, a type and a <b>scope</b>, which sets where it lives:</p>
+	<ul>
+		<li><b>Global:</b> one value for the whole game, defined in the Narramancer window.</li>
+		<li><b>Scene:</b> defined on a <b>Narramancer Scene</b> component and available while that scene is loaded.</li>
+		<li><b>Verb:</b> a verb's own inputs and outputs.</li>
+	</ul>
+	<p>Read a variable with a <b>Get Variable</b> node and write one with a <b>Set Variable</b> node. Set the
+	node's scope to match the variable. Set Variable only works inside an ActionVerb, and only changes the value
+	when it runs.</p>
+	<p>Global variables can have a starting value in the Narramancer window, but that window can't point at objects
+	in a scene. To give a verb a scene object, use one of these three:</p>
+	<ol>
+		<li>A <b>Set Global Variables</b> component, which assigns global variables when the scene starts.</li>
+		<li>A <b>Narramancer Scene</b> component, with the object assigned to one of its scene variables.</li>
+		<li>A <b>Run Action Verb</b> component, with the object assigned to one of the verb's inputs.</li>
+	</ol>
+	<p>All three are under <span class="path">GameObject → Narramancer</span>. After changing a verb's inputs or
+	the global variables, press <b>Update Assignments</b> on a Run Action Verb or Set Global Variables component
+	to sync it. Values assigned to a renamed input or variable are kept, as long as its type is unchanged.</p>
+
+	<h1 class="chapter">5. The Narramancer window</h1>
+	<p>Open it from <span class="path">Window → Narramancer</span>. It docks like any other panel and is the
+	hub for your game's starting nouns, verbs and global variables. (It is really the inspector of the
+	<b>Narramancer</b> settings asset in <code>Assets/Resources</code>.)</p>
+	<h3>Editor mode</h3>
+	<p>Outside Play Mode the window has four tabs: <b>Nouns</b>, <b>Adjectives</b>, <b>Verbs</b> and
+	<b>Variables</b>. Nouns listed here are created when the game starts, and verbs listed here run right after.
+	The Variables tab is where global variables are defined and given starting values.</p>
+	<h3>Runtime mode</h3>
+	<p>In Play Mode the window shows the live table of noun instances. You can inspect any of them and add or
+	remove properties and stats while the game runs, which is handy for testing a branch without playing up to
+	it.</p>
+	<h3>From code</h3>
+	<p>Everything the window shows is also available from scripts through one entry point:</p>
+<pre><span class="k">var</span> narramancer = NarramancerSingleton.Instance;   <span class="c">// exists once the game starts</span></pre>
+</section>
+
+<section class="chapter">
+	<h1>6. Saving and loading</h1>
+	<p class="lede">Most of a save happens on its own. The one thing you decide is which scene objects are
+	saved, and that is set on one component.</p>
+
+	<div class="figure">
+		<div class="box">
+			<h4>The story</h4>
+			<div class="who">Saved automatically</div>
+			<ul>
+				<li>Every noun instance, with its properties, stats and relationships</li>
+				<li>Every variable</li>
+				<li>Every running verb, including exactly what it is waiting on: a click, a choice, a timer</li>
+				<li>The text and choices on screen</li>
+			</ul>
+		</div>
+		<div class="box you">
+			<h4>Scene objects</h4>
+			<div class="who">Saved where you add a Saveable</div>
+			<ul>
+				<li>Position, rotation and scale</li>
+				<li>Images, sprites, text and audio</li>
+				<li>Whether the object is active</li>
+				<li>Fields of your own scripts marked <code>[Save]</code></li>
+			</ul>
+		</div>
+	</div>
+
+	<h2>Adding save and load to your game</h2>
+	<p>The quickest way is the <b>Overlay Buttons Manager Canvas</b> prefab from the samples: Save and Load buttons,
+	save slots with thumbnails, and a history log. From your own code, a save and a load look like this:</p>
+<pre><span class="c">// Save</span>
+<span class="k">var</span> story = NarramancerSingleton.Instance.PrepareStoryForSave();
+SaveLoadUtilities.WriteSaveData(<span class="k">"slot1"</span>, SaveLoadUtilities.SerializeData(story));
+
+<span class="c">// Load: reopens the scene the save was made in, then restores the story into it</span>
+<span class="k">var</span> save = SaveLoadUtilities.ReadSaveWrapper(<span class="k">"slot1"</span>);
+NarramancerSingleton.Instance.LoadStory(save);</pre>
+	<p>Saves are JSON files. In the editor they go to <code>Assets/Saves</code> so you can open and read them;
+	in a build they go to <code>Application.persistentDataPath/Saves</code>. On WebGL they are stored in the
+	browser and survive a page reload.</p>
+
+	<h2>Saving scene objects: the Saveable component</h2>
+	<p>Add one <b>Saveable</b> to each GameObject whose state should come back after a load. It does two
+	things:</p>
+	<ul>
+		<li><b>It gives the object a permanent id.</b> Saves point at objects by this id, not by name or place in
+			the hierarchy. You can rename, reparent or reorder an object without breaking existing saves.</li>
+		<li><b>It saves what you tick.</b> The inspector lists <b>Active state</b>, plus a toggle for each
+			component on the object that Narramancer knows how to save:</li>
+	</ul>
+	<table>
+		<tr><th style="width:30%">Component</th><th>What comes back after a load</th></tr>
+		<tr><td>Transform</td><td>Local position, rotation and scale</td></tr>
+		<tr><td>Rect Transform</td><td>Anchored position, size, rotation and scale</td></tr>
+		<tr><td>Image, Sprite Renderer</td><td>Sprite, color and whether it is enabled</td></tr>
+		<tr><td>Text</td><td>The text, its color and whether it is enabled</td></tr>
+		<tr><td>Audio Source</td><td>Clip, playback position, volume, pitch, looping and whether it was playing</td></tr>
+		<tr><td>Animation</td><td>Clip, time, speed and wrap mode</td></tr>
+		<tr><td>Nav Mesh Agent</td><td>Destination, speed, stopping distance and whether it is stopped</td></tr>
+	</table>
+	<p>Adding a Saveable by hand ticks everything it finds. Untick what should reset to the scene's own state
+	on a load. A Saveable with nothing ticked is <b>identity only</b>: other saves can point at the object, but
+	nothing about the object itself is saved.</p>
+	<p>To add Saveables in bulk, run <span class="path">Window → Narramancer → Add Missing Saveables</span>
+	(open scenes, or prefabs). It finds objects that need an id because something points at them, and adds
+	identity-only Saveables. Tick what you want saved afterwards.</p>
+
+	<div class="note"><b>If a verb changes it, save it.</b> A verb can set a label's text, swap an image or
+	hide an object. If that object's Saveable doesn't save that component, or the object has no Saveable, the
+	change is undone by the next load: the scene comes back as it was built, not as the verb left it. When a
+	label or image looks wrong after a load, check this first.</div>
+
+	<h2>Your own scripts</h2>
+	<p>Mark a field <code>[Save]</code> on any MonoBehaviour that sits on an object with a Saveable, and it is
+	saved and restored with the object. No other code is needed. The inspector lists these scripts under
+	<b>Also saved, by their [Save] fields</b>.</p>
+<pre><span class="k">public class</span> Lantern : MonoBehaviour {
+    [Save] <span class="k">private float</span> oilLeft = 1f;
+    [Save] <span class="k">private bool</span> lit;
+    [Save] <span class="k">private</span> List&lt;<span class="k">string</span>&gt; litBy = <span class="k">new</span> List&lt;<span class="k">string</span>&gt;();
+}</pre>
+	<p>Fields can hold numbers, strings, Unity value types like <code>Vector3</code> and <code>Color</code>,
+	lists, dictionaries, your own <code>[Serializable]</code> classes, assets, and scene objects that have a
+	Saveable.</p>
+
+	<h2>Movement and animation</h2>
+	<p>The <b>Translate GameObject</b>, <b>Tween GameObject Rotation</b>, <b>Play Animation</b> and <b>Move
+	NavMesh Agent</b> nodes keep going after a load: a character saved halfway through a walk finishes the walk,
+	and a verb waiting for it to arrive carries on when it does. The moving object needs a Saveable. If it
+	doesn't have one, Narramancer logs a warning when the move starts.</p>
+
+	<h2>Assets in a save</h2>
+	<p>When a save points at an asset, such as the sprite on an image or a noun in a variable, it records a
+	permanent id. In a build, those ids are looked up in an <b>asset manifest</b> that Narramancer rebuilds before
+	every build. The manifest includes:</p>
+	<ul>
+		<li>every Narramancer asset (nouns, adjectives, verbs and their nodes),</li>
+		<li>every asset those reference, such as the sprites in your nouns,</li>
+		<li>everything in a <code>Resources</code> folder.</li>
+	</ul>
+	<p>That covers almost everything. The exception is an asset that only your own code or the scene refers to.
+	Add those to the manifest's <b>Additional Assets</b> list (<code>Assets/Resources/NarramancerAssetManifest</code>).
+	If a save meets an asset it can't name, it logs a warning saying which one, and that one item comes back as
+	the scene has it.</p>
+
+	<div class="note info"><b>Test saves in a build before you ship.</b> Play Mode in the editor can look up any
+	asset, so a save that works there can still miss something in a player. A WebGL or IL2CPP build is the real
+	test. Save, quit, relaunch and load.</div>
+</section>
+
+<section class="chapter">
+	<h1>7. Upgrading from 0.5</h1>
+	<p>Version 1.0 changes how saving works. Because of that, a project from 0.5 needs a few one-time fixes.</p>
+	<ul>
+		<li><b>Odin Serializer is gone.</b> Delete any leftover <code>OdinSerializer</code> folder. The
+			".NET 4.x" Player Setting is no longer required.</li>
+		<li><b>Old save files can't be loaded.</b> The save format changed, and a 0.5 save is rejected with a
+			message, not misread.</li>
+		<li><b>The <code>Serialize…</code> components were replaced by Saveable.</b> Scenes that used them will
+			show <i>missing script</i> warnings where they were. Remove those, add a Saveable, and tick the
+			matching toggle:</li>
+	</ul>
+	<table>
+		<tr><th style="width:44%">0.5 component</th><th>1.0 equivalent</th></tr>
+		<tr><td><code>SerializeTransform</code></td><td>Saveable → <b>Transform</b></td></tr>
+		<tr><td><code>SerializeRectTransform</code></td><td>Saveable → <b>Rect Transform</b></td></tr>
+		<tr><td><code>SerializeActive</code></td><td>Saveable → <b>Active state</b></td></tr>
+		<tr><td><code>SerializeImage</code></td><td>Saveable → <b>Image</b></td></tr>
+		<tr><td><code>SerializeSpriteRenderer</code></td><td>Saveable → <b>Sprite Renderer</b></td></tr>
+		<tr><td><code>SerializeText</code></td><td>Saveable → <b>Text</b></td></tr>
+		<tr><td><code>SerializeAudioSource</code></td><td>Saveable → <b>Audio Source</b></td></tr>
+		<tr><td><code>SerializeAnimation</code></td><td>Saveable → <b>Animation</b></td></tr>
+		<tr><td><code>[SerializeMonoBehaviourField]</code></td><td><code>[Save]</code></td></tr>
+		<tr><td><code>SerializeNounInstanceReference</code></td><td>Unchanged</td></tr>
+	</table>
+	<p>Then run <span class="path">Window → Narramancer → Add Missing Saveables</span> on your scenes and prefabs, so
+	every object something points at has a permanent id.</p>
+	<p>Two more changes come for free. You no longer need to add a component to an object before moving or
+	animating it from a node, because the nodes set that up themselves. And objects that start inactive are now
+	saved like any other.</p>
+
+	<h2>Where to go next</h2>
+	<p>This guide covers the essentials. The full documentation, including every node, is at
+	<b>narramancer.com</b>. The <i>Narramancer Online Documentation</i> link in this folder opens it.</p>
+</section>
+
+</body>
+</html>

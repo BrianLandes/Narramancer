@@ -360,7 +360,12 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   the release smoke. Lists Build Settings, persists across loads, resets the story on each switch. Probably
   worth shipping: a buyer gets one build that shows everything. If it ships, give it a look that matches the
   brand rather than default IMGUI.
-- [ ] **Rewrite the shipped `Getting Started.pdf`** — `Assets/Narramancer/Documentation/Getting Started.pdf`
+- [x] **Rewrite the shipped `Getting Started.pdf`** — done 2026-10-28: 10 pages, rebuilt from
+  `docs/getting-started/guide.html` (the rebuild command is in its header). It drops the .NET 4.x / Odin step.
+  New material: a saving-and-loading chapter (what saves automatically, `Saveable` and its toggles, `[Save]`,
+  the asset manifest, the "if a verb changes it, save it" warning), the launcher and samples, and a 0.5 →
+  1.0 upgrade table. The Naninovel aside is gone. Unlike the old guide it has **no editor screenshots**; worth
+  adding a few once the demo video is shot. Original note: `Assets/Narramancer/Documentation/Getting Started.pdf`
   ships in the package and was last touched 2024-02-22, before the new serializer and `Saveable`. It almost
   certainly describes the old `Serialize*` workflow. Do it after M4b settles which components exist.
 
