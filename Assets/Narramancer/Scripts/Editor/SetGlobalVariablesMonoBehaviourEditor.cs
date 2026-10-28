@@ -42,7 +42,10 @@ namespace Narramancer {
 
 			if (GUILayout.Button("Update Assignments")) {
 				var runStoryTarget = target as SetGlobalVariablesMonoBehaviour;
+				// See RunActionVerbMonoBehaviourEditor: recorded so it saves and undoes, then re-read.
+				Undo.RecordObject(runStoryTarget, "Update Assignments");
 				runStoryTarget.CreateInputs();
+				serializedObject.Update();
 			}
 
 			if (GUILayout.Button("Clear Assignments")) {

@@ -26,7 +26,11 @@ namespace Narramancer {
 
 			if (GUILayout.Button("Update Assignments")) {
 				var runGraphTarget = target as RunActionVerbMonoBehaviour;
+				// Recorded, so the change dirties the scene (and saves) and can be undone; then re-read, so the list
+				// draws what CreateInputs left rather than this frame's stale copy.
+				Undo.RecordObject(runGraphTarget, "Update Assignments");
 				runGraphTarget.CreateInputs();
+				serializedObject.Update();
 			}
 
 			if (GUILayout.Button("Clear Assignments")) {

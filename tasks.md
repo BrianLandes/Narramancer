@@ -84,7 +84,7 @@ cost nothing and don't make the product any more purchasable.
 ## Now / In progress
 
 - [ ] **The patch test for M2–M4 — then §3.** M4a and M4b are done and merged to `main`, and the WebGL build
-  smoke passed on 2026-10-28 (561/561 EditMode tests). Scene objects have a durable identity, `Saveable` is the
+  smoke passed on 2026-10-28 (567/567 EditMode tests). Scene objects have a durable identity, `Saveable` is the
   one component that saves an object, and eight of the nine `Serialize*` components are gone
   (`SerializeNounInstanceReference` stays). The patch test is all that stands between here and the relaunch
   work (§2, "Re-run the Task Z build smoke").
@@ -130,7 +130,7 @@ recorded before anything changes anyway.
 ## 2. Breaking changes — land these before anyone can buy
 
 **This is the critical path.** With ~0 users there is no save-format migration burden; that is the whole
-reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 561
+reason this section moved ahead of the launch. The test net that used to gate this work **exists** — 567
 EditMode tests (2026-10-27), run with `run_tests` (EditMode, assembly `Tests.Editor`) — so nothing here is blocked on it
 any more.
 
@@ -149,7 +149,7 @@ So: **swap first and smoke it immediately**, then batch the remaining format cha
 The principle is to batch format-breaking work behind the manual check — but not the first piece, where the
 unknown is concentrated and a failure needs to be isolated.
 
-- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **561 passing**
+- [~] **The test net is up — the gate on the refactors below is CLOSED.** `Tests.Editor` is at **567 passing**
   EditMode tests (2026-10-27); run with `run_tests` (EditMode, assembly `Tests.Editor`). Everything in this section that
   said *(needs the test net)* is now unblocked.
   - [x] Save → load round-trip, **including resume after load** *(done 2026-08-27)* — `SaveLoadRoundTripTests`
@@ -394,7 +394,15 @@ see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
   Walk dotted property paths, and add `GetParentType()`, `GetPropertyTargetType()`, `GetTargetObjectParent()`,
   `GetFirstFieldWithType<T>()`. Then fix `VerbGraphDrawer`, which resolves its attribute lookup against the
   wrong type. **Infrastructure — do this first.** *(from inbox 2026-08-11 — Tier B4)*
-- [ ] **`VariableAssignment` partial-match recovery** — renaming a verb input currently **wipes** every
+- [x] **`VariableAssignment` partial-match recovery** — done 2026-10-28. An assignment now follows its input
+  through a rename, or a delete-and-re-add that mints a new id, as long as the type still matches, and its
+  stale half is repaired. It matches in passes (exact, then id, then name), each taking only assignments not
+  yet claimed. **Not the fork's version:** its single "id or name" check let a new input that took a renamed
+  input's old name claim that input's value whenever it came first in the list. 6 tests in
+  `VariableAssignmentTests`; exact-only matching and the fork's check were each run and seen to fail them.
+  Also fixed: the two **Update Assignments** buttons edited the component without `Undo.RecordObject`, so the
+  re-match neither dirtied the scene nor could be undone. The optional `VariableAssignmentList` + drawer was
+  not done. Original note: renaming a verb input currently **wipes** every
   assignment bound to it, silently, across every graph and component that referenced it. Match on *either* id
   or name (with a type match) and repair the stale half. Pure authoring-quality fix. Optionally ships with the
   `VariableAssignmentList` + drawer that wraps the same logic for reuse. *(needs the nested-path work above)*

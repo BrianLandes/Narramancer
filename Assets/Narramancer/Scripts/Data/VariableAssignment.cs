@@ -93,27 +93,61 @@ namespace Narramancer {
 
 	public static class VariableAssignmentExtensions {
 
+		/// <summary>
+		/// Rebuilds <paramref name="assignments"/> to line up with <paramref name="variables"/>, keeping every value
+		/// that can still be matched to its variable.
+		/// <para>
+		/// A match used to need the id <em>and</em> the name, so renaming a verb input — or deleting and re-adding
+		/// it, which mints a new id — silently wiped the value assigned to it in every component that used the
+		/// verb. Now an assignment follows its variable through either change, as long as the type still
+		/// matches, and its stale half is repaired.
+		/// </para>
+		/// <para>
+		/// The matching runs in passes, most confident first, each one choosing only from what the earlier passes
+		/// left: exact, then by id, then by name. A single "id or name" check would let a new input that took a
+		/// renamed input's old name claim that input's value, depending only on which came first in the list.
+		/// </para>
+		/// </summary>
 		public static void MatchToVariables<T>(this List<VariableAssignment> assignments, List<T> variables) where T : NarramancerPort {
-			var existingAssignments = assignments.ToList();
+			var unclaimed = assignments.ToList();
+			var matched = new VariableAssignment[variables.Count];
+
+			Claim(variables, unclaimed, matched, (assignment, variable) => SameId(assignment, variable) && SameName(assignment, variable));
+			Claim(variables, unclaimed, matched, SameId);
+			Claim(variables, unclaimed, matched, SameName);
 
 			assignments.Clear();
-
-			foreach (var variable in variables) {
-
-				var existingAssignment = existingAssignments.FirstOrDefault(x => x.id.Equals(variable.Id, StringComparison.Ordinal)
-					&& x.name.Equals(variable.Name, StringComparison.Ordinal)
-					&& VariableAssignment.TypeToString(variable.Type).Equals(x.type, StringComparison.Ordinal));
-
-				if (existingAssignment != null) {
-					assignments.Add(existingAssignment);
-					continue;
-				}
-				var newAssignment = new VariableAssignment() {
-					name = variable.Name,
-					id = variable.Id,
+			for (var ii = 0; ii < variables.Count; ii++) {
+				var variable = variables[ii];
+				var assignment = matched[ii] ?? new VariableAssignment() {
 					type = VariableAssignment.TypeToString(variable.Type),
 				};
-				assignments.Add(newAssignment);
+				assignment.id = variable.Id;
+				assignment.name = variable.Name;
+				assignments.Add(assignment);
+			}
+		}
+
+		private static bool SameId(VariableAssignment assignment, NarramancerPort variable) {
+			return string.Equals(assignment.id, variable.Id, StringComparison.Ordinal);
+		}
+
+		private static bool SameName(VariableAssignment assignment, NarramancerPort variable) {
+			return string.Equals(assignment.name, variable.Name, StringComparison.Ordinal);
+		}
+
+		private static void Claim<T>(List<T> variables, List<VariableAssignment> unclaimed, VariableAssignment[] matched,
+			Func<VariableAssignment, NarramancerPort, bool> matches) where T : NarramancerPort {
+			for (var ii = 0; ii < variables.Count; ii++) {
+				if (matched[ii] != null) {
+					continue;
+				}
+				var type = VariableAssignment.TypeToString(variables[ii].Type);
+				var match = unclaimed.FirstOrDefault(assignment => string.Equals(assignment.type, type, StringComparison.Ordinal) && matches(assignment, variables[ii]));
+				if (match != null) {
+					matched[ii] = match;
+					unclaimed.Remove(match);
+				}
 			}
 		}
 
