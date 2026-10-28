@@ -463,7 +463,7 @@ see [`docs/UPSTREAM_PORT_SCOPE.md`](docs/UPSTREAM_PORT_SCOPE.md) Tier B.
 Everything here goes out together, on a build that already has the new serializer and the `Saveable` model.
 **Nothing in this section starts until §2 is done and the build smoke has been re-run.**
 
-- [ ] **Record the demo video** — 60–90s, no narration: run a graph → pause mid-execution → save → quit the
+- [ ] **Record the demo video** — shot list, setup and edit plan in [`docs/DEMO_VIDEO_PLAN.md`](docs/DEMO_VIDEO_PLAN.md) (2026-10-28): you record the raw clips, Claude edits them with ffmpeg. 60–90s, no narration: run a graph → pause mid-execution → save → quit the
   editor entirely → reopen → load → resume exactly where it was. **Record it after the Saveable refactor**, so
   any inspector footage shows the single `Saveable` component rather than the old `Serialize*` zoo and doesn't
   need re-shooting. Use on the listing, README, narramancer.com, and as the r/Unity3D post.
