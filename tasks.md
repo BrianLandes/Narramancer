@@ -356,7 +356,7 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
   waiting out a timer. Cosmetic, but it lands on the exact moment the plugin is sold on — and the demo video
   will show it. Likely `TextPrinter` restoring its visual state without knowing whether the promise it is
   waiting on is a timer or a click. *(from inbox 2026-10-27; found 2026-09-04 smoke-testing M3)*
-- [ ] **`0. Sample Launcher` ships** *(decided 2026-10-28)* — still to do: give it a look that matches the brand rather than default IMGUI. Added 2026-10-27 so one build covers all four samples in
+- [x] **`0. Sample Launcher` ships** *(decided and restyled 2026-10-28)* — in the icon's colours (navy, slate, the `#EF476F` accent the editor already uses), with the icon, numbered rows and a matching back button. Still IMGUI, so it cannot collide with a sample's UI. It now also scales *down* to fit a short or narrow screen; before, a small WebGL canvas clipped the list. Checked in the editor's Game view; the back button has only been seen in code. Added 2026-10-27 so one build covers all four samples in
   the release smoke. Lists Build Settings, persists across loads, resets the story on each switch. Probably
   worth shipping: a buyer gets one build that shows everything. If it ships, give it a look that matches the
   brand rather than default IMGUI.
