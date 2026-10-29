@@ -375,8 +375,14 @@ No save-format impact, so these gate nothing. Tier B4, B5 and B7 landed 2026-10-
   pre-load runner forever. The window kept the runner it was showing until you picked another, and a load
   replaces every runner. It now drops a runner that is no longer on offer. This matters because it is the
   demo video's key shot. Checked in play mode by saving, carrying on and loading; it was seen stale without the
-  fix. **Still open:** a History dropdown beside Back listing the recently-opened stack, and a
-  corrected Back stack (the current one mutates the stack in `OnOpen()` and loses position). Plus live
+  fix. *Toolbar pass 2026-10-29:* the loose buttons and the side dropdown became a real toolbar. It has
+  Back, a **Recent** dropdown (the History dropdown this task asked for), an asset › verb breadcrumb whose
+  menu switches between verbs in the same asset, **Linked** (the verbs this one uses and the verbs that use it),
+  Find Verb, and Add Node / Frame / Collapse / New Child Verb / More. While playing, the runner pickers sit in a
+  second row. Clicks on the toolbar no longer fall through to the graph, which used to clear the selection.
+  The fix is `NodeGraphEditor.IsOverlayAt` in vendored xNode. **Compiled, but not yet looked at in the
+  editor.** **Still open:** a corrected Back stack (the current one mutates the stack in `OnOpen()` and
+  loses position). Plus live
   `NodeRunner` inspection of `NarramancerSingleton` during play, which fills the two in-code
   `// TODO: include NarramancerSingleton` comments in `VerbGraphEditor.cs` and is directly useful when
   recording the §3 demo video. Skip the fork's `NARRAMANCER_SHOW_FPS` block — debug scaffolding.

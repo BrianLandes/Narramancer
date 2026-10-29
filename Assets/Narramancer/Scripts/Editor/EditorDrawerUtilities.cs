@@ -542,11 +542,15 @@ namespace Narramancer {
 		public static void ShowSearchNodesPopup(NodeGraph nodeGraph, Vector2 mousePosition) {
 			Vector2 windowMousePosition = NodeEditorWindow.current.WindowToGridPosition(mousePosition);
 			var screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
+			ShowSearchNodesPopup(nodeGraph, windowMousePosition, screenPosition);
+		}
 
+		/// <summary>Shows the popup at <paramref name="screenPosition"/>, and creates the chosen node at <paramref name="gridPosition"/>.</summary>
+		public static void ShowSearchNodesPopup(NodeGraph nodeGraph, Vector2 gridPosition, Vector2 screenPosition) {
 			NodeSearchModalWindow window = ScriptableObject.CreateInstance(typeof(NodeSearchModalWindow)) as NodeSearchModalWindow;
 			var allowRunnableNodes = typeof(ActionVerb).IsAssignableFrom(nodeGraph.GetType());
 			window.ShowForValues(screenPosition, allowRunnableNodes, type => {
-				XNode.Node node = nodeGraph.CreateNode(type, windowMousePosition);
+				XNode.Node node = nodeGraph.CreateNode(type, gridPosition);
 				NodeEditorWindow.current.AutoConnect(node);
 			});
 		}

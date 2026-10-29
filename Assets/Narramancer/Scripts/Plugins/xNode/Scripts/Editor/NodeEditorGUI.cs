@@ -27,6 +27,13 @@ namespace XNodeEditor {
             Matrix4x4 m = GUI.matrix;
             if (graph == null) return;
             ValidateGraphEditor();
+
+            // The graph editor's overlay draws last, so the graph would otherwise see a press on it first and act on it
+            // (deselect, box-select, open a menu). Hide the press from the graph, then hand it back for the overlay.
+            EventType overlayEventType = e.type;
+            bool isOverlayPress = IsPressOnOverlay(e);
+            if (isOverlayPress) e.type = EventType.Ignore;
+
             Controls();
 
             var rect = new Rect(Vector2.zero, position.size);
@@ -36,6 +43,8 @@ namespace XNodeEditor {
             DrawNodes();
             DrawSelectionBox();
             DrawTooltip();
+
+            if (isOverlayPress) e.type = overlayEventType;
             graphEditor.OnGUI();
 
             // Run and reset onLateGUI
@@ -50,6 +59,22 @@ namespace XNodeEditor {
                 Repaint();
                 ForceRepaint = false;
             }
+        }
+
+        private bool IsPressOnOverlay(Event e) {
+            switch (e.type) {
+                case EventType.MouseDown:
+                case EventType.ContextClick:
+                case EventType.ScrollWheel:
+                    break;
+                case EventType.MouseUp:
+                    // A release over the overlay still has to end a drag or pan that began on the graph
+                    if (currentActivity != NodeActivity.Idle || IsDraggingPort || isPanning) return false;
+                    break;
+                default:
+                    return false;
+            }
+            return graphEditor.IsOverlayAt(e.mousePosition);
         }
 
 		public static void BeginZoomed(Rect rect, float zoom, float topPadding) {

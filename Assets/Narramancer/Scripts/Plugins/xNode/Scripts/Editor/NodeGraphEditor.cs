@@ -18,6 +18,9 @@ namespace XNodeEditor {
 
         public virtual void OnGUI() { }
 
+        /// <summary> Whether a window position lies on GUI that OnGUI overlays on the graph. Presses there are kept from the graph beneath. </summary>
+        public virtual bool IsOverlayAt(Vector2 windowPosition) { return false; }
+
         /// <summary> Called when opened by NodeEditorWindow </summary>
         public virtual void OnOpen() { }
 
