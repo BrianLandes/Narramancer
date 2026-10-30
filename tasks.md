@@ -512,8 +512,10 @@ Larger builds that each have their own design doc — read the linked handoff be
   options on `OfferObjectsAsChoicesNode`, name-input dialogs in `ActionVerbListDrawer`, stat handling without
   min/max in `StatInstance`). Worth one pass to promote the few that matter and delete the rest, rather than
   seeding 28 lines here.
-- [ ] **Rename the publisher from "Professional Bad Guys"** — signals nothing relevant to someone evaluating a
-  save system. Low priority.
+- [ ] **Professional Bad Guys: a brand guide and a new studio site** — *2026-10-30: keeping the name* (this
+  replaces the old "rename the publisher" item). A new site replaces the Pseudo World pitch and exists to answer
+  "who makes this, and will they still be around?" Outline and open questions:
+  [`docs/PROFESSIONAL_BAD_GUYS_SITE_HANDOFF.md`](docs/PROFESSIONAL_BAD_GUYS_SITE_HANDOFF.md).
 
 ---
 
