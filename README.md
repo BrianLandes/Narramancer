@@ -67,7 +67,7 @@ objects, and graphs can be edited in Play Mode while the running node lights up.
 
 1. Import Narramancer from the [Asset Store](https://assetstore.unity.com/packages/tools/visual-scripting/narramancer-269301)
    (or clone this repo; see [Licensing](#licensing)).
-2. Open **Window → Narramancer** once to create the settings asset.
+2. Open **Window → Narramancer → Open Narramancer Window** once to create the settings asset.
 3. Open `Narramancer/Scenes/1. Text and Choices Example` and press Play. Save halfway through, keep going, then
    load.
 

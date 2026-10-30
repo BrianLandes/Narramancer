@@ -84,7 +84,7 @@ is built into the PDF that ships in the package. The site must not contradict it
 
 | Site page | What to do | Guide chapter |
 |---|---|---|
-| Getting Started | Rewrite: **Unity 6**, install from My Assets, open Window → Narramancer once. **Delete the ".NET 4.x API compatibility" step**; it's no longer needed. Add the samples table, including **0. Sample Launcher**. | 2, 3 |
+| Getting Started | Rewrite: **Unity 6**, install from My Assets, open Window → Narramancer → Open Narramancer Window once. **Delete the ".NET 4.x API compatibility" step**; it's no longer needed. Add the samples table, including **0. Sample Launcher**. | 2, 3 |
 | Saving and Loading | **Rewrite.** One component, `Saveable`, decides what a scene object saves. Cover the `[Save]` attribute, the asset manifest and "Additional Assets", where save files go (editor, build, WebGL), and "test saves in a build". | 6 |
 | Components | Remove every `Serialize…` component except `SerializeNounInstanceReference`, which is unchanged. Add `Saveable`. Check the rest against what's under `GameObject → Narramancer`. | 6, 7 |
 | **Upgrading from 0.5** (new) | 0.5 saves can't be loaded; Odin is gone; the mapping from `Serialize…` components to `Saveable` toggles; Add Missing Saveables. | 7 |

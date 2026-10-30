@@ -21,7 +21,7 @@ namespace Narramancer {
 		UnityEngine.Object lastHoveredElement;
 		UnityEngine.Object draggedElement;
 
-		[MenuItem("Window/Narramancer")]
+		[MenuItem("Window/Narramancer/Open Narramancer Window", priority = 0)]
 		public static void OpenWindow() {
 			var narramancer = Resources.LoadAll<NarramancerSingleton>(string.Empty).FirstOrDefault();
 			if (narramancer == null) {
