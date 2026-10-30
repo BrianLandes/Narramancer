@@ -27,7 +27,7 @@
 | Execution-model correctness | ✅ Done 2026-09-04 (**M2**) — sub-runner ownership, durable blackboard keys, owned timers |
 | Serialized closures | ✅ Done 2026-09-04 (**M3**) — `Continuation` record, WebGL smoke passed |
 | B4 Saveable — identity half | ✅ **M4a, done** — WebGL build smoke passed 2026-10-27 |
-| B4 Saveable — driver half | ✅ **M4b, done 2026-10-27** — drivers, `[Save]`, eight of the nine `Serialize*` components deleted. WebGL build smoke passed 2026-10-28; the patch test is still to run |
+| B4 Saveable — driver half | ✅ **M4b, done 2026-10-27** — drivers, `[Save]`, eight of the nine `Serialize*` components deleted. WebGL build smoke passed 2026-10-28; patch test passed 2026-10-30 |
 | Pre-launch polish | ✅ Done 2026-10-28 — sample launcher, Getting Started guide rewritten for 1.0, samples and prefabs themed in the brand palette, Tier B4/B5/B7 authoring fixes, gitleaks history scan clean. See `done.md` |
 | Odin Inspector coexistence check | ❌ Not run — needs a copy of Odin Inspector |
 | #2 Core extraction | ❌ Not started — gated on the post-launch measurement |
@@ -170,7 +170,7 @@ cost is small; the cost of launching a save-system listing with no proof-of-conc
 - Store link above the fold; docs cover Unity 6 setup.
 
 ### A6. Measure
-Record the 3–4 views/day baseline **before** anything ships. Then 30 days, no changes, compare.
+Baseline recorded 2026-10-30: **≈1.0 views/day** (336 over 2025-12-01 → 2026-10-28; the 3–4/day first assumed was wrong). Then 30 days, no changes, compare. At ~1/day, 30 days expects ~30 views ± ~6, so read only a doubling or more as signal.
 Views up → compatibility was the bottleneck. Flat → positioning problem persists, diagnose before building
 more. Up but no sales → conversion problem; reviews and a free/lite tier are the next levers.
 
@@ -305,13 +305,13 @@ blocker 1's fix gives you for free). Keying the cache by `(target, window)` is t
 | # | What | Track | Gate |
 |---|---|---|---|
 | 0 | ~~**Task Z** — IL2CPP + WebGL save/load round-trip in a built player~~ | B | ✅ **passed 2026-08-11** |
-| 1 | **Record the views/day baseline** | A | do first — unrecoverable once the listing changes |
+| 1 | ~~**Record the views/day baseline**~~ | A | ✅ 2026-10-30: 336 views over 332 days, **≈1.0/day** (not the 3–4 first assumed) |
 | 2 | Check whether the listing Description is populated at all | A | pure diagnostic, exposure-neutral |
 | 3 | ~~B1 safe wins (deprecations + TypeCache)~~ | B | ✅ done 2026-08-11 |
 | 4 | ~~**B2 test net** (save/load round-trip first)~~ | B | ✅ done 2026-08-27 |
 | 5 | ~~B3 Odin removal → `NarramancerSerializer`~~ | B | ✅ done 2026-09-04 (M1) |
 | 6 | ~~B4 Saveable + GUID identity~~ | B | ✅ done in code 2026-10-27 (M4a + M4b) |
-| 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization. Smoke ✅ passed 2026-10-28; patch test still to run |
+| 7 | **Re-run the Task Z build smoke** | B | **required** — 5 and 6 changed serialization. ✅ smoke passed 2026-10-28, patch test passed 2026-10-30 |
 | 8 | B6 multi-window xNode | B | independent; optional before launch, don't let it delay 10 |
 | 9 | Record demo video | A | after B4, so inspector footage doesn't go stale. Plan: [`DEMO_VIDEO_PLAN.md`](DEMO_VIDEO_PLAN.md) |
 | 10 | **Republish 1.0.0** w/ Unity 6 + listing rewrite + video + README | A | **the launch** |

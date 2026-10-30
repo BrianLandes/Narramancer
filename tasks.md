@@ -88,7 +88,7 @@ Tier B authoring riders, the sample launcher, the rewritten Getting Started guid
 EditMode tests pass. The WebGL build smoke passed on 2026-10-28, but that was **before** the UI pass, so the
 restyled UI has only been checked in the editor. What remains before §3 is mostly yours to run:
 
-- [ ] **The patch test for M2–M4 — then §3.** Save, change the assets, rebuild, load (§2, "Re-run the Task Z
+- [x] **The patch test for M2–M4 — passed 2026-10-30, all green.** Save, change the assets, rebuild, load (§2, "Re-run the Task Z
   build smoke"; procedure in [`docs/RELEASE_RUNBOOK.md`](docs/RELEASE_RUNBOOK.md)). It is all that stands
   between here and the relaunch work. Scene objects have a durable identity, `Saveable` is the one component
   that saves an object, and eight of the nine `Serialize*` components are gone (`SerializeNounInstanceReference`
@@ -96,15 +96,24 @@ restyled UI has only been checked in the editor. What remains before §3 is most
 - [ ] **A build check of the 2026-10-28 UI pass** — fold it into the patch-test build. Look at the save and load
   menus, the top-right button row, the samples' title cards, and the launcher's **back button**, which has only
   been seen in code (camera screenshots leave out IMGUI).
-- [ ] **Record the demo clips** — [`docs/DEMO_VIDEO_PLAN.md`](docs/DEMO_VIDEO_PLAN.md) (§3). You record and
-  Claude edits.
-  **Decision open:** whether to add a short "walk on" tween to sample 4 first. It would give the video a shot
-  where something is visibly mid-motion when the save happens, and it would be the first build test of a
-  `Tweener` resuming after a load (see the ⚠️ note in §2). Not started.
-- [ ] **Odin Inspector coexistence check** and the **§1 baseline**: both still yours, both listed below.
+- [ ] **Upload the video and fill in the 1.0.0 submission** — every field, paste-ready, is in
+  [`docs/LAUNCH_COPY.md`](docs/LAUNCH_COPY.md) (2026-10-29): the YouTube title, description and chapters; the
+  package name, category, price, compatibility, keywords, summary, description, technical details and release
+  notes; and which file goes in which media slot. Media is in [`docs/media/`](docs/media/), including the card,
+  cover and social marketing images (rebuilt by `~/Videos/narramancer-demo/_edit/store_images.py`). Upload to
+  YouTube as **Unlisted** until approval. Submitting still waits on the patch test. Once the video is up, put its
+  link into `README.md` in place of `YOUTUBE_ID`.
+  - *2026-10-30: video uploaded (Unlisted) and the 1.0.0 submission is with Unity for review.* On approval:
+    make the video Public, push the README (with the video link) and deploy narramancer.com **on the same day**,
+    then start the 30-day window. Nothing ships during it.
+- [ ] **Odin Inspector coexistence check**: still yours, listed below. Do it before saying anything about Odin
+  publicly; the release notes deliberately don't.
+
+**narramancer.com** has its own handoff for a session in the site repo:
+[`docs/NARRAMANCER_COM_HANDOFF.md`](docs/NARRAMANCER_COM_HANDOFF.md). Deploy it on approval day.
 
 **Claude can pick up any time without you:** the rest of **Graph editor navigation** (§2, riders), **Multiple
-xNode editor windows**, **A10**, and, once the video exists, editor screenshots for the Getting Started guide.
+xNode editor windows**, **A10**, and editor screenshots for the Getting Started guide (the video is cut).
 
 ⚠️ **Read the code before trusting the task notes.** Four premises have now turned out to be stale: `Cancel`
 "overridden by nothing" (three nodes override it), "two unstable keys" (thirteen), the Promise registry being
@@ -125,10 +134,12 @@ Free, and **exposure-neutral**: none of this makes the product more discoverable
 compromise the "land the breaking changes before anyone can buy" ordering. The baseline in particular has to be
 recorded before anything changes anyway.
 
-- [ ] **Record the views/day baseline** — publisher dashboard, before any change. Baseline is ~3–4/day.
-  Confirm the referrer breakdown while you're in there. **Do this first** — once the listing changes, the
-  pre-change number is unrecoverable.
-- [ ] **Verify the listing's Description / Technical Details are populated at all** — they rendered empty on
+- [x] **Record the views/day baseline** — *recorded 2026-10-30 from the publisher dashboard export, before the
+  1.0.0 listing went live.* **2025-12-01 → 2026-10-28 (332 days): 336 pageviews, ≈1.0/day.** 0 sales, 0 wishlists,
+  0 refunds, no rating. That is well below the ~3–4/day this file used to assume, so compare against **~1/day**.
+  The export is a single total row, so it gives no referrer breakdown and no daily trend. At ~1/day a 30-day window
+  expects about 30 views (±~6 from noise alone), so 2× or more is a real signal and +20% is not.
+- [ ] **Verify the listing's Description / Technical Details are populated at all** — *re-fetched 2026-10-29: still empty, and the 1.0.0 copy fills both regardless.* They rendered empty on
   fetch. Check in a logged-out browser. Pure diagnostic, changes nothing. If blank, that alone plausibly
   explains 22 favorites against ~0 sales, and it means the listing has never had a fair test — which *raises*
   the value of launching from a hardened build rather than re-running a broken launch.
@@ -338,11 +349,11 @@ that must ship if anything gets time-boxed. Full reasoning in the Reassessment a
     were — there is no converter, because the conversion was done by hand on the one sample that used them.
     Accepted at ~0 users; worth one line in the release notes, and a converter keyed on the old script GUIDs
     (recorded in `done.md`) if anyone asks.
-- [ ] **Re-run the Task Z build smoke, and the patch test** — **required, not optional**, and this is the one
+- [x] **Re-run the Task Z build smoke, and the patch test** — **both passed** (2026-10-28, 2026-10-30). **required, not optional**, and this is the one
   that covers M2, M3 and M4 together. For M4b, confirm scene 4's sprites **and** texts come back after a reload.
   - [x] **Build smoke passed 2026-10-28** on WebGL, all four samples through the launcher, after the two fixes
     below. Merged to `main`. That build predates the UI pass.
-  - [ ] **Patch test** — not yet recorded as run against M4: save, change the assets, rebuild, load.
+  - [x] **Patch test passed 2026-10-30** against M4: save, change the assets, rebuild, load.
   - The first run found two scene-4 bugs (sprites missing from the manifest, texts never saved); both fixed —
     see [`done.md`](done.md), 2026-10-28.
   ⚠️ **No sample tweens, animates or nav-moves anything**, so no build can exercise a `Tweener` being re-added
@@ -381,7 +392,10 @@ No save-format impact, so these gate nothing. Tier B4, B5 and B7 landed 2026-10-
   Find Verb, and Add Node / Frame / Collapse / New Child Verb / More. While playing, the runner pickers sit in a
   second row. Clicks on the toolbar no longer fall through to the graph, which used to clear the selection.
   The fix is `NodeGraphEditor.IsOverlayAt` in vendored xNode. **Compiled, but not yet looked at in the
-  editor.** **Still open:** a corrected Back stack (the current one mutates the stack in `OnOpen()` and
+  editor.** *Seen again 2026-10-29 while recording:* in one of two takes of a load after an editor restart, the
+  graph lit the first Print Text and never moved, though the story had resumed at Offer Choices
+  (`~/Videos/shot1-2026-10-29_16.39.00.mkv`, about 0:18). The other take followed correctly. So the stale
+  highlight is intermittent, not fixed. **Still open:** a corrected Back stack (the current one mutates the stack in `OnOpen()` and
   loses position). Plus live
   `NodeRunner` inspection of `NarramancerSingleton` during play, which fills the two in-code
   `// TODO: include NarramancerSingleton` comments in `VerbGraphEditor.cs` and is directly useful when
@@ -395,28 +409,28 @@ No save-format impact, so these gate nothing. Tier B4, B5 and B7 landed 2026-10-
 Everything here goes out together, on a build that already has the new serializer and the `Saveable` model.
 **Nothing in this section starts until §2 is done and the build smoke has been re-run.**
 
-- [ ] **Record the demo video** — shot list, setup and edit plan in [`docs/DEMO_VIDEO_PLAN.md`](docs/DEMO_VIDEO_PLAN.md) (2026-10-28): you record the raw clips, Claude edits them with ffmpeg. 60–90s, no narration: run a graph → pause mid-execution → save → quit the
+- [x] **Record the demo video** — cut approved 2026-10-29; shot list, setup and edit plan in [`docs/DEMO_VIDEO_PLAN.md`](docs/DEMO_VIDEO_PLAN.md) (2026-10-28): you record the raw clips, Claude edits them with ffmpeg. 60–90s, no narration: run a graph → pause mid-execution → save → quit the
   editor entirely → reopen → load → resume exactly where it was. **Record it after the Saveable refactor**, so
   any inspector footage shows the single `Saveable` component rather than the old `Serialize*` zoo and doesn't
   need re-shooting. Use on the listing, README, narramancer.com, and as the r/Unity3D post.
 - [ ] **Republish as 1.0.0 with Unity 6 compatibility** — drop the 0.x (loudest "unfinished" signal), declare
   6000.x, then verify the live compatibility table actually shows Unity 6. Success check: the asset appears
   when browsing Visual Scripting filtered to 6000.x.
-- [ ] **Rewrite the listing around save/load** — lead with the pain, not the mechanism. "Node graph tool" is a
+- [~] **Rewrite the listing around save/load** — *drafted 2026-10-29 in [`docs/LAUNCH_COPY.md`](docs/LAUNCH_COPY.md), not yet submitted.* — lead with the pain, not the mechanism. "Node graph tool" is a
   commodity with a free first-party incumbent; "graph tool with save/restore built into the execution model"
   is close to a category of one. Title → `Narramancer — Node Graphs with Built-In Save/Load`.
 - [ ] **Price → $39** — expect this to *raise* conversions. No launch discount; $7.99 reads as abandonware.
 - [ ] **Replace the keyword set** — drop unwinnable generics (`logic`, `Tool`, `Node`, `flow`, `visual`,
   `Graph`) for high-intent terms: `save system`, `save and load`, `game state`, `serialization`, `checkpoint`,
   `save anywhere`, `visual novel`, `dialogue`. Also confirm which category is primary.
-- [ ] **Rewrite README as a landing page** — demo GIF at top, one paragraph, link to the listing. Currently
+- [~] **Rewrite README as a landing page** — *done 2026-10-29 except the YouTube link (`YOUTUBE_ID`); hold the push until approval day.* — demo GIF at top, one paragraph, link to the listing. Currently
   it's feature documentation. Repos rank in Google for queries the Asset Store page never will. Add a short
   licensing line pointing at [`LICENSING.md`](LICENSING.md) — "free for noncommercial use; commercial use needs
   an Asset Store license" is a feature, stated plainly.
   - ⚠️ **Say "source-available," never "open source"** — here, on the listing, on narramancer.com, and in any
     forum post. PolyForm Noncommercial is not OSI-approved, and the distinction gets policed hard in developer
     communities. Getting it wrong turns a selling point into an argument.
-- [ ] **narramancer.com: move the Naninovel recommendation** — it currently talks visual-novel devs out of the
+- [ ] **narramancer.com: move the Naninovel recommendation** — *handoff: [`docs/NARRAMANCER_COM_HANDOFF.md`](docs/NARRAMANCER_COM_HANDOFF.md).* — it currently talks visual-novel devs out of the
   product inside the pitch paragraph, at the moment of decision. Keep the honesty; relocate to a comparison
   page further down the funnel.
 - [ ] **narramancer.com: hero leads with save/load** — match the listing. Store link above the fold. Docs
